@@ -1,0 +1,458 @@
+{
+  "scenario": "carreira-nova",
+  "reference": "/world/directory?tab=athletes",
+  "routes": {
+    "/game": {
+      "records": {
+        "MissionProgress": {
+          "created": 1,
+          "removed": 0,
+          "changed": 0
+        },
+        "FinancialTransaction": {
+          "created": 1,
+          "removed": 0,
+          "changed": 0
+        }
+      },
+      "introAdded": [
+        "/game"
+      ]
+    },
+    "/development": {
+      "records": {},
+      "introAdded": [
+        "/development"
+      ]
+    },
+    "/team-hub": {
+      "records": {},
+      "introAdded": [
+        "/team-hub"
+      ]
+    },
+    "/competitions": {
+      "records": {},
+      "introAdded": [
+        "/competitions"
+      ]
+    },
+    "/management": {
+      "records": {},
+      "introAdded": [
+        "/management"
+      ]
+    },
+    "/world": {
+      "records": {},
+      "introAdded": [
+        "/world"
+      ]
+    },
+    "/game/training": {
+      "records": {},
+      "introAdded": [
+        "/game/training",
+        "/game/training-center"
+      ]
+    },
+    "/game/matches": {
+      "records": {},
+      "introAdded": [
+        "/game/matches",
+        "/game/training-center"
+      ]
+    },
+    "/game/missions": {
+      "records": {},
+      "introAdded": []
+    },
+    "/game/missions?tab=achievements": {
+      "records": {
+        "PlayerAchievement": {
+          "created": 1,
+          "removed": 0,
+          "changed": 0
+        },
+        "FinancialTransaction": {
+          "created": 1,
+          "removed": 0,
+          "changed": 0
+        }
+      },
+      "introAdded": []
+    },
+    "/game/legacy": {
+      "records": {},
+      "introAdded": [
+        "/game/legacy"
+      ]
+    },
+    "/game/legacy?tab=hall": {
+      "records": {},
+      "introAdded": [
+        "/game/legacy"
+      ]
+    },
+    "/game/legacy?tab=monthly": {
+      "records": {},
+      "introAdded": [
+        "/game/legacy"
+      ]
+    },
+    "/game/legacy?tab=annual": {
+      "records": {},
+      "introAdded": [
+        "/game/legacy"
+      ]
+    },
+    "/game/stats": {
+      "records": {},
+      "introAdded": [
+        "/game/stats"
+      ]
+    },
+    "/game/monthly-reports": {
+      "records": {},
+      "introAdded": [
+        "/game/monthly-reports"
+      ]
+    },
+    "/game/annual-reports": {
+      "records": {},
+      "introAdded": [
+        "/game/annual-reports"
+      ]
+    },
+    "/game/economy": {
+      "records": {},
+      "introAdded": [
+        "/game/economy"
+      ]
+    },
+    "/tournaments": {
+      "records": {
+        "Tournament": {
+          "created": 27,
+          "removed": 0,
+          "changed": 0
+        },
+        "Season": {
+          "created": 1,
+          "removed": 0,
+          "changed": 0
+        }
+      },
+      "introAdded": [
+        "/tournaments"
+      ]
+    },
+    "/tournaments?tab=calendar": {
+      "records": {},
+      "introAdded": [
+        "/tournaments"
+      ]
+    },
+    "/ranking": {
+      "records": {},
+      "introAdded": [
+        "/ranking"
+      ]
+    },
+    "/ranking?scope=world&type=doubles": {
+      "records": {},
+      "introAdded": [
+        "/ranking"
+      ]
+    },
+    "/ranking?scope=race&type=individual": {
+      "records": {},
+      "introAdded": [
+        "/ranking"
+      ]
+    },
+    "/ranking?scope=race&type=doubles": {
+      "records": {},
+      "introAdded": [
+        "/ranking"
+      ]
+    },
+    "/ranking?tab=season": {
+      "records": {},
+      "introAdded": [
+        "/ranking"
+      ]
+    },
+    "/partners": {
+      "records": {
+        "PartnerOffer": {
+          "created": 4,
+          "removed": 0,
+          "changed": 0
+        }
+      },
+      "introAdded": [
+        "/partners"
+      ]
+    },
+    "/partners?view=offers": {
+      "records": {
+        "PartnerOffer": {
+          "created": 4,
+          "removed": 0,
+          "changed": 0
+        }
+      },
+      "introAdded": [
+        "/partners"
+      ]
+    },
+    "/partners?view=search": {
+      "records": {
+        "PartnerOffer": {
+          "created": 4,
+          "removed": 0,
+          "changed": 0
+        }
+      },
+      "introAdded": [
+        "/partners"
+      ]
+    },
+    "/partners?view=inbox": {
+      "records": {
+        "PartnerOffer": {
+          "created": 4,
+          "removed": 0,
+          "changed": 0
+        }
+      },
+      "introAdded": [
+        "/partners"
+      ]
+    },
+    "/partners?view=overview": {
+      "records": {
+        "PartnerOffer": {
+          "created": 4,
+          "removed": 0,
+          "changed": 0
+        }
+      },
+      "introAdded": [
+        "/partners"
+      ]
+    },
+    "/partners?view=contract": {
+      "records": {
+        "PartnerOffer": {
+          "created": 4,
+          "removed": 0,
+          "changed": 0
+        }
+      },
+      "introAdded": [
+        "/partners"
+      ]
+    },
+    "/partners?view=history": {
+      "records": {
+        "PartnerOffer": {
+          "created": 4,
+          "removed": 0,
+          "changed": 0
+        }
+      },
+      "introAdded": [
+        "/partners"
+      ]
+    },
+    "/career/athlete": {
+      "records": {},
+      "introAdded": [
+        "/career/athlete"
+      ]
+    },
+    "/career/athlete?tab=appearance": {
+      "records": {},
+      "introAdded": [
+        "/career/athlete"
+      ]
+    },
+    "/career/training": {
+      "records": {},
+      "introAdded": [
+        "/career/training"
+      ]
+    },
+    "/career/training?tab=inventory": {
+      "records": {},
+      "introAdded": [
+        "/career/training"
+      ]
+    },
+    "/career/training?tab=shop": {
+      "records": {
+        "ShopItem": {
+          "created": 111,
+          "removed": 0,
+          "changed": 4
+        }
+      },
+      "introAdded": [
+        "/career/training"
+      ]
+    },
+    "/career/team": {
+      "records": {
+        "Coach": {
+          "created": 118,
+          "removed": 0,
+          "changed": 0
+        }
+      },
+      "introAdded": [
+        "/career/team"
+      ]
+    },
+    "/career/team?tab=staff": {
+      "records": {},
+      "introAdded": [
+        "/career/team"
+      ]
+    },
+    "/career/relations": {
+      "records": {},
+      "introAdded": [
+        "/career/relations"
+      ]
+    },
+    "/career/relations?tab=fans": {
+      "records": {},
+      "introAdded": [
+        "/career/relations"
+      ]
+    },
+    "/world/circuit": {
+      "records": {},
+      "introAdded": [
+        "/world/circuit"
+      ]
+    },
+    "/world/circuit?tab=circuit": {
+      "records": {
+        "WorldEvent": {
+          "created": 2,
+          "removed": 0,
+          "changed": 0
+        }
+      },
+      "introAdded": [
+        "/world/circuit"
+      ]
+    },
+    "/world/circuit?tab=press": {
+      "records": {
+        "PressJournalist": {
+          "created": 14,
+          "removed": 0,
+          "changed": 0
+        }
+      },
+      "introAdded": [
+        "/world/circuit"
+      ]
+    },
+    "/world/circuit?tab=community": {
+      "records": {},
+      "introAdded": [
+        "/world/circuit"
+      ]
+    },
+    "/world/directory?tab=clubs": {
+      "records": {
+        "Club": {
+          "created": 71,
+          "removed": 0,
+          "changed": 0
+        }
+      },
+      "introAdded": []
+    },
+    "/world/directory?tab=countries": {
+      "records": {},
+      "introAdded": []
+    },
+    "/world-market": {
+      "records": {
+        "AthleteProfile": {
+          "created": 0,
+          "removed": 0,
+          "changed": 500
+        },
+        "Coach": {
+          "created": 118,
+          "removed": 0,
+          "changed": 0
+        }
+      },
+      "introAdded": [
+        "/world-market"
+      ]
+    },
+    "/weather": {
+      "records": {},
+      "introAdded": [
+        "/weather"
+      ]
+    },
+    "/encyclopedia": {
+      "records": {
+        "EncyclopediaEntry": {
+          "created": 62,
+          "removed": 0,
+          "changed": 0
+        }
+      },
+      "introAdded": [
+        "/encyclopedia"
+      ]
+    },
+    "/encyclopedia?tab=history": {
+      "records": {},
+      "introAdded": [
+        "/encyclopedia"
+      ]
+    },
+    "/communications": {
+      "records": {},
+      "introAdded": [
+        "/communications"
+      ]
+    },
+    "/settings": {
+      "records": {},
+      "introAdded": [
+        "/settings"
+      ]
+    },
+    "/careers": {
+      "records": {},
+      "introAdded": []
+    },
+    "/admin": {
+      "records": {},
+      "introAdded": [
+        "/admin"
+      ]
+    },
+    "/database": {
+      "records": {},
+      "introAdded": [
+        "/database"
+      ]
+    }
+  },
+  "referenceNoise": {},
+  "jsErrors": []
+}

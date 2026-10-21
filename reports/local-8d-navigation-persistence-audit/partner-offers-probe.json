@@ -1,0 +1,138 @@
+{
+  "report": {
+    "sequential": {
+      "existingBeforeOpen": 0,
+      "createdOnFirstOpen": 4,
+      "afterSecondOpen": 4,
+      "candidates": [
+        "player-fictional-11q11d2",
+        "player-fictional-15x1byv",
+        "player-fictional-17b5nfo",
+        "player-fictional-3vivu7"
+      ],
+      "displayOrder": {
+        "firstOpen": [
+          "Thiago Oliveira",
+          "Andrea Moretti",
+          "Théo Leroy",
+          "Tomás Acosta"
+        ],
+        "laterOpens": [
+          "Tomás Acosta",
+          "Théo Leroy",
+          "Andrea Moretti",
+          "Thiago Oliveira"
+        ]
+      },
+      "courtSide": null,
+      "poolSize": 0
+    },
+    "concurrent": {
+      "offers": 4,
+      "distinctCandidates": 4,
+      "outcomes": [
+        "ok:4",
+        "erro:PartnerOffer já existe com o id: partner-offer-probe-player-player-fictional-17b"
+      ]
+    },
+    "determinism": {
+      "sameCandidates": true,
+      "a": [
+        "player-fictional-11q11d2",
+        "player-fictional-15x1byv",
+        "player-fictional-17b5nfo",
+        "player-fictional-3vivu7"
+      ],
+      "b": [
+        "player-fictional-11q11d2",
+        "player-fictional-15x1byv",
+        "player-fictional-17b5nfo",
+        "player-fictional-3vivu7"
+      ]
+    },
+    "profileDrift": {
+      "sameIfProfileChanges": false,
+      "first": [
+        "player-fictional-11q11d2",
+        "player-fictional-15x1byv",
+        "player-fictional-17b5nfo",
+        "player-fictional-3vivu7"
+      ],
+      "withCourtSideAndXp": [
+        "player-fictional-11q11d2",
+        "player-fictional-15x1byv",
+        "player-fictional-17b5nfo",
+        "player-fictional-3bjog9"
+      ]
+    },
+    "rejection": {
+      "initial": [
+        "player-fictional-11q11d2",
+        "player-fictional-15x1byv",
+        "player-fictional-17b5nfo",
+        "player-fictional-3vivu7"
+      ],
+      "regeneratedAfterAllRejected": [
+        "player-fictional-12v5pc6",
+        "player-fictional-1355b15",
+        "player-fictional-14t62oy",
+        "player-fictional-2hkvdc"
+      ],
+      "cooldown": [
+        "2026-01-15",
+        "2026-01-15",
+        "2026-01-15",
+        "2026-01-15"
+      ]
+    }
+  },
+  "findings": [
+    {
+      "label": "mesmas propostas, ORDEM diferente entre a 1ª e as demais aberturas (explica \"propostas mudaram\" na 5.32-C.1)",
+      "fact": {
+        "firstOpen": [
+          "Thiago Oliveira",
+          "Andrea Moretti",
+          "Théo Leroy",
+          "Tomás Acosta"
+        ],
+        "laterOpens": [
+          "Tomás Acosta",
+          "Théo Leroy",
+          "Andrea Moretti",
+          "Thiago Oliveira"
+        ]
+      }
+    },
+    {
+      "label": "abertura simultânea: a 2ª chamada LANÇA erro de id duplicado (a tela mostra \"não foi possível carregar\")",
+      "fact": [
+        "ok:4",
+        "erro:PartnerOffer já existe com o id: partner-offer-probe-player-player-fictional-17b"
+      ]
+    },
+    {
+      "label": "o lote depende do perfil no momento da 1ª abertura (lado/XP): abrir antes ou depois do onboarding muda os candidatos",
+      "fact": {
+        "first": [
+          "player-fictional-11q11d2",
+          "player-fictional-15x1byv",
+          "player-fictional-17b5nfo",
+          "player-fictional-3vivu7"
+        ],
+        "withCourtSideAndXp": [
+          "player-fictional-11q11d2",
+          "player-fictional-15x1byv",
+          "player-fictional-17b5nfo",
+          "player-fictional-3bjog9"
+        ]
+      }
+    },
+    {
+      "label": "com todas recusadas, reabrir a página GERA um novo lote (sem avanço do calendário)",
+      "fact": {
+        "novas": 4
+      }
+    }
+  ]
+}

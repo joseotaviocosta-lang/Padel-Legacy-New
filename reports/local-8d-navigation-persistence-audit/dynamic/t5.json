@@ -1,0 +1,2268 @@
+{
+  "scenario": "t5",
+  "routes": {
+    "/game": {
+      "route": "/game",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {
+            "PressInterview": {
+              "count": 1,
+              "fields": {
+                "updated_date": 1
+              }
+            }
+          },
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 5,
+        "careerWrites": 0,
+        "path": "/game"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {
+            "PressInterview": {
+              "count": 1,
+              "fields": {
+                "updated_date": 1
+              }
+            }
+          },
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 0,
+        "path": "/game"
+      }
+    },
+    "/development": {
+      "route": "/development",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 5,
+        "careerWrites": 1,
+        "path": "/development"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/development"
+      }
+    },
+    "/team-hub": {
+      "route": "/team-hub",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/team-hub"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/team-hub"
+      }
+    },
+    "/competitions": {
+      "route": "/competitions",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/competitions"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/competitions"
+      }
+    },
+    "/management": {
+      "route": "/management",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/management"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/management"
+      }
+    },
+    "/world": {
+      "route": "/world",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/world"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/world"
+      }
+    },
+    "/game/training": {
+      "route": "/game/training",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 3,
+        "persistCalls": 17,
+        "careerWrites": 2,
+        "path": "/game/training-center?view=training"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 3,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/game/training-center?view=training"
+      }
+    },
+    "/game/matches": {
+      "route": "/game/matches",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 3,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/game/training-center?view=match"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 3,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/game/training-center?view=match"
+      }
+    },
+    "/game/missions": {
+      "route": "/game/missions",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {
+            "Mission": {
+              "count": 3,
+              "fields": {
+                "xp_reward": 3,
+                "coins_reward": 3,
+                "mission_type": 3,
+                "updated_date": 3
+              }
+            }
+          },
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 17,
+        "careerWrites": 2,
+        "path": "/game/missions"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {
+            "Mission": {
+              "count": 3,
+              "fields": {
+                "is_active": 3,
+                "updated_date": 3,
+                "retired_reason": 3
+              }
+            }
+          },
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 5,
+        "careerWrites": 1,
+        "path": "/game/missions"
+      }
+    },
+    "/game/missions?tab=achievements": {
+      "route": "/game/missions?tab=achievements",
+      "open1": {
+        "diff": {
+          "created": {
+            "PlayerAchievement": {
+              "count": 1,
+              "sample": [
+                "pa-achv-meia-decada-bd83ba91-e824-4539-ae0c-97afc1ffa7be-player"
+              ]
+            }
+          },
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "achievements_v2_reconciled"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 17,
+        "careerWrites": 2,
+        "path": "/game/missions?tab=achievements"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/game/missions?tab=achievements"
+      }
+    },
+    "/game/legacy": {
+      "route": "/game/legacy",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/game/legacy"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/game/legacy"
+      }
+    },
+    "/game/legacy?tab=hall": {
+      "route": "/game/legacy?tab=hall",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/game/legacy?tab=hall"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/game/legacy?tab=hall"
+      }
+    },
+    "/game/legacy?tab=monthly": {
+      "route": "/game/legacy?tab=monthly",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/game/legacy?tab=monthly"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/game/legacy?tab=monthly"
+      }
+    },
+    "/game/legacy?tab=annual": {
+      "route": "/game/legacy?tab=annual",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/game/legacy?tab=annual"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/game/legacy?tab=annual"
+      }
+    },
+    "/game/stats": {
+      "route": "/game/stats",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/game/stats"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/game/stats"
+      }
+    },
+    "/game/monthly-reports": {
+      "route": "/game/monthly-reports",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/game/monthly-reports"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/game/monthly-reports"
+      }
+    },
+    "/game/annual-reports": {
+      "route": "/game/annual-reports",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/game/annual-reports"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/game/annual-reports"
+      }
+    },
+    "/game/economy": {
+      "route": "/game/economy",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 13,
+        "careerWrites": 1,
+        "path": "/game/economy"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/game/economy"
+      }
+    },
+    "/tournaments": {
+      "route": "/tournaments",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 5320,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/tournaments"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 5351,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/tournaments"
+      }
+    },
+    "/tournaments?tab=calendar": {
+      "route": "/tournaments?tab=calendar",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 5290,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/tournaments?tab=calendar"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 5293,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/tournaments?tab=calendar"
+      }
+    },
+    "__NEXT_TOURNAMENT__": {
+      "route": "/tournaments?tournament=tournament-2031-seo-bro-w05-1",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 5299,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/tournaments?tournament=tournament-2031-seo-bro-w05-1"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 5337,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/tournaments?tournament=tournament-2031-seo-bro-w05-1"
+      }
+    },
+    "__LAST_FINISHED_BRACKET__": {
+      "route": "/tournaments?tournament=tournament-2030-nai-leg-w52-1&openBracket=true",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 5294,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/tournaments?tournament=tournament-2030-nai-leg-w52-1&openBracket=true"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 5328,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/tournaments?tournament=tournament-2030-nai-leg-w52-1&openBracket=true"
+      }
+    },
+    "/ranking": {
+      "route": "/ranking",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/ranking"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/ranking"
+      }
+    },
+    "/ranking?scope=world&type=doubles": {
+      "route": "/ranking?scope=world&type=doubles",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/ranking?scope=world&type=doubles"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/ranking?scope=world&type=doubles"
+      }
+    },
+    "/ranking?scope=race&type=individual": {
+      "route": "/ranking?scope=race&type=individual",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/ranking?scope=race&type=individual"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/ranking?scope=race&type=individual"
+      }
+    },
+    "/ranking?scope=race&type=doubles": {
+      "route": "/ranking?scope=race&type=doubles",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/ranking?scope=race&type=doubles"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/ranking?scope=race&type=doubles"
+      }
+    },
+    "/ranking?tab=season": {
+      "route": "/ranking?tab=season",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/ranking?tab=season"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/ranking?tab=season"
+      }
+    },
+    "/partners": {
+      "route": "/partners",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/partners"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/partners"
+      }
+    },
+    "/partners?view=offers": {
+      "route": "/partners?view=offers",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/partners?view=offers"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/partners?view=offers"
+      }
+    },
+    "/partners?view=search": {
+      "route": "/partners?view=search",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/partners?view=search"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/partners?view=search"
+      }
+    },
+    "/partners?view=inbox": {
+      "route": "/partners?view=inbox",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/partners?view=inbox"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/partners?view=inbox"
+      }
+    },
+    "/partners?view=overview": {
+      "route": "/partners?view=overview",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/partners?view=overview"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/partners?view=overview"
+      }
+    },
+    "/partners?view=contract": {
+      "route": "/partners?view=contract",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/partners?view=contract"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/partners?view=contract"
+      }
+    },
+    "/partners?view=history": {
+      "route": "/partners?view=history",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/partners?view=history"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/partners?view=history"
+      }
+    },
+    "/career/athlete": {
+      "route": "/career/athlete",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/career/athlete"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/career/athlete"
+      }
+    },
+    "/career/athlete?tab=appearance": {
+      "route": "/career/athlete?tab=appearance",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/career/athlete?tab=appearance"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/career/athlete?tab=appearance"
+      }
+    },
+    "/career/training": {
+      "route": "/career/training",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 13,
+        "careerWrites": 1,
+        "path": "/career/training"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/career/training"
+      }
+    },
+    "/career/training?tab=inventory": {
+      "route": "/career/training?tab=inventory",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/career/training?tab=inventory"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/career/training?tab=inventory"
+      }
+    },
+    "/career/training?tab=shop": {
+      "route": "/career/training?tab=shop",
+      "open1": {
+        "diff": {
+          "created": {
+            "ShopItem": {
+              "count": 111,
+              "sample": [
+                "shopitem-1792540027168-ydxcv8",
+                "shopitem-1792540027168-buel5g",
+                "shopitem-1792540027168-5qsfij",
+                "shopitem-1792540027168-9b7qlx"
+              ]
+            }
+          },
+          "removed": {},
+          "changed": {
+            "ShopItem": {
+              "count": 4,
+              "fields": {
+                "image_url": 4,
+                "updated_date": 4
+              }
+            }
+          },
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ]
+          }
+        },
+        "mathRandomCalls": 112,
+        "persistCalls": 32,
+        "careerWrites": 5,
+        "path": "/career/training?tab=shop"
+      },
+      "open2": {
+        "diff": {
+          "created": {
+            "ShopItem": {
+              "count": 2,
+              "sample": [
+                "shopitem-1792540094343-nacl9d",
+                "shopitem-1792540094343-vwy3lc"
+              ]
+            }
+          },
+          "removed": {},
+          "changed": {
+            "ShopItem": {
+              "count": 111,
+              "fields": {
+                "updated_date": 111,
+                "name": 2,
+                "price": 2,
+                "description": 2,
+                "collection": 2,
+                "history": 2
+              }
+            }
+          },
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ]
+          }
+        },
+        "mathRandomCalls": 3,
+        "persistCalls": 588,
+        "careerWrites": 6,
+        "path": "/career/training?tab=shop"
+      }
+    },
+    "/career/team": {
+      "route": "/career/team",
+      "open1": {
+        "diff": {
+          "created": {
+            "Coach": {
+              "count": 118,
+              "sample": [
+                "catalog-coach-001",
+                "catalog-coach-002",
+                "catalog-coach-003",
+                "catalog-coach-004"
+              ]
+            }
+          },
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 15,
+        "careerWrites": 3,
+        "path": "/career/team"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/career/team"
+      }
+    },
+    "/career/team?tab=staff": {
+      "route": "/career/team?tab=staff",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/career/team?tab=staff"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/career/team?tab=staff"
+      }
+    },
+    "/career/relations": {
+      "route": "/career/relations",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/career/relations"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/career/relations"
+      }
+    },
+    "/career/relations?tab=fans": {
+      "route": "/career/relations?tab=fans",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/career/relations?tab=fans"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/career/relations?tab=fans"
+      }
+    },
+    "/world/circuit": {
+      "route": "/world/circuit",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {
+            "Match": {
+              "count": 23,
+              "fields": {
+                "team_a": 23,
+                "team_b": 8
+              }
+            }
+          },
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/world/circuit"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/world/circuit"
+      }
+    },
+    "/world/circuit?tab=circuit": {
+      "route": "/world/circuit?tab=circuit",
+      "open1": {
+        "diff": {
+          "created": {
+            "WorldEvent": {
+              "count": 15,
+              "sample": [
+                "worldevent-2031-01-04-social-comunidade-do-padel-debate-os-prox-11me60m-001",
+                "worldevent-2031-01-04-noticia-academias-intensificam-a-preparaca-17kgqov-002",
+                "worldevent-2031-01-04-social-comunidade-do-padel-debate-os-prox-0b1xwp0-003",
+                "worldevent-2031-01-04-noticia-academias-intensificam-a-preparaca-0bavn08-004"
+              ]
+            }
+          },
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ]
+          }
+        },
+        "mathRandomCalls": 46,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/world/circuit?tab=circuit"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/world/circuit?tab=circuit"
+      }
+    },
+    "/world/circuit?tab=press": {
+      "route": "/world/circuit?tab=press",
+      "open1": {
+        "diff": {
+          "created": {
+            "PressJournalist": {
+              "count": 14,
+              "sample": [
+                "journalist-001",
+                "journalist-002",
+                "j1",
+                "j2"
+              ]
+            }
+          },
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 67,
+        "careerWrites": 12,
+        "path": "/world/circuit?tab=press"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/world/circuit?tab=press"
+      }
+    },
+    "/world/circuit?tab=community": {
+      "route": "/world/circuit?tab=community",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/world/circuit?tab=community"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/world/circuit?tab=community"
+      }
+    },
+    "/world/directory?tab=clubs": {
+      "route": "/world/directory?tab=clubs",
+      "open1": {
+        "diff": {
+          "created": {
+            "Club": {
+              "count": 71,
+              "sample": [
+                "club-1792540238010-ijn51r",
+                "club-1792540238666-20wza8",
+                "club-1792540239255-qe35fy",
+                "club-1792540239802-6jxhnt"
+              ]
+            }
+          },
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ]
+          }
+        },
+        "mathRandomCalls": 71,
+        "persistCalls": 376,
+        "careerWrites": 71,
+        "path": "/world/directory?tab=clubs"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 0,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/world/directory?tab=clubs"
+      }
+    },
+    "/world/directory?tab=countries": {
+      "route": "/world/directory?tab=countries",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 0,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/world/directory?tab=countries"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 0,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/world/directory?tab=countries"
+      }
+    },
+    "__FIRST_CLUB__": {
+      "route": "/clubs/club-001",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 14,
+        "careerWrites": 1,
+        "path": "/clubs/club-001"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/clubs/club-001"
+      }
+    },
+    "/world-market": {
+      "route": "/world-market",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {
+            "AthleteProfile": {
+              "count": 500,
+              "fields": {
+                "updated_date": 500,
+                "potential": 5,
+                "world_rank": 500,
+                "last_market_month": 500,
+                "market_months_elapsed": 500,
+                "career_status": 444,
+                "current_form": 5
+              }
+            },
+            "Coach": {
+              "count": 118,
+              "fields": {
+                "updated_date": 118,
+                "market_available": 118,
+                "market_month": 118,
+                "market_demand": 118,
+                "market_salary": 118,
+                "market_signing_bonus": 118
+              }
+            }
+          },
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 22,
+        "careerWrites": 3,
+        "path": "/world-market"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {
+            "Coach": {
+              "count": 118,
+              "fields": {
+                "updated_date": 118
+              }
+            }
+          },
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 5,
+        "careerWrites": 1,
+        "path": "/world-market"
+      }
+    },
+    "/weather": {
+      "route": "/weather",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 81,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/weather"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 80,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/weather"
+      }
+    },
+    "/encyclopedia": {
+      "route": "/encyclopedia",
+      "open1": {
+        "diff": {
+          "created": {
+            "EncyclopediaEntry": {
+              "count": 62,
+              "sample": [
+                "encyclopedia-001",
+                "encyclopedia-002",
+                "encyclopediaentry-1792540361334-mywz73",
+                "encyclopediaentry-1792540361334-rcvot8"
+              ]
+            }
+          },
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 61,
+        "persistCalls": 17,
+        "careerWrites": 2,
+        "path": "/encyclopedia"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/encyclopedia"
+      }
+    },
+    "/encyclopedia?tab=history": {
+      "route": "/encyclopedia?tab=history",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/encyclopedia?tab=history"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/encyclopedia?tab=history"
+      }
+    },
+    "/communications": {
+      "route": "/communications",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {
+            "PressInterview": {
+              "count": 1,
+              "fields": {
+                "updated_date": 1
+              }
+            }
+          },
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 17,
+        "careerWrites": 1,
+        "path": "/communications"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {
+            "PressInterview": {
+              "count": 1,
+              "fields": {
+                "updated_date": 1
+              }
+            }
+          },
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 5,
+        "careerWrites": 0,
+        "path": "/communications"
+      }
+    },
+    "/settings": {
+      "route": "/settings",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/settings"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/settings"
+      }
+    },
+    "/careers": {
+      "route": "/careers",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 0,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/careers"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 0,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/careers"
+      }
+    },
+    "/admin": {
+      "route": "/admin",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 5,
+        "careerWrites": 1,
+        "path": "/admin"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/admin"
+      }
+    },
+    "/database": {
+      "route": "/database",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/database"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/database"
+      }
+    }
+  },
+  "boot": null,
+  "jsErrors": []
+}

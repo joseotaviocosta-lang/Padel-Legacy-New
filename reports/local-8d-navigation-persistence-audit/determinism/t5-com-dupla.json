@@ -1,0 +1,178 @@
+{
+  "scenario": "t5-com-dupla",
+  "dates": [
+    "2031-01-25",
+    "2031-01-25",
+    "2031-01-25"
+  ],
+  "routesNavigated": 56,
+  "noiseAvsA2": {},
+  "navigationAvsB": {
+    "AthleteProfile": {
+      "countA": 1118,
+      "countB": 1118,
+      "onlyInA": 500,
+      "onlyInB": 500
+    },
+    "Tournament": {
+      "countA": 773,
+      "countB": 784,
+      "onlyInA": 0,
+      "onlyInB": 11
+    },
+    "Mission": {
+      "countA": 30,
+      "countB": 30,
+      "onlyInA": 3,
+      "onlyInB": 3
+    },
+    "Coach": {
+      "countA": 0,
+      "countB": 118,
+      "onlyInA": 0,
+      "onlyInB": 118
+    },
+    "Club": {
+      "countA": 3,
+      "countB": 74,
+      "onlyInA": 0,
+      "onlyInB": 71
+    },
+    "ShopItem": {
+      "countA": 4,
+      "countB": 115,
+      "onlyInA": 4,
+      "onlyInB": 115
+    },
+    "WorldEvent": {
+      "countA": 6669,
+      "countB": 6684,
+      "onlyInA": 0,
+      "onlyInB": 15
+    },
+    "Match": {
+      "countA": 258,
+      "countB": 258,
+      "onlyInA": 23,
+      "onlyInB": 23
+    },
+    "PressJournalist": {
+      "countA": 0,
+      "countB": 14,
+      "onlyInA": 0,
+      "onlyInB": 14
+    },
+    "EncyclopediaEntry": {
+      "countA": 0,
+      "countB": 62,
+      "onlyInA": 0,
+      "onlyInB": 62
+    }
+  },
+  "attributableToNavigation": {
+    "AthleteProfile": {
+      "countA": 1118,
+      "countB": 1118,
+      "onlyInA": 500,
+      "onlyInB": 500
+    },
+    "Tournament": {
+      "countA": 773,
+      "countB": 784,
+      "onlyInA": 0,
+      "onlyInB": 11
+    },
+    "Mission": {
+      "countA": 30,
+      "countB": 30,
+      "onlyInA": 3,
+      "onlyInB": 3
+    },
+    "Coach": {
+      "countA": 0,
+      "countB": 118,
+      "onlyInA": 0,
+      "onlyInB": 118
+    },
+    "Club": {
+      "countA": 3,
+      "countB": 74,
+      "onlyInA": 0,
+      "onlyInB": 71
+    },
+    "ShopItem": {
+      "countA": 4,
+      "countB": 115,
+      "onlyInA": 4,
+      "onlyInB": 115
+    },
+    "WorldEvent": {
+      "countA": 6669,
+      "countB": 6684,
+      "onlyInA": 0,
+      "onlyInB": 15
+    },
+    "Match": {
+      "countA": 258,
+      "countB": 258,
+      "onlyInA": 23,
+      "onlyInB": 23
+    },
+    "PressJournalist": {
+      "countA": 0,
+      "countB": 14,
+      "onlyInA": 0,
+      "onlyInB": 14
+    },
+    "EncyclopediaEntry": {
+      "countA": 0,
+      "countB": 62,
+      "onlyInA": 0,
+      "onlyInB": 62
+    }
+  },
+  "fieldsNoise": {
+    "AthleteProfile": {
+      "changed": 0,
+      "fields": {}
+    },
+    "Match": {
+      "changed": 0,
+      "fields": {}
+    },
+    "Mission": {
+      "changed": 0,
+      "fields": {}
+    }
+  },
+  "fieldsNavigation": {
+    "AthleteProfile": {
+      "changed": 500,
+      "fields": {
+        "last_market_month": 500,
+        "market_months_elapsed": 500,
+        "world_rank": 500,
+        "career_status": 444,
+        "potential": 5,
+        "current_form": 5
+      }
+    },
+    "Match": {
+      "changed": 0,
+      "fields": {}
+    },
+    "Mission": {
+      "changed": 3,
+      "fields": {
+        "coins_reward": 3,
+        "mission_type": 3,
+        "xp_reward": 3
+      }
+    }
+  },
+  "errors": {
+    "A": [],
+    "A2": [],
+    "B": []
+  }
+}

@@ -1,0 +1,176 @@
+{
+  "scenario": "carreira-nova",
+  "dates": [
+    "2026-01-02",
+    "2026-01-02",
+    "2026-01-02"
+  ],
+  "routesNavigated": 56,
+  "noiseAvsA2": {
+    "MissionProgress": {
+      "countA": 1,
+      "countB": 1,
+      "onlyInA": 1,
+      "onlyInB": 1
+    }
+  },
+  "navigationAvsB": {
+    "AthleteProfile": {
+      "countA": 1000,
+      "countB": 1000,
+      "onlyInA": 500,
+      "onlyInB": 500
+    },
+    "WorldEvent": {
+      "countA": 452,
+      "countB": 457,
+      "onlyInA": 0,
+      "onlyInB": 5
+    },
+    "Tournament": {
+      "countA": 124,
+      "countB": 151,
+      "onlyInA": 0,
+      "onlyInB": 27
+    },
+    "Season": {
+      "countA": 1,
+      "countB": 2,
+      "onlyInA": 0,
+      "onlyInB": 1
+    },
+    "Coach": {
+      "countA": 0,
+      "countB": 118,
+      "onlyInA": 0,
+      "onlyInB": 118
+    },
+    "Club": {
+      "countA": 3,
+      "countB": 74,
+      "onlyInA": 0,
+      "onlyInB": 71
+    },
+    "ShopItem": {
+      "countA": 4,
+      "countB": 115,
+      "onlyInA": 4,
+      "onlyInB": 115
+    },
+    "MissionProgress": {
+      "countA": 1,
+      "countB": 1,
+      "onlyInA": 1,
+      "onlyInB": 1
+    },
+    "CareerMessage": {
+      "countA": 2,
+      "countB": 2,
+      "onlyInA": 1,
+      "onlyInB": 1
+    },
+    "__player": {
+      "countA": 1,
+      "countB": 1,
+      "onlyInA": 0,
+      "onlyInB": 0
+    },
+    "PartnerOffer": {
+      "countA": 0,
+      "countB": 4,
+      "onlyInA": 0,
+      "onlyInB": 4
+    },
+    "PressJournalist": {
+      "countA": 0,
+      "countB": 14,
+      "onlyInA": 0,
+      "onlyInB": 14
+    },
+    "EncyclopediaEntry": {
+      "countA": 0,
+      "countB": 62,
+      "onlyInA": 0,
+      "onlyInB": 62
+    }
+  },
+  "attributableToNavigation": {
+    "AthleteProfile": {
+      "countA": 1000,
+      "countB": 1000,
+      "onlyInA": 500,
+      "onlyInB": 500
+    },
+    "WorldEvent": {
+      "countA": 452,
+      "countB": 457,
+      "onlyInA": 0,
+      "onlyInB": 5
+    },
+    "Tournament": {
+      "countA": 124,
+      "countB": 151,
+      "onlyInA": 0,
+      "onlyInB": 27
+    },
+    "Season": {
+      "countA": 1,
+      "countB": 2,
+      "onlyInA": 0,
+      "onlyInB": 1
+    },
+    "Coach": {
+      "countA": 0,
+      "countB": 118,
+      "onlyInA": 0,
+      "onlyInB": 118
+    },
+    "Club": {
+      "countA": 3,
+      "countB": 74,
+      "onlyInA": 0,
+      "onlyInB": 71
+    },
+    "ShopItem": {
+      "countA": 4,
+      "countB": 115,
+      "onlyInA": 4,
+      "onlyInB": 115
+    },
+    "CareerMessage": {
+      "countA": 2,
+      "countB": 2,
+      "onlyInA": 1,
+      "onlyInB": 1
+    },
+    "__player": {
+      "countA": 1,
+      "countB": 1,
+      "onlyInA": 0,
+      "onlyInB": 0
+    },
+    "PartnerOffer": {
+      "countA": 0,
+      "countB": 4,
+      "onlyInA": 0,
+      "onlyInB": 4
+    },
+    "PressJournalist": {
+      "countA": 0,
+      "countB": 14,
+      "onlyInA": 0,
+      "onlyInB": 14
+    },
+    "EncyclopediaEntry": {
+      "countA": 0,
+      "countB": 62,
+      "onlyInA": 0,
+      "onlyInB": 62
+    }
+  },
+  "errors": {
+    "A": [],
+    "A2": [],
+    "B": []
+  }
+}

@@ -1,0 +1,88 @@
+[
+  {
+    "open": 1,
+    "items": 115,
+    "created": 111,
+    "createdNames": [
+      "Padel Start Control One Club",
+      "Padel Start Control One Sport",
+      "Padel Start Control One Pro",
+      "Padel Start Control One Elite"
+    ],
+    "rewritten": 4,
+    "sample": {
+      "id": "shop-001",
+      "before": {
+        "name": "Raquete Starter Control",
+        "price": 500
+      },
+      "after": {
+        "name": "Raquete Starter Control",
+        "price": 500
+      }
+    }
+  },
+  {
+    "open": 2,
+    "items": 117,
+    "created": 2,
+    "createdNames": [
+      "Medalha Circuito Local",
+      "Réplica Troféu Major"
+    ],
+    "rewritten": 2,
+    "sample": {
+      "id": "shopitem-1792573558462-nwcxcf",
+      "before": {
+        "name": "Medalha Circuito Local",
+        "price": 1200
+      },
+      "after": {
+        "name": "Bola Dourada WPT Final (2023)",
+        "price": 73000
+      }
+    }
+  },
+  {
+    "open": 3,
+    "items": 119,
+    "created": 2,
+    "createdNames": [
+      "Medalha Circuito Local",
+      "Réplica Troféu Major"
+    ],
+    "rewritten": 2,
+    "sample": {
+      "id": "shopitem-1792573562117-i9b69m",
+      "before": {
+        "name": "Medalha Circuito Local",
+        "price": 1200
+      },
+      "after": {
+        "name": "Bola Dourada WPT Final (2023)",
+        "price": 73000
+      }
+    }
+  },
+  {
+    "open": 4,
+    "items": 121,
+    "created": 2,
+    "createdNames": [
+      "Medalha Circuito Local",
+      "Réplica Troféu Major"
+    ],
+    "rewritten": 2,
+    "sample": {
+      "id": "shopitem-1792573565690-dlolc7",
+      "before": {
+        "name": "Medalha Circuito Local",
+        "price": 1200
+      },
+      "after": {
+        "name": "Bola Dourada WPT Final (2023)",
+        "price": 73000
+      }
+    }
+  }
+]

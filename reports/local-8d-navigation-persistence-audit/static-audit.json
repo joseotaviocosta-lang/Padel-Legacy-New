@@ -1,0 +1,3869 @@
+{
+  "createdAt": "2026-10-21T09:05:19.000Z",
+  "routes": [
+    {
+      "path": "/",
+      "element": "<RootEntry />"
+    },
+    {
+      "path": "/careers",
+      "element": "<CareerManager />"
+    },
+    {
+      "path": "/career-hub",
+      "element": "<CareerManager />"
+    },
+    {
+      "path": "/login",
+      "element": "<Login />"
+    },
+    {
+      "path": "/register",
+      "element": "<Register />"
+    },
+    {
+      "path": "/forgot-password",
+      "element": "<ForgotPassword />"
+    },
+    {
+      "path": "/reset-password",
+      "element": "<ResetPassword />"
+    },
+    {
+      "path": "/game",
+      "element": "<CareerHub />"
+    },
+    {
+      "path": "/development",
+      "element": "<NavigationHub areaId=\"development\" />"
+    },
+    {
+      "path": "/team-hub",
+      "element": "<NavigationHub areaId=\"team\" />"
+    },
+    {
+      "path": "/competitions",
+      "element": "<NavigationHub areaId=\"competition\" />"
+    },
+    {
+      "path": "/world",
+      "element": "<WorldHub />"
+    },
+    {
+      "path": "/management",
+      "element": "<NavigationHub areaId=\"management\" />"
+    },
+    {
+      "path": "/game/training",
+      "element": "<Training />"
+    },
+    {
+      "path": "/game/matches",
+      "element": "<Matches />"
+    },
+    {
+      "path": "/game/missions",
+      "element": "<Missions />"
+    },
+    {
+      "path": "/game/legacy",
+      "element": "<LegacyHub />"
+    },
+    {
+      "path": "/game/stats",
+      "element": "<CareerStats />"
+    },
+    {
+      "path": "/game/monthly-reports",
+      "element": "<MonthlyReports />"
+    },
+    {
+      "path": "/game/annual-reports",
+      "element": "<AnnualReports />"
+    },
+    {
+      "path": "/game/economy",
+      "element": "<ModuleErrorBoundary moduleName=\"Economia\"><Economy /></ModuleErrorBoundary>"
+    },
+    {
+      "path": "/matches",
+      "element": "<Matches />"
+    },
+    {
+      "path": "/world-tour/live",
+      "element": "<Navigate to=\"/tournaments\" replace />"
+    },
+    {
+      "path": "/live-circuit",
+      "element": "<Navigate to=\"/tournaments\" replace />"
+    },
+    {
+      "path": "/tournaments",
+      "element": "<CompeteHub />"
+    },
+    {
+      "path": "/ranking",
+      "element": "<RankingHub />"
+    },
+    {
+      "path": "/clubs/:clubId",
+      "element": "<ClubDetail />"
+    },
+    {
+      "path": "/admin",
+      "element": "<Admin />"
+    },
+    {
+      "path": "/database",
+      "element": "<DatabaseManager />"
+    },
+    {
+      "path": "/training-center",
+      "element": "<Navigate to={APP_ROUTES.TRAINING_FACILITIES"
+    },
+    {
+      "path": "/social",
+      "element": "<Navigate to=\"/community\" replace />"
+    },
+    {
+      "path": "/achievements",
+      "element": "<Navigate to=\"/game/missions?tab=achievements\" replace />"
+    },
+    {
+      "path": "/world-market",
+      "element": "<WorldMarket />"
+    },
+    {
+      "path": "/weather",
+      "element": "<Weather />"
+    },
+    {
+      "path": "/encyclopedia",
+      "element": "<EncyclopediaHub />"
+    },
+    {
+      "path": "/partners",
+      "element": "<PartnerHub />"
+    },
+    {
+      "path": "/communications",
+      "element": "<Communications />"
+    },
+    {
+      "path": "/settings",
+      "element": "<Settings />"
+    },
+    {
+      "path": "/career/athlete",
+      "element": "<MyAthleteHub />"
+    },
+    {
+      "path": "/career/training",
+      "element": "<TrainingEquipmentHub />"
+    },
+    {
+      "path": "/career/team",
+      "element": "<TeamHub />"
+    },
+    {
+      "path": "/career/relations",
+      "element": "<RelationsHub />"
+    },
+    {
+      "path": "/world/circuit",
+      "element": "<CircuitCentralHub />"
+    },
+    {
+      "path": "/world/directory",
+      "element": "<AthletesClubsHub />"
+    },
+    {
+      "path": "/profile",
+      "element": "<LegacyRedirect to=\"/career/athlete\" tab=\"profile\" />"
+    },
+    {
+      "path": "/character",
+      "element": "<LegacyRedirect to=\"/career/athlete\" tab=\"appearance\" />"
+    },
+    {
+      "path": "/game/inventory",
+      "element": "<LegacyRedirect to=\"/career/training\" tab=\"inventory\" />"
+    },
+    {
+      "path": "/game/shop",
+      "element": "<LegacyRedirect to=\"/career/training\" tab=\"shop\" />"
+    },
+    {
+      "path": "/coaches",
+      "element": "<LegacyRedirect to=\"/career/team\" tab=\"coach\" />"
+    },
+    {
+      "path": "/staff",
+      "element": "<LegacyRedirect to=\"/career/team\" tab=\"staff\" />"
+    },
+    {
+      "path": "/relationships",
+      "element": "<LegacyRedirect to=\"/career/relations\" tab=\"people\" />"
+    },
+    {
+      "path": "/fans",
+      "element": "<LegacyRedirect to=\"/career/relations\" tab=\"fans\" />"
+    },
+    {
+      "path": "/journal",
+      "element": "<LegacyRedirect to=\"/world/circuit\" tab=\"news\" />"
+    },
+    {
+      "path": "/world-events",
+      "element": "<LegacyRedirect to=\"/world/circuit\" tab=\"circuit\" />"
+    },
+    {
+      "path": "/press",
+      "element": "<LegacyRedirect to=\"/world/circuit\" tab=\"press\" />"
+    },
+    {
+      "path": "/community",
+      "element": "<LegacyRedirect to=\"/world/circuit\" tab=\"community\" />"
+    },
+    {
+      "path": "/athletes",
+      "element": "<LegacyRedirect to=\"/world/directory\" tab=\"athletes\" />"
+    },
+    {
+      "path": "/clubs",
+      "element": "<LegacyRedirect to=\"/world/directory\" tab=\"clubs\" />"
+    },
+    {
+      "path": "/history",
+      "element": "<LegacyRedirect to=\"/encyclopedia\" tab=\"history\" />"
+    },
+    {
+      "path": "/hall-of-fame",
+      "element": "<LegacyRedirect to=\"/game/legacy\" tab=\"hall\" />"
+    },
+    {
+      "path": "/game/calendar",
+      "element": "<LegacyRedirect to=\"/tournaments\" tab=\"calendar\" />"
+    },
+    {
+      "path": "/game/season",
+      "element": "<LegacyRedirect to=\"/ranking\" tab=\"season\" />"
+    },
+    {
+      "path": "*",
+      "element": "<PageNotFound />"
+    }
+  ],
+  "hubs": {
+    "AthletesClubsHub": [
+      {
+        "key": "athletes",
+        "label": "Atletas",
+        "component": "Athletes"
+      },
+      {
+        "key": "clubs",
+        "label": "Clubes",
+        "component": "Clubs"
+      },
+      {
+        "key": "countries",
+        "label": "Países",
+        "component": "Countries"
+      }
+    ],
+    "CircuitCentralHub": [
+      {
+        "key": "news",
+        "label": "Notícias",
+        "component": "Journal"
+      },
+      {
+        "key": "circuit",
+        "label": "Circuito",
+        "component": "WorldEvents"
+      },
+      {
+        "key": "press",
+        "label": "Imprensa",
+        "component": "Press"
+      },
+      {
+        "key": "community",
+        "label": "Comunidade",
+        "component": "Community"
+      }
+    ],
+    "CompeteHub": [
+      {
+        "key": "tournaments",
+        "label": "Torneios",
+        "component": "Tournaments"
+      },
+      {
+        "key": "calendar",
+        "label": "Calendário",
+        "component": "CalendarPage"
+      }
+    ],
+    "EncyclopediaHub": [
+      {
+        "key": "encyclopedia",
+        "label": "Enciclopédia",
+        "component": "Encyclopedia"
+      },
+      {
+        "key": "history",
+        "label": "História do padel",
+        "component": "HistoryPage"
+      }
+    ],
+    "LegacyHub": [
+      {
+        "key": "legacy",
+        "label": "Legado",
+        "component": "Legacy"
+      },
+      {
+        "key": "hall",
+        "label": "Hall da fama",
+        "component": "HallOfFame"
+      },
+      {
+        "key": "monthly",
+        "label": "Relatórios mensais",
+        "component": "MonthlyReports"
+      },
+      {
+        "key": "annual",
+        "label": "Relatórios anuais",
+        "component": "AnnualReports"
+      }
+    ],
+    "MyAthleteHub": [
+      {
+        "key": "profile",
+        "label": "Perfil",
+        "component": "PlayerProfile"
+      },
+      {
+        "key": "appearance",
+        "label": "Aparência",
+        "component": "CharacterEditor"
+      }
+    ],
+    "RankingHub": [
+      {
+        "key": "ranking",
+        "label": "Ranking",
+        "component": "Ranking"
+      },
+      {
+        "key": "season",
+        "label": "Temporada",
+        "component": "Season"
+      }
+    ],
+    "RelationsHub": [
+      {
+        "key": "people",
+        "label": "Pessoas",
+        "component": "Relationships"
+      },
+      {
+        "key": "fans",
+        "label": "Fãs",
+        "component": "Fans"
+      }
+    ],
+    "TeamHub": [
+      {
+        "key": "coach",
+        "label": "Treinador",
+        "component": "Coaches"
+      },
+      {
+        "key": "staff",
+        "label": "Comissão",
+        "component": "Staff"
+      }
+    ],
+    "TrainingEquipmentHub": [
+      {
+        "key": "training",
+        "label": "Treinos",
+        "component": "TrainingCenter"
+      },
+      {
+        "key": "inventory",
+        "label": "Inventário",
+        "component": "Inventory"
+      },
+      {
+        "key": "shop",
+        "label": "Loja",
+        "component": "Shop"
+      }
+    ]
+  },
+  "screens": [
+    {
+      "file": "src/components/achievements/AchievementsPanel.jsx",
+      "calls": [
+        {
+          "name": "syncPlayerAchievements",
+          "file": "src/lib/achievementEngine.js",
+          "writes": [
+            "localGame.batch"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [
+        ".update"
+      ],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/components/AppLayout.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/components/calendar/TournamentRegistrationModal.jsx",
+      "calls": [
+        {
+          "name": "registerForTournament",
+          "file": "src/lib/calendarSystem.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "cancelRegistration",
+              "file": "src/lib/calendarSystem.js",
+              "writes": [
+                ".update"
+              ],
+              "randoms": 0
+            },
+            {
+              "name": "incrementMissionProgress",
+              "file": "src/lib/padel.js",
+              "writes": [
+                "localGame.batch",
+                ".update",
+                ".create"
+              ],
+              "randoms": 0
+            }
+          ]
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/components/career/AttributeDistribution.jsx",
+      "calls": [],
+      "directWrites": [
+        ".update"
+      ],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/components/career/MedicalCenterPanel.jsx",
+      "calls": [],
+      "directWrites": [
+        ".update"
+      ],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/components/career/OnboardingAttributes.jsx",
+      "calls": [],
+      "directWrites": [
+        ".update"
+      ],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/components/career/PartnerSelection.jsx",
+      "calls": [
+        {
+          "name": "formPartnerContract",
+          "file": "src/game-core/partnerLifecycle.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "startPartnership",
+              "file": "src/lib/partnershipSystem.js",
+              "writes": [
+                ".create",
+                ".update"
+              ],
+              "randoms": 0
+            }
+          ]
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/components/career/StrategicCareerPanel.jsx",
+      "calls": [
+        {
+          "name": "saveWeeklyPlan",
+          "file": "src/lib/trainingSystemV2.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/components/communications/CommunicationBell.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "ensureContextualCareerCommunications",
+          "file": "src/lib/careerCommunications.js",
+          "writes": [
+            "localGame.batch"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "resolveAndOpenNotification",
+          "file": "src/lib/careerCommunications.js",
+          "writes": [],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "markCareerCommunicationRead",
+              "file": "src/lib/careerCommunications.js",
+              "writes": [
+                ".update"
+              ],
+              "randoms": 0
+            }
+          ]
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/components/fans/FanBaseDetail.jsx",
+      "calls": [],
+      "directWrites": [
+        ".update"
+      ],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/components/matches/SimulationModal.jsx",
+      "calls": [
+        {
+          "name": "resolveActiveCoach",
+          "file": "src/game-core/coachLifecycle.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [
+        ".update"
+      ],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/components/missions/MissionNotificationBridge.jsx",
+      "calls": [
+        {
+          "name": "ensureTutorialMissionCatalog",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".bulkCreate",
+            ".create",
+            ".bulkUpdate",
+            ".delete"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "incrementMissionProgress",
+          "file": "src/lib/padel.js",
+          "writes": [
+            "localGame.batch",
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "ensureTutorialMissionCatalog",
+              "file": "src/lib/padel.js",
+              "writes": [
+                ".bulkCreate",
+                ".create",
+                ".bulkUpdate",
+                ".delete"
+              ],
+              "randoms": 0
+            }
+          ]
+        }
+      ],
+      "directWrites": [
+        ".create"
+      ],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/components/onboarding/OnboardingGuide.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "reconcilePersistedTutorial",
+          "file": "src/onboarding/tutorialReconciliation.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "completeTutorialStep",
+          "file": "src/onboarding/tutorialEngine.js",
+          "writes": [],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "ensureTutorialMissionCatalog",
+              "file": "src/lib/padel.js",
+              "writes": [
+                ".bulkCreate",
+                ".create",
+                ".bulkUpdate",
+                ".delete"
+              ],
+              "randoms": 0
+            },
+            {
+              "name": "incrementMissionProgress",
+              "file": "src/lib/padel.js",
+              "writes": [
+                "localGame.batch",
+                ".update",
+                ".create"
+              ],
+              "randoms": 0
+            },
+            {
+              "name": "reconcilePersistedTutorial",
+              "file": "src/onboarding/tutorialReconciliation.js",
+              "writes": [
+                ".update",
+                ".create"
+              ],
+              "randoms": 0
+            }
+          ]
+        }
+      ],
+      "directWrites": [
+        ".update"
+      ],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/components/partner/InboxPanel.jsx",
+      "calls": [
+        {
+          "name": "markCareerCommunicationRead",
+          "file": "src/lib/careerCommunications.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "resolveMessage",
+          "file": "src/lib/careerCommunications.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "dismissMessage",
+          "file": "src/lib/careerCommunications.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/components/social/SocialPost.jsx",
+      "calls": [],
+      "directWrites": [],
+      "randomInFile": 2
+    },
+    {
+      "file": "src/components/system/BetaTools.jsx",
+      "calls": [
+        {
+          "name": "applyWorldRepairPlan",
+          "file": "src/lib/simulationHealth.js",
+          "writes": [
+            ".delete",
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/components/system/SaveFoundationBootstrap.jsx",
+      "calls": [
+        {
+          "name": "repairLegacyPlayerPartnerAthlete",
+          "file": "src/lib/partnerAthlete.js",
+          "writes": [],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "materializePartnerAthlete",
+              "file": "src/lib/partnerAthlete.js",
+              "writes": [
+                ".create"
+              ],
+              "randoms": 0
+            }
+          ]
+        },
+        {
+          "name": "ensureWorldSeed2025",
+          "file": "src/lib/saveFoundation.js",
+          "writes": [
+            ".bulkUpdate",
+            ".bulkCreate",
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "createCriticalBackup",
+              "file": "src/lib/saveFoundation.js",
+              "writes": [
+                ".bulkCreate"
+              ],
+              "randoms": 0
+            },
+            {
+              "name": "repairLegacyTeamRankings",
+              "file": "src/lib/teamRanking.js",
+              "writes": [
+                ".delete",
+                ".update"
+              ],
+              "randoms": 0
+            },
+            {
+              "name": "formNewPartnerships",
+              "file": "src/game-core/aiPartnershipLifecycle.js",
+              "writes": [
+                ".bulkUpdate",
+                "localGame.batch",
+                ".bulkCreate"
+              ],
+              "randoms": 0
+            }
+          ]
+        },
+        {
+          "name": "ensurePlayerTeamRanking",
+          "file": "src/lib/teamRanking.js",
+          "writes": [],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "materializeTeamRankingForPair",
+              "file": "src/lib/teamRanking.js",
+              "writes": [
+                ".update",
+                ".create"
+              ],
+              "randoms": 0
+            }
+          ]
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/components/tournaments/TournamentModal.jsx",
+      "calls": [
+        {
+          "name": "resolveActiveCoach",
+          "file": "src/game-core/coachLifecycle.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "syncPlayerAchievements",
+          "file": "src/lib/achievementEngine.js",
+          "writes": [
+            "localGame.batch"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "finalizeTournamentRun",
+          "file": "src/game-core/tournamentLifecycle.js",
+          "writes": [
+            "localGame.batch"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [
+        ".update",
+        "localGame.batch"
+      ],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/components/training/DevelopmentGoals.jsx",
+      "calls": [
+        {
+          "name": "createGoal",
+          "file": "src/lib/trainingSystem.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "deleteGoal",
+          "file": "src/lib/trainingSystem.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/components/training/WeeklyPlanner.jsx",
+      "calls": [
+        {
+          "name": "saveWeeklyPlan",
+          "file": "src/lib/trainingSystemV2.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/components/training-center/TrainingFacilityView.jsx",
+      "calls": [],
+      "directWrites": [
+        ".create",
+        ".update"
+      ],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/components/training-center/TrainingView.jsx",
+      "calls": [
+        {
+          "name": "executeTraining",
+          "file": "src/lib/trainingSystemV2.js",
+          "writes": [
+            ".delete"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/components/ui/sidebar.jsx",
+      "calls": [],
+      "directWrites": [],
+      "randomInFile": 1
+    },
+    {
+      "file": "src/components/ui/use-toast.jsx",
+      "calls": [],
+      "directWrites": [
+        ".delete"
+      ],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/components/world/WorldFeed.jsx",
+      "calls": [
+        {
+          "name": "generateWorldEvents",
+          "file": "src/lib/world.js",
+          "writes": [
+            ".bulkUpdate"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/Admin.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/AnnualReports.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/Athletes.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/CalendarPage.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "safeModuleTask",
+          "file": "src/lib/moduleLoading.js",
+          "writes": [
+            ".delete"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "loadModuleTasks",
+          "file": "src/lib/moduleLoading.js",
+          "writes": [],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "safeModuleTask",
+              "file": "src/lib/moduleLoading.js",
+              "writes": [
+                ".delete"
+              ],
+              "randoms": 0
+            }
+          ]
+        },
+        {
+          "name": "scheduleRecurringActivities",
+          "file": "src/lib/calendarSystem.js",
+          "writes": [],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "schedulePlannedActivity",
+              "file": "src/lib/calendarSystem.js",
+              "writes": [
+                ".create"
+              ],
+              "randoms": 0
+            }
+          ]
+        },
+        {
+          "name": "incrementMissionProgress",
+          "file": "src/lib/padel.js",
+          "writes": [
+            "localGame.batch",
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "ensureTutorialMissionCatalog",
+              "file": "src/lib/padel.js",
+              "writes": [
+                ".bulkCreate",
+                ".create",
+                ".bulkUpdate",
+                ".delete"
+              ],
+              "randoms": 0
+            }
+          ]
+        },
+        {
+          "name": "cancelPlannedActivity",
+          "file": "src/lib/calendarSystem.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "updatePlannedActivity",
+          "file": "src/lib/calendarSystem.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "advanceCareerUntilRecovered",
+          "file": "src/game-core/calendarLifecycle.js",
+          "writes": [],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "processInjuryRecoveryDay",
+              "file": "src/game-core/injuryRecoveryLifecycle.js",
+              "writes": [
+                ".update"
+              ],
+              "randoms": 0
+            }
+          ]
+        },
+        {
+          "name": "resolveDecision",
+          "file": "src/lib/calendarSystem.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/CareerHub.jsx",
+      "calls": [
+        {
+          "name": "incrementMissionProgress",
+          "file": "src/lib/padel.js",
+          "writes": [
+            "localGame.batch",
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "ensureTutorialMissionCatalog",
+              "file": "src/lib/padel.js",
+              "writes": [
+                ".bulkCreate",
+                ".create",
+                ".bulkUpdate",
+                ".delete"
+              ],
+              "randoms": 0
+            }
+          ]
+        },
+        {
+          "name": "advanceCareerUntilRecovered",
+          "file": "src/game-core/calendarLifecycle.js",
+          "writes": [],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "processInjuryRecoveryDay",
+              "file": "src/game-core/injuryRecoveryLifecycle.js",
+              "writes": [
+                ".update"
+              ],
+              "randoms": 0
+            }
+          ]
+        },
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "ensureContextualCareerCommunications",
+          "file": "src/lib/careerCommunications.js",
+          "writes": [
+            "localGame.batch"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [
+        ".update"
+      ],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/CharacterEditor.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [
+        ".update",
+        ".create"
+      ],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/ClubDetail.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/Clubs.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "ensureWorldClubCatalog",
+          "file": "src/lib/sportsEconomyV26.js",
+          "writes": [
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "createClub",
+          "file": "src/lib/clubs.js",
+          "writes": [
+            ".create",
+            ".bulkCreate",
+            ".update"
+          ],
+          "randoms": 1,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/Coaches.jsx",
+      "calls": [
+        {
+          "name": "ensureCoachMarketInitialized",
+          "file": "src/game-core/coachLifecycle.js",
+          "writes": [
+            ".delete"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "resolveActiveCoach",
+          "file": "src/game-core/coachLifecycle.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "hirePrimaryCoach",
+          "file": "src/game-core/coachLifecycle.js",
+          "writes": [
+            "localGame.batch"
+          ],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "publishContractEvent",
+              "file": "src/lib/contractNews.js",
+              "writes": [
+                ".upsert"
+              ],
+              "randoms": 0
+            },
+            {
+              "name": "incrementMissionProgress",
+              "file": "src/lib/padel.js",
+              "writes": [
+                "localGame.batch",
+                ".update",
+                ".create"
+              ],
+              "randoms": 0
+            }
+          ]
+        },
+        {
+          "name": "renewPrimaryCoach",
+          "file": "src/game-core/coachLifecycle.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "publishContractEvent",
+              "file": "src/lib/contractNews.js",
+              "writes": [
+                ".upsert"
+              ],
+              "randoms": 0
+            }
+          ]
+        }
+      ],
+      "directWrites": [
+        ".update"
+      ],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/Communications.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "ensureContextualCareerCommunications",
+          "file": "src/lib/careerCommunications.js",
+          "writes": [
+            "localGame.batch"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "resolveAndOpenNotification",
+          "file": "src/lib/careerCommunications.js",
+          "writes": [],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "markCareerCommunicationRead",
+              "file": "src/lib/careerCommunications.js",
+              "writes": [
+                ".update"
+              ],
+              "randoms": 0
+            }
+          ]
+        },
+        {
+          "name": "markCareerCommunicationRead",
+          "file": "src/lib/careerCommunications.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "applyCareerCommunicationAction",
+          "file": "src/lib/careerCommunications.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "resolveMessage",
+          "file": "src/lib/careerCommunications.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "dismissMessage",
+          "file": "src/lib/careerCommunications.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/Community.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [
+        ".create",
+        ".update"
+      ],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/DatabaseManager.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "resetCareer",
+          "file": "src/lib/demoData.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/Economy.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "completeCareerOpportunity",
+          "file": "src/game-core/opportunityLifecycle.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "evaluateSponsorContracts",
+          "file": "src/game-core/sponsorLifecycle.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "upsertCareerMessage",
+              "file": "src/lib/careerCommunications.js",
+              "writes": [
+                ".upsert"
+              ],
+              "randoms": 0
+            }
+          ]
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/Encyclopedia.jsx",
+      "calls": [
+        {
+          "name": "safeModuleTask",
+          "file": "src/lib/moduleLoading.js",
+          "writes": [
+            ".delete"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [
+        ".bulkCreate"
+      ],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/Fans.jsx",
+      "calls": [
+        {
+          "name": "getOrCreatePlayerFanBase",
+          "file": "src/game-core/fanLifecycle.js",
+          "writes": [
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "evaluateMonthlyFanEngagement",
+          "file": "src/game-core/fanLifecycle.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "getOrCreatePlayerFanBase",
+              "file": "src/game-core/fanLifecycle.js",
+              "writes": [
+                ".create"
+              ],
+              "randoms": 0
+            },
+            {
+              "name": "upsertCareerMessage",
+              "file": "src/lib/careerCommunications.js",
+              "writes": [
+                ".upsert"
+              ],
+              "randoms": 0
+            }
+          ]
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/HallOfFame.jsx",
+      "calls": [
+        {
+          "name": "safeModuleTask",
+          "file": "src/lib/moduleLoading.js",
+          "writes": [
+            ".delete"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/Inventory.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "recordFinancialEntry",
+          "file": "src/lib/financialLedger.js",
+          "writes": [
+            ".upsert",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [
+        ".update",
+        ".bulkUpdate",
+        ".delete"
+      ],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/Journal.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/Legacy.jsx",
+      "calls": [
+        {
+          "name": "retireProfile",
+          "file": "src/lib/legacy.js",
+          "writes": [
+            ".create",
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "startNewCareer",
+          "file": "src/lib/legacy.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/Missions.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "safeModuleTask",
+          "file": "src/lib/moduleLoading.js",
+          "writes": [
+            ".delete"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "reconcilePersistedTutorial",
+          "file": "src/onboarding/tutorialReconciliation.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "incrementMissionProgress",
+          "file": "src/lib/padel.js",
+          "writes": [
+            "localGame.batch",
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "ensureTutorialMissionCatalog",
+              "file": "src/lib/padel.js",
+              "writes": [
+                ".bulkCreate",
+                ".create",
+                ".bulkUpdate",
+                ".delete"
+              ],
+              "randoms": 0
+            }
+          ]
+        },
+        {
+          "name": "saveAthleteNameFlow",
+          "file": "src/onboarding/athleteNameSave.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "incrementMissionProgress",
+              "file": "src/lib/padel.js",
+              "writes": [
+                "localGame.batch",
+                ".update",
+                ".create"
+              ],
+              "randoms": 0
+            }
+          ]
+        },
+        {
+          "name": "completeTutorialStep",
+          "file": "src/onboarding/tutorialEngine.js",
+          "writes": [],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "ensureTutorialMissionCatalog",
+              "file": "src/lib/padel.js",
+              "writes": [
+                ".bulkCreate",
+                ".create",
+                ".bulkUpdate",
+                ".delete"
+              ],
+              "randoms": 0
+            },
+            {
+              "name": "incrementMissionProgress",
+              "file": "src/lib/padel.js",
+              "writes": [
+                "localGame.batch",
+                ".update",
+                ".create"
+              ],
+              "randoms": 0
+            },
+            {
+              "name": "reconcilePersistedTutorial",
+              "file": "src/onboarding/tutorialReconciliation.js",
+              "writes": [
+                ".update",
+                ".create"
+              ],
+              "randoms": 0
+            }
+          ]
+        }
+      ],
+      "directWrites": [
+        ".bulkCreate",
+        ".create",
+        ".bulkUpdate",
+        ".update"
+      ],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/MonthlyReports.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/PartnerHub.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "listPartnerOffers",
+          "file": "src/lib/partnerOffers.js",
+          "writes": [
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "ensureInitialPartnerOffers",
+          "file": "src/lib/partnerOffers.js",
+          "writes": [
+            ".create",
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "listPartnerOffers",
+              "file": "src/lib/partnerOffers.js",
+              "writes": [
+                ".create"
+              ],
+              "randoms": 0
+            }
+          ]
+        },
+        {
+          "name": "startPartnership",
+          "file": "src/lib/partnershipSystem.js",
+          "writes": [
+            ".create",
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "endPartnership",
+              "file": "src/lib/partnershipSystem.js",
+              "writes": [
+                ".update",
+                ".create"
+              ],
+              "randoms": 0
+            },
+            {
+              "name": "materializePartnerAthlete",
+              "file": "src/lib/partnerAthlete.js",
+              "writes": [
+                ".create"
+              ],
+              "randoms": 0
+            },
+            {
+              "name": "getOrCreateRelationship",
+              "file": "src/lib/relationships.js",
+              "writes": [
+                ".create"
+              ],
+              "randoms": 0
+            },
+            {
+              "name": "materializeTeamRankingForPair",
+              "file": "src/lib/teamRanking.js",
+              "writes": [
+                ".update",
+                ".create"
+              ],
+              "randoms": 0
+            },
+            {
+              "name": "incrementMissionProgress",
+              "file": "src/lib/padel.js",
+              "writes": [
+                "localGame.batch",
+                ".update",
+                ".create"
+              ],
+              "randoms": 0
+            }
+          ]
+        },
+        {
+          "name": "acceptPartnerOffer",
+          "file": "src/lib/partnerOffers.js",
+          "writes": [
+            ".update",
+            ".delete"
+          ],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "formPartnerContract",
+              "file": "src/game-core/partnerLifecycle.js",
+              "writes": [
+                ".update",
+                ".create"
+              ],
+              "randoms": 0
+            }
+          ]
+        },
+        {
+          "name": "rejectPartnerOffer",
+          "file": "src/lib/partnerOffers.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "releasePartner",
+          "file": "src/game-core/partnerLifecycle.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "endPartnership",
+              "file": "src/lib/partnershipSystem.js",
+              "writes": [
+                ".update",
+                ".create"
+              ],
+              "randoms": 0
+            }
+          ]
+        },
+        {
+          "name": "negotiatePrizeSplit",
+          "file": "src/lib/partnershipSystem.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "renewPartnerContract",
+          "file": "src/game-core/partnerLifecycle.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "upsertCareerMessage",
+              "file": "src/lib/careerCommunications.js",
+              "writes": [
+                ".upsert"
+              ],
+              "randoms": 0
+            },
+            {
+              "name": "negotiatePrizeSplit",
+              "file": "src/lib/partnershipSystem.js",
+              "writes": [
+                ".update"
+              ],
+              "randoms": 0
+            }
+          ]
+        },
+        {
+          "name": "schedulePartnerSeparation",
+          "file": "src/game-core/partnerLifecycle.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "upsertCareerMessage",
+              "file": "src/lib/careerCommunications.js",
+              "writes": [
+                ".upsert"
+              ],
+              "randoms": 0
+            }
+          ]
+        },
+        {
+          "name": "addConversation",
+          "file": "src/lib/partnershipSystem.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "sendMessage",
+          "file": "src/lib/partnershipSystem.js",
+          "writes": [
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/PlayerProfile.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [
+        ".update"
+      ],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/Press.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "incrementMissionProgress",
+          "file": "src/lib/padel.js",
+          "writes": [
+            "localGame.batch",
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "ensureTutorialMissionCatalog",
+              "file": "src/lib/padel.js",
+              "writes": [
+                ".bulkCreate",
+                ".create",
+                ".bulkUpdate",
+                ".delete"
+              ],
+              "randoms": 0
+            }
+          ]
+        }
+      ],
+      "directWrites": [
+        ".upsert",
+        ".update"
+      ],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/Ranking.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "ensurePlayerTeamRanking",
+          "file": "src/lib/teamRanking.js",
+          "writes": [],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "materializeTeamRankingForPair",
+              "file": "src/lib/teamRanking.js",
+              "writes": [
+                ".update",
+                ".create"
+              ],
+              "randoms": 0
+            }
+          ]
+        },
+        {
+          "name": "loadModuleTasks",
+          "file": "src/lib/moduleLoading.js",
+          "writes": [],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "safeModuleTask",
+              "file": "src/lib/moduleLoading.js",
+              "writes": [
+                ".delete"
+              ],
+              "randoms": 0
+            }
+          ]
+        }
+      ],
+      "directWrites": [
+        ".delete"
+      ],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/Relationships.jsx",
+      "calls": [
+        {
+          "name": "ensurePlayerRelationships",
+          "file": "src/game-core/relationshipLifecycle.js",
+          "writes": [],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "seedInitialRelationships",
+              "file": "src/lib/relationships.js",
+              "writes": [
+                ".bulkCreate",
+                ".create"
+              ],
+              "randoms": 0
+            }
+          ]
+        },
+        {
+          "name": "interactSocially",
+          "file": "src/lib/relationships.js",
+          "writes": [],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "getOrCreateRelationship",
+              "file": "src/lib/relationships.js",
+              "writes": [
+                ".create"
+              ],
+              "randoms": 0
+            },
+            {
+              "name": "updateRelationshipScore",
+              "file": "src/lib/relationships.js",
+              "writes": [
+                ".update"
+              ],
+              "randoms": 0
+            }
+          ]
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/Season.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/SeasonDashboard.jsx",
+      "calls": [
+        {
+          "name": "finalizeSeason",
+          "file": "src/game-core/seasonLifecycle.js",
+          "writes": [
+            ".create",
+            "localGame.batch",
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/Shop.jsx",
+      "calls": [
+        {
+          "name": "safeModuleTask",
+          "file": "src/lib/moduleLoading.js",
+          "writes": [
+            ".delete"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "loadModuleTasks",
+          "file": "src/lib/moduleLoading.js",
+          "writes": [],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "safeModuleTask",
+              "file": "src/lib/moduleLoading.js",
+              "writes": [
+                ".delete"
+              ],
+              "randoms": 0
+            }
+          ]
+        },
+        {
+          "name": "recordFinancialEntry",
+          "file": "src/lib/financialLedger.js",
+          "writes": [
+            ".upsert",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [
+        ".create",
+        ".update"
+      ],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/Social.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [
+        ".bulkCreate",
+        ".create",
+        ".update"
+      ],
+      "randomInFile": 3
+    },
+    {
+      "file": "src/pages/Staff.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "hireStaff",
+          "file": "src/lib/economy.js",
+          "writes": [
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "fireStaff",
+          "file": "src/lib/economy.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "renewStaffContract",
+          "file": "src/lib/economy.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "upgradeStaffFacility",
+          "file": "src/lib/staffFacilities.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "recordFinancialEntry",
+              "file": "src/lib/financialLedger.js",
+              "writes": [
+                ".upsert",
+                ".create"
+              ],
+              "randoms": 0
+            }
+          ]
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/Tournaments.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "simulatePastTournaments",
+          "file": "src/lib/teamRanking.js",
+          "writes": [
+            ".bulkUpdate",
+            "localGame.batch"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "cancelTournamentRegistration",
+          "file": "src/lib/tournamentRegistration.js",
+          "writes": [
+            ".update",
+            ".upsert"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [
+        ".delete"
+      ],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/TrainingCenter.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [
+        ".delete"
+      ],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/Weather.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "loadModuleTasks",
+          "file": "src/lib/moduleLoading.js",
+          "writes": [],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "safeModuleTask",
+              "file": "src/lib/moduleLoading.js",
+              "writes": [
+                ".delete"
+              ],
+              "randoms": 0
+            }
+          ]
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/WorldEvents.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "loadModuleTasks",
+          "file": "src/lib/moduleLoading.js",
+          "writes": [],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "safeModuleTask",
+              "file": "src/lib/moduleLoading.js",
+              "writes": [
+                ".delete"
+              ],
+              "randoms": 0
+            }
+          ]
+        },
+        {
+          "name": "generateWorldEvents",
+          "file": "src/lib/world.js",
+          "writes": [
+            ".bulkUpdate"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/WorldHub.jsx",
+      "calls": [
+        {
+          "name": "loadModuleTasks",
+          "file": "src/lib/moduleLoading.js",
+          "writes": [],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "safeModuleTask",
+              "file": "src/lib/moduleLoading.js",
+              "writes": [
+                ".delete"
+              ],
+              "randoms": 0
+            }
+          ]
+        },
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    },
+    {
+      "file": "src/pages/WorldMarket.jsx",
+      "calls": [
+        {
+          "name": "ensureMyProfile",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "processGlobalMarketMonth",
+          "file": "src/game-core/globalMarketLifecycle.js",
+          "writes": [],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "evolveWorldMarket",
+              "file": "src/game-core/worldMarketLifecycle.js",
+              "writes": [
+                ".bulkUpdate",
+                ".create"
+              ],
+              "randoms": 0
+            }
+          ]
+        },
+        {
+          "name": "scoutAthlete",
+          "file": "src/game-core/scoutingLifecycle.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "toggleShortlist",
+          "file": "src/game-core/scoutingLifecycle.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0,
+          "indirect": []
+        },
+        {
+          "name": "submitPartnerOffer",
+          "file": "src/game-core/marketNegotiationLifecycle.js",
+          "writes": [
+            ".create",
+            ".update"
+          ],
+          "randoms": 0,
+          "indirect": [
+            {
+              "name": "formPartnerContract",
+              "file": "src/game-core/partnerLifecycle.js",
+              "writes": [
+                ".update",
+                ".create"
+              ],
+              "randoms": 0
+            }
+          ]
+        }
+      ],
+      "directWrites": [],
+      "randomInFile": 0
+    }
+  ],
+  "byFunction": {
+    "syncPlayerAchievements": {
+      "file": "src/lib/achievementEngine.js",
+      "writes": [
+        "localGame.batch"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/components/achievements/AchievementsPanel.jsx",
+        "src/components/tournaments/TournamentModal.jsx"
+      ]
+    },
+    "ensureMyProfile": {
+      "file": "src/lib/padel.js",
+      "writes": [
+        ".update",
+        ".create"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/components/AppLayout.jsx",
+        "src/components/communications/CommunicationBell.jsx",
+        "src/components/missions/MissionNotificationBridge.jsx",
+        "src/components/onboarding/OnboardingGuide.jsx",
+        "src/pages/Admin.jsx",
+        "src/pages/AnnualReports.jsx",
+        "src/pages/Athletes.jsx",
+        "src/pages/CalendarPage.jsx",
+        "src/pages/CareerHub.jsx",
+        "src/pages/CharacterEditor.jsx",
+        "src/pages/ClubDetail.jsx",
+        "src/pages/Clubs.jsx",
+        "src/pages/Communications.jsx",
+        "src/pages/Community.jsx",
+        "src/pages/DatabaseManager.jsx",
+        "src/pages/Economy.jsx",
+        "src/pages/Inventory.jsx",
+        "src/pages/Journal.jsx",
+        "src/pages/Missions.jsx",
+        "src/pages/MonthlyReports.jsx",
+        "src/pages/PartnerHub.jsx",
+        "src/pages/PlayerProfile.jsx",
+        "src/pages/Press.jsx",
+        "src/pages/Ranking.jsx",
+        "src/pages/Season.jsx",
+        "src/pages/Shop.jsx",
+        "src/pages/Social.jsx",
+        "src/pages/Staff.jsx",
+        "src/pages/Tournaments.jsx",
+        "src/pages/TrainingCenter.jsx",
+        "src/pages/Weather.jsx",
+        "src/pages/WorldEvents.jsx",
+        "src/pages/WorldHub.jsx",
+        "src/pages/WorldMarket.jsx"
+      ]
+    },
+    "registerForTournament": {
+      "file": "src/lib/calendarSystem.js",
+      "writes": [
+        ".update",
+        ".create"
+      ],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "cancelRegistration",
+          "file": "src/lib/calendarSystem.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0
+        },
+        {
+          "name": "incrementMissionProgress",
+          "file": "src/lib/padel.js",
+          "writes": [
+            "localGame.batch",
+            ".update",
+            ".create"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/components/calendar/TournamentRegistrationModal.jsx"
+      ]
+    },
+    "formPartnerContract": {
+      "file": "src/game-core/partnerLifecycle.js",
+      "writes": [
+        ".update",
+        ".create"
+      ],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "startPartnership",
+          "file": "src/lib/partnershipSystem.js",
+          "writes": [
+            ".create",
+            ".update"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/components/career/PartnerSelection.jsx"
+      ]
+    },
+    "saveWeeklyPlan": {
+      "file": "src/lib/trainingSystemV2.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/components/career/StrategicCareerPanel.jsx",
+        "src/components/training/WeeklyPlanner.jsx"
+      ]
+    },
+    "ensureContextualCareerCommunications": {
+      "file": "src/lib/careerCommunications.js",
+      "writes": [
+        "localGame.batch"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/components/communications/CommunicationBell.jsx",
+        "src/pages/CareerHub.jsx",
+        "src/pages/Communications.jsx"
+      ]
+    },
+    "resolveAndOpenNotification": {
+      "file": "src/lib/careerCommunications.js",
+      "writes": [],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "markCareerCommunicationRead",
+          "file": "src/lib/careerCommunications.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/components/communications/CommunicationBell.jsx",
+        "src/pages/Communications.jsx"
+      ]
+    },
+    "resolveActiveCoach": {
+      "file": "src/game-core/coachLifecycle.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/components/matches/SimulationModal.jsx",
+        "src/components/tournaments/TournamentModal.jsx",
+        "src/pages/Coaches.jsx"
+      ]
+    },
+    "ensureTutorialMissionCatalog": {
+      "file": "src/lib/padel.js",
+      "writes": [
+        ".bulkCreate",
+        ".create",
+        ".bulkUpdate",
+        ".delete"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/components/missions/MissionNotificationBridge.jsx"
+      ]
+    },
+    "incrementMissionProgress": {
+      "file": "src/lib/padel.js",
+      "writes": [
+        "localGame.batch",
+        ".update",
+        ".create"
+      ],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "ensureTutorialMissionCatalog",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".bulkCreate",
+            ".create",
+            ".bulkUpdate",
+            ".delete"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/components/missions/MissionNotificationBridge.jsx",
+        "src/pages/CalendarPage.jsx",
+        "src/pages/CareerHub.jsx",
+        "src/pages/Missions.jsx",
+        "src/pages/Press.jsx"
+      ]
+    },
+    "reconcilePersistedTutorial": {
+      "file": "src/onboarding/tutorialReconciliation.js",
+      "writes": [
+        ".update",
+        ".create"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/components/onboarding/OnboardingGuide.jsx",
+        "src/pages/Missions.jsx"
+      ]
+    },
+    "completeTutorialStep": {
+      "file": "src/onboarding/tutorialEngine.js",
+      "writes": [],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "ensureTutorialMissionCatalog",
+          "file": "src/lib/padel.js",
+          "writes": [
+            ".bulkCreate",
+            ".create",
+            ".bulkUpdate",
+            ".delete"
+          ],
+          "randoms": 0
+        },
+        {
+          "name": "incrementMissionProgress",
+          "file": "src/lib/padel.js",
+          "writes": [
+            "localGame.batch",
+            ".update",
+            ".create"
+          ],
+          "randoms": 0
+        },
+        {
+          "name": "reconcilePersistedTutorial",
+          "file": "src/onboarding/tutorialReconciliation.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/components/onboarding/OnboardingGuide.jsx",
+        "src/pages/Missions.jsx"
+      ]
+    },
+    "markCareerCommunicationRead": {
+      "file": "src/lib/careerCommunications.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/components/partner/InboxPanel.jsx",
+        "src/pages/Communications.jsx"
+      ]
+    },
+    "resolveMessage": {
+      "file": "src/lib/careerCommunications.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/components/partner/InboxPanel.jsx",
+        "src/pages/Communications.jsx"
+      ]
+    },
+    "dismissMessage": {
+      "file": "src/lib/careerCommunications.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/components/partner/InboxPanel.jsx",
+        "src/pages/Communications.jsx"
+      ]
+    },
+    "applyWorldRepairPlan": {
+      "file": "src/lib/simulationHealth.js",
+      "writes": [
+        ".delete",
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/components/system/BetaTools.jsx"
+      ]
+    },
+    "repairLegacyPlayerPartnerAthlete": {
+      "file": "src/lib/partnerAthlete.js",
+      "writes": [],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "materializePartnerAthlete",
+          "file": "src/lib/partnerAthlete.js",
+          "writes": [
+            ".create"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/components/system/SaveFoundationBootstrap.jsx"
+      ]
+    },
+    "ensureWorldSeed2025": {
+      "file": "src/lib/saveFoundation.js",
+      "writes": [
+        ".bulkUpdate",
+        ".bulkCreate",
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "createCriticalBackup",
+          "file": "src/lib/saveFoundation.js",
+          "writes": [
+            ".bulkCreate"
+          ],
+          "randoms": 0
+        },
+        {
+          "name": "repairLegacyTeamRankings",
+          "file": "src/lib/teamRanking.js",
+          "writes": [
+            ".delete",
+            ".update"
+          ],
+          "randoms": 0
+        },
+        {
+          "name": "formNewPartnerships",
+          "file": "src/game-core/aiPartnershipLifecycle.js",
+          "writes": [
+            ".bulkUpdate",
+            "localGame.batch",
+            ".bulkCreate"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/components/system/SaveFoundationBootstrap.jsx"
+      ]
+    },
+    "ensurePlayerTeamRanking": {
+      "file": "src/lib/teamRanking.js",
+      "writes": [],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "materializeTeamRankingForPair",
+          "file": "src/lib/teamRanking.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/components/system/SaveFoundationBootstrap.jsx",
+        "src/pages/Ranking.jsx"
+      ]
+    },
+    "finalizeTournamentRun": {
+      "file": "src/game-core/tournamentLifecycle.js",
+      "writes": [
+        "localGame.batch"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/components/tournaments/TournamentModal.jsx"
+      ]
+    },
+    "createGoal": {
+      "file": "src/lib/trainingSystem.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/components/training/DevelopmentGoals.jsx"
+      ]
+    },
+    "deleteGoal": {
+      "file": "src/lib/trainingSystem.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/components/training/DevelopmentGoals.jsx"
+      ]
+    },
+    "executeTraining": {
+      "file": "src/lib/trainingSystemV2.js",
+      "writes": [
+        ".delete"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/components/training-center/TrainingView.jsx"
+      ]
+    },
+    "generateWorldEvents": {
+      "file": "src/lib/world.js",
+      "writes": [
+        ".bulkUpdate"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/components/world/WorldFeed.jsx",
+        "src/pages/WorldEvents.jsx"
+      ]
+    },
+    "safeModuleTask": {
+      "file": "src/lib/moduleLoading.js",
+      "writes": [
+        ".delete"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/CalendarPage.jsx",
+        "src/pages/Encyclopedia.jsx",
+        "src/pages/HallOfFame.jsx",
+        "src/pages/Missions.jsx",
+        "src/pages/Shop.jsx"
+      ]
+    },
+    "loadModuleTasks": {
+      "file": "src/lib/moduleLoading.js",
+      "writes": [],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "safeModuleTask",
+          "file": "src/lib/moduleLoading.js",
+          "writes": [
+            ".delete"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/pages/CalendarPage.jsx",
+        "src/pages/Ranking.jsx",
+        "src/pages/Shop.jsx",
+        "src/pages/Weather.jsx",
+        "src/pages/WorldEvents.jsx",
+        "src/pages/WorldHub.jsx"
+      ]
+    },
+    "scheduleRecurringActivities": {
+      "file": "src/lib/calendarSystem.js",
+      "writes": [],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "schedulePlannedActivity",
+          "file": "src/lib/calendarSystem.js",
+          "writes": [
+            ".create"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/pages/CalendarPage.jsx"
+      ]
+    },
+    "cancelPlannedActivity": {
+      "file": "src/lib/calendarSystem.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/CalendarPage.jsx"
+      ]
+    },
+    "updatePlannedActivity": {
+      "file": "src/lib/calendarSystem.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/CalendarPage.jsx"
+      ]
+    },
+    "advanceCareerUntilRecovered": {
+      "file": "src/game-core/calendarLifecycle.js",
+      "writes": [],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "processInjuryRecoveryDay",
+          "file": "src/game-core/injuryRecoveryLifecycle.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/pages/CalendarPage.jsx",
+        "src/pages/CareerHub.jsx"
+      ]
+    },
+    "resolveDecision": {
+      "file": "src/lib/calendarSystem.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/CalendarPage.jsx"
+      ]
+    },
+    "ensureWorldClubCatalog": {
+      "file": "src/lib/sportsEconomyV26.js",
+      "writes": [
+        ".create"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/Clubs.jsx"
+      ]
+    },
+    "createClub": {
+      "file": "src/lib/clubs.js",
+      "writes": [
+        ".create",
+        ".bulkCreate",
+        ".update"
+      ],
+      "randoms": 1,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/Clubs.jsx"
+      ]
+    },
+    "ensureCoachMarketInitialized": {
+      "file": "src/game-core/coachLifecycle.js",
+      "writes": [
+        ".delete"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/Coaches.jsx"
+      ]
+    },
+    "hirePrimaryCoach": {
+      "file": "src/game-core/coachLifecycle.js",
+      "writes": [
+        "localGame.batch"
+      ],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "publishContractEvent",
+          "file": "src/lib/contractNews.js",
+          "writes": [
+            ".upsert"
+          ],
+          "randoms": 0
+        },
+        {
+          "name": "incrementMissionProgress",
+          "file": "src/lib/padel.js",
+          "writes": [
+            "localGame.batch",
+            ".update",
+            ".create"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/pages/Coaches.jsx"
+      ]
+    },
+    "renewPrimaryCoach": {
+      "file": "src/game-core/coachLifecycle.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "publishContractEvent",
+          "file": "src/lib/contractNews.js",
+          "writes": [
+            ".upsert"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/pages/Coaches.jsx"
+      ]
+    },
+    "applyCareerCommunicationAction": {
+      "file": "src/lib/careerCommunications.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/Communications.jsx"
+      ]
+    },
+    "resetCareer": {
+      "file": "src/lib/demoData.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/DatabaseManager.jsx"
+      ]
+    },
+    "completeCareerOpportunity": {
+      "file": "src/game-core/opportunityLifecycle.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/Economy.jsx"
+      ]
+    },
+    "evaluateSponsorContracts": {
+      "file": "src/game-core/sponsorLifecycle.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "upsertCareerMessage",
+          "file": "src/lib/careerCommunications.js",
+          "writes": [
+            ".upsert"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/pages/Economy.jsx"
+      ]
+    },
+    "getOrCreatePlayerFanBase": {
+      "file": "src/game-core/fanLifecycle.js",
+      "writes": [
+        ".create"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/Fans.jsx"
+      ]
+    },
+    "evaluateMonthlyFanEngagement": {
+      "file": "src/game-core/fanLifecycle.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "getOrCreatePlayerFanBase",
+          "file": "src/game-core/fanLifecycle.js",
+          "writes": [
+            ".create"
+          ],
+          "randoms": 0
+        },
+        {
+          "name": "upsertCareerMessage",
+          "file": "src/lib/careerCommunications.js",
+          "writes": [
+            ".upsert"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/pages/Fans.jsx"
+      ]
+    },
+    "recordFinancialEntry": {
+      "file": "src/lib/financialLedger.js",
+      "writes": [
+        ".upsert",
+        ".create"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/Inventory.jsx",
+        "src/pages/Shop.jsx"
+      ]
+    },
+    "retireProfile": {
+      "file": "src/lib/legacy.js",
+      "writes": [
+        ".create",
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/Legacy.jsx"
+      ]
+    },
+    "startNewCareer": {
+      "file": "src/lib/legacy.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/Legacy.jsx"
+      ]
+    },
+    "saveAthleteNameFlow": {
+      "file": "src/onboarding/athleteNameSave.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "incrementMissionProgress",
+          "file": "src/lib/padel.js",
+          "writes": [
+            "localGame.batch",
+            ".update",
+            ".create"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/pages/Missions.jsx"
+      ]
+    },
+    "listPartnerOffers": {
+      "file": "src/lib/partnerOffers.js",
+      "writes": [
+        ".create"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/PartnerHub.jsx"
+      ]
+    },
+    "ensureInitialPartnerOffers": {
+      "file": "src/lib/partnerOffers.js",
+      "writes": [
+        ".create",
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "listPartnerOffers",
+          "file": "src/lib/partnerOffers.js",
+          "writes": [
+            ".create"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/pages/PartnerHub.jsx"
+      ]
+    },
+    "startPartnership": {
+      "file": "src/lib/partnershipSystem.js",
+      "writes": [
+        ".create",
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "endPartnership",
+          "file": "src/lib/partnershipSystem.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0
+        },
+        {
+          "name": "materializePartnerAthlete",
+          "file": "src/lib/partnerAthlete.js",
+          "writes": [
+            ".create"
+          ],
+          "randoms": 0
+        },
+        {
+          "name": "getOrCreateRelationship",
+          "file": "src/lib/relationships.js",
+          "writes": [
+            ".create"
+          ],
+          "randoms": 0
+        },
+        {
+          "name": "materializeTeamRankingForPair",
+          "file": "src/lib/teamRanking.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0
+        },
+        {
+          "name": "incrementMissionProgress",
+          "file": "src/lib/padel.js",
+          "writes": [
+            "localGame.batch",
+            ".update",
+            ".create"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/pages/PartnerHub.jsx"
+      ]
+    },
+    "acceptPartnerOffer": {
+      "file": "src/lib/partnerOffers.js",
+      "writes": [
+        ".update",
+        ".delete"
+      ],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "formPartnerContract",
+          "file": "src/game-core/partnerLifecycle.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/pages/PartnerHub.jsx"
+      ]
+    },
+    "rejectPartnerOffer": {
+      "file": "src/lib/partnerOffers.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/PartnerHub.jsx"
+      ]
+    },
+    "releasePartner": {
+      "file": "src/game-core/partnerLifecycle.js",
+      "writes": [
+        ".update",
+        ".create"
+      ],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "endPartnership",
+          "file": "src/lib/partnershipSystem.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/pages/PartnerHub.jsx"
+      ]
+    },
+    "negotiatePrizeSplit": {
+      "file": "src/lib/partnershipSystem.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/PartnerHub.jsx"
+      ]
+    },
+    "renewPartnerContract": {
+      "file": "src/game-core/partnerLifecycle.js",
+      "writes": [
+        ".update",
+        ".create"
+      ],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "upsertCareerMessage",
+          "file": "src/lib/careerCommunications.js",
+          "writes": [
+            ".upsert"
+          ],
+          "randoms": 0
+        },
+        {
+          "name": "negotiatePrizeSplit",
+          "file": "src/lib/partnershipSystem.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/pages/PartnerHub.jsx"
+      ]
+    },
+    "schedulePartnerSeparation": {
+      "file": "src/game-core/partnerLifecycle.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "upsertCareerMessage",
+          "file": "src/lib/careerCommunications.js",
+          "writes": [
+            ".upsert"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/pages/PartnerHub.jsx"
+      ]
+    },
+    "addConversation": {
+      "file": "src/lib/partnershipSystem.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/PartnerHub.jsx"
+      ]
+    },
+    "sendMessage": {
+      "file": "src/lib/partnershipSystem.js",
+      "writes": [
+        ".create"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/PartnerHub.jsx"
+      ]
+    },
+    "ensurePlayerRelationships": {
+      "file": "src/game-core/relationshipLifecycle.js",
+      "writes": [],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "seedInitialRelationships",
+          "file": "src/lib/relationships.js",
+          "writes": [
+            ".bulkCreate",
+            ".create"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/pages/Relationships.jsx"
+      ]
+    },
+    "interactSocially": {
+      "file": "src/lib/relationships.js",
+      "writes": [],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "getOrCreateRelationship",
+          "file": "src/lib/relationships.js",
+          "writes": [
+            ".create"
+          ],
+          "randoms": 0
+        },
+        {
+          "name": "updateRelationshipScore",
+          "file": "src/lib/relationships.js",
+          "writes": [
+            ".update"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/pages/Relationships.jsx"
+      ]
+    },
+    "finalizeSeason": {
+      "file": "src/game-core/seasonLifecycle.js",
+      "writes": [
+        ".create",
+        "localGame.batch",
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/SeasonDashboard.jsx"
+      ]
+    },
+    "hireStaff": {
+      "file": "src/lib/economy.js",
+      "writes": [
+        ".create"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/Staff.jsx"
+      ]
+    },
+    "fireStaff": {
+      "file": "src/lib/economy.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/Staff.jsx"
+      ]
+    },
+    "renewStaffContract": {
+      "file": "src/lib/economy.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/Staff.jsx"
+      ]
+    },
+    "upgradeStaffFacility": {
+      "file": "src/lib/staffFacilities.js",
+      "writes": [
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "recordFinancialEntry",
+          "file": "src/lib/financialLedger.js",
+          "writes": [
+            ".upsert",
+            ".create"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/pages/Staff.jsx"
+      ]
+    },
+    "simulatePastTournaments": {
+      "file": "src/lib/teamRanking.js",
+      "writes": [
+        ".bulkUpdate",
+        "localGame.batch"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/Tournaments.jsx"
+      ]
+    },
+    "cancelTournamentRegistration": {
+      "file": "src/lib/tournamentRegistration.js",
+      "writes": [
+        ".update",
+        ".upsert"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/Tournaments.jsx"
+      ]
+    },
+    "processGlobalMarketMonth": {
+      "file": "src/game-core/globalMarketLifecycle.js",
+      "writes": [],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "evolveWorldMarket",
+          "file": "src/game-core/worldMarketLifecycle.js",
+          "writes": [
+            ".bulkUpdate",
+            ".create"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/pages/WorldMarket.jsx"
+      ]
+    },
+    "scoutAthlete": {
+      "file": "src/game-core/scoutingLifecycle.js",
+      "writes": [
+        ".update",
+        ".create"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/WorldMarket.jsx"
+      ]
+    },
+    "toggleShortlist": {
+      "file": "src/game-core/scoutingLifecycle.js",
+      "writes": [
+        ".update",
+        ".create"
+      ],
+      "randoms": 0,
+      "indirect": [],
+      "calledFrom": [
+        "src/pages/WorldMarket.jsx"
+      ]
+    },
+    "submitPartnerOffer": {
+      "file": "src/game-core/marketNegotiationLifecycle.js",
+      "writes": [
+        ".create",
+        ".update"
+      ],
+      "randoms": 0,
+      "indirect": [
+        {
+          "name": "formPartnerContract",
+          "file": "src/game-core/partnerLifecycle.js",
+          "writes": [
+            ".update",
+            ".create"
+          ],
+          "randoms": 0
+        }
+      ],
+      "calledFrom": [
+        "src/pages/WorldMarket.jsx"
+      ]
+    }
+  }
+}
