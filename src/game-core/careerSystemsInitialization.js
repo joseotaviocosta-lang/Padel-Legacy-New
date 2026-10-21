@@ -5,6 +5,7 @@ import { seedMarket } from '@/lib/marketEngine.js';
 import { ensureExpandedShopCatalog } from '@/lib/storeCatalog.js';
 import { ensureInitialPartnerOffers, isReadyForInitialPartnerOffers } from '@/lib/partnerOffers.js';
 import { ensureCoachMarketInitialized } from './coachLifecycle.js';
+import { ensurePreSeasonExhibition } from '@/lib/career.js';
 
 // LOCAL-8F — INICIALIZAÇÃO dos sistemas da carreira (ciclo de vida).
 //
@@ -20,6 +21,9 @@ import { ensureCoachMarketInitialized } from './coachLifecycle.js';
 // reexecutada na próxima ativação).
 const STEPS = [
   ['missions', () => ensureTutorialMissionCatalog()],
+  // LOCAL-8G.1: a Pré-Temporada (única, 1ª temporada) existe antes de o
+  // jogador abrir Torneios — a tela continua somente leitura.
+  ['preSeason', (profile) => ensurePreSeasonExhibition(profile?.career_date || null)],
   ['clubs', () => ensureWorldClubCatalog(72)],
   ['coaches', (_profile, careerId) => ensureCoachMarketInitialized(careerId || null)],
   ['shop', async (profile) => { await seedMarket(profile?.career_date || null); await ensureExpandedShopCatalog(); }],

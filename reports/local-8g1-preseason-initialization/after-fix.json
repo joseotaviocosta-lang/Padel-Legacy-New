@@ -1,0 +1,158 @@
+{
+  "label": "after-fix",
+  "sections": {
+    "newCareer": {
+      "exhibitionsBeforeActivation": 0,
+      "activation": {
+        "missions": "ok",
+        "preSeason": "ok",
+        "clubs": "ok",
+        "coaches": "ok",
+        "shop": "ok",
+        "partnerOffers": "ok"
+      },
+      "exhibition": {
+        "id": "tournament-2026-rom-exh-2026",
+        "circuit_code": "ROM-EXH-2026",
+        "name": "Roma Pré-Temporada",
+        "tier": "Exibição",
+        "start_date": "2026-01-12",
+        "end_date": "2026-01-14",
+        "registration_open_date": "2026-01-01",
+        "registration_deadline": null,
+        "season_id": "season-2026",
+        "city": "Roma",
+        "main_draw_size": 8
+      },
+      "registrationWindow": {
+        "opensAt": "2026-01-01",
+        "closesAt": "2026-01-08"
+      },
+      "firstRegular": "2026-01-29",
+      "reactivation": {
+        "records": 0,
+        "diff": {},
+        "writes": 0,
+        "exhibitions": 1
+      },
+      "openTournaments": {
+        "records": 0,
+        "writes": 0
+      },
+      "registration": {
+        "success": true,
+        "error": null
+      },
+      "saveLoad": {
+        "records": 0,
+        "writes": 0,
+        "exhibitions": 1,
+        "registrations": 1
+      },
+      "play": {
+        "date": "2026-01-16",
+        "errors": 0,
+        "matches": [
+          {
+            "date": "2026-01-12",
+            "round": "Quartas de Final",
+            "won": false,
+            "score": "4-6, 4-6"
+          }
+        ],
+        "run": "eliminated",
+        "eventStatus": "completed",
+        "status": "finalizado",
+        "champion": "Samuel Miranda & Santiago García 934",
+        "runner_up": "Nicolás Vega 952 & Daniel Acosta 873"
+      },
+      "february": {
+        "date": "2026-02-02",
+        "errors": 0,
+        "exhibitions": [
+          {
+            "id": "tournament-2026-rom-exh-2026",
+            "circuit_code": "ROM-EXH-2026",
+            "name": "Roma Pré-Temporada",
+            "tier": "Exibição",
+            "start_date": "2026-01-12",
+            "end_date": "2026-01-14",
+            "registration_open_date": "2026-01-01",
+            "registration_deadline": null,
+            "season_id": "season-2026",
+            "city": "Roma",
+            "main_draw_size": 8
+          }
+        ],
+        "status": "finalizado"
+      }
+    },
+    "regularCalendarTwin": {
+      "twinExhibitions": 0
+    },
+    "lateNewCareer": {
+      "afterActivation": 0,
+      "afterReconcile": 0,
+      "lastDay": [
+        "inscricoes"
+      ],
+      "dayAfter": 0
+    },
+    "oldCareerWithout": {
+      "before": 0,
+      "after": 0,
+      "tournamentChanges": {
+        "created": 49,
+        "removed": 0,
+        "changed": 0
+      },
+      "bugWindowCareer": [
+        {
+          "id": "tournament-2026-rom-exh-2026",
+          "circuit_code": "ROM-EXH-2026",
+          "name": "Roma Pré-Temporada",
+          "tier": "Exibição",
+          "start_date": "2026-01-12",
+          "end_date": "2026-01-14",
+          "registration_open_date": "2026-01-01",
+          "registration_deadline": null,
+          "season_id": "season-2026",
+          "city": "Roma",
+          "main_draw_size": 8
+        }
+      ],
+      "secondSeason": 0
+    },
+    "historical": {
+      "exhibitions": [
+        {
+          "id": "tournament-2026-rom-exh-2026",
+          "circuit_code": "ROM-EXH-2026",
+          "name": "Roma Pré-Temporada",
+          "tier": "Exibição",
+          "start_date": "2026-01-12",
+          "end_date": "2026-01-14",
+          "registration_open_date": "2026-01-01",
+          "registration_deadline": null,
+          "season_id": "season-2026",
+          "city": "Roma",
+          "main_draw_size": 8,
+          "status": "finalizado",
+          "champion": "Arturo Coello & Agustín Tapia"
+        }
+      ],
+      "tournamentDiff": null,
+      "activationWrites": 6
+    },
+    "determinism": {
+      "equal": {
+        "exhibition": true,
+        "calendar": true,
+        "ids": true
+      }
+    }
+  },
+  "passed": 24,
+  "failed": 0,
+  "failures": []
+}

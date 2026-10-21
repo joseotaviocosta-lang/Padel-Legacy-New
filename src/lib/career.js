@@ -490,6 +490,55 @@ function sameTournamentValue(a, b) {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
+// LOCAL-8G.1 — regra ÚNICA de criação da Pré-Temporada (usada pela ativação
+// da carreira e pela reconciliação do calendário). Devolve o ano em que ela
+// deve ser criada, ou null quando:
+//   - já existe uma exibição no save (única por carreira; histórica ou não);
+//   - a carreira não está na 1ª temporada (há torneios de anos anteriores);
+//   - a data da carreira já passou do encerramento da exibição — criá-la
+//     agora seria um torneio fantasma, com datas passadas e inscrição aberta.
+function preSeasonExhibitionYear(tournaments, careerDate) {
+  const date = String(careerDate || '').slice(0, 10);
+  const year = Number(date.slice(0, 4));
+  if (!year) return null;
+  if ((tournaments || []).some((item) => item?.is_exhibition)) return null;
+  const seasonStart = `${year}-01-01`;
+  if ((tournaments || []).some((item) => item?.start_date && String(item.start_date) < seasonStart)) return null;
+  if (date > buildPreSeasonExhibition(year).end_date) return null;
+  return year;
+}
+
+// LOCAL-8G.1 — até b270e04 a Pré-Temporada só nascia quando a tela Torneios
+// chamava ensureFutureTournaments; a LOCAL-8G tornou a tela somente leitura e
+// a exibição passou a surgir só na virada de mês (01/02), já vencida. Agora
+// ela nasce na ativação da carreira (careerSystemsInitialization). Só cria a
+// exibição — não estende o horizonte do calendário regular. Idempotente: com
+// a exibição já existente (ou fora da janela) é só leitura.
+async function ensurePreSeasonExhibitionInternal(careerDate) {
+  try {
+    const tournaments = (await localGame.entities.Tournament.list('-start_date', 5000)) || [];
+    const year = preSeasonExhibitionYear(tournaments, careerDate);
+    if (year == null) return { created: 0 };
+    const seasons = (await localGame.entities.Season.list('-start_date', 100)) || [];
+    const season = seasons.find((item) => Number(item?.season_number || String(item?.start_date || '').slice(0, 4)) === year);
+    const payload = buildPreSeasonExhibition(year, season?.id ?? null);
+    await localGame.entities.Tournament.bulkUpdate([payload]);
+    notifyTournamentsChanged();
+    return { created: 1, id: payload.id };
+  } catch (error) {
+    console.error('ensurePreSeasonExhibition', error);
+    return { created: 0, error };
+  }
+}
+
+const initializePreSeasonExhibitionOnce = createKeyedInitializer(ensurePreSeasonExhibitionInternal);
+
+export function ensurePreSeasonExhibition(careerDate) {
+  if (!careerDate) return Promise.resolve({ created: 0 });
+  const key = String(careerDate).slice(0, 10);
+  return initializePreSeasonExhibitionOnce(key, careerDate);
+}
+
 // Mantém ao menos 15 meses de calendário, usando o Padel Legacy World Tour global, com eventos simultâneos e nove níveis (Fase 3).
 async function ensureFutureTournamentsInternal(careerDate) {
   if (!careerDate) return { created: 0, repaired: 0 };
@@ -530,8 +579,10 @@ async function ensureFutureTournamentsInternal(careerDate) {
     // primeiro ano do horizonte (careerD.getFullYear()) — pra uma carreira
     // nova, esse É o ano de criação; season_id é resolvido dentro do laço
     // abaixo (a temporada daquele ano pode ainda não existir aqui em cima).
-    const needsExhibition = !tournaments.some((item) => item?.is_exhibition);
-    const exhibitionYear = careerD.getFullYear();
+    // LOCAL-8G.1: a decisão é a mesma regra de ensurePreSeasonExhibition
+    // (abaixo) — nunca cria a exibição já encerrada nem fora da 1ª temporada.
+    const exhibitionYear = preSeasonExhibitionYear(tournaments, careerDate);
+    const needsExhibition = exhibitionYear != null;
 
     let created = 0;
     let repaired = 0;
@@ -557,13 +608,10 @@ async function ensureFutureTournamentsInternal(careerDate) {
       }
 
       if (needsExhibition && year === exhibitionYear) {
-        // Sem o filtro de janela `dateObj < careerD || dateObj > horizon`
-        // que os eventos regulares abaixo aplicam, de propósito: o
-        // gatilho de criação é ÚNICO E DEFINITIVO (needsExhibition, calculado
-        // uma vez acima) — se pulasse aqui por já termos passado do dia 11,
-        // nunca mais tentaria de novo (diferente dos eventos regulares, que
-        // são reconciliados a cada chamada). Melhor existir como evento já
-        // encerrado do que nunca existir.
+        // LOCAL-8G.1: a janela já foi validada em preSeasonExhibitionYear
+        // (data da carreira até o encerramento da exibição). Criar depois
+        // disso gerava um torneio fantasma — datas passadas, preso em
+        // `inscricoes`, nunca resolvido (a exibição não é world_tour_event).
         const exhibitionPayload = buildPreSeasonExhibition(year, season?.id ?? null);
         desiredTournamentKeys.add(`${year}:${exhibitionPayload.circuit_code}`);
         pendingTournamentUpserts.push(exhibitionPayload);

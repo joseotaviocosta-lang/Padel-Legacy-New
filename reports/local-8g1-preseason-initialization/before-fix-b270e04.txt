@@ -1,0 +1,12 @@
+FAIL — R: carreira nova (02/01/2026) — Pré-Temporada criada na ATIVAÇÃO, sem abrir Torneios {"exhibitionsBeforeActivation":0,"activation":{"missions":"ok","clubs":"ok","coaches":"ok","shop":"ok","partnerOffers":"ok"},"exhibition":null}
+FAIL — 1: mesmas regras do catálogo (cidade/datas/id/inscrição) — undefined undefined→undefined
+FAIL — 1: criada em `inscricoes`, sem resultado
+FAIL — 2: inscrição aberta em 02/01 (janela null→null)
+PASS — 11: calendário regular idêntico ao de antes da ativação
+PASS — 11: temporada regular continua começando em 29/01 (2026-01-29)
+FAIL — 4: 3 reativações — sem duplicação (0), 0 registro(s) e 0 gravação(ões) {"records":0,"diff":{},"writes":0,"exhibitions":0}
+PASS — 5: Tournaments.jsx não chama ensureFutureTournaments (LOCAL-8G preservada)
+PASS — 5: abrir Torneios 2x — 0 registro(s), 0 gravação(ões)
+FAIL — 3: inscrição na Pré-Temporada com dupla válida (Alessio Romano) {"success":false,"error":"Cannot read properties of null (reading 'id')"}
+FAIL — 6: save/load + ativação — sem alterações (0 registro(s), 0 gravação(ões)), exibição e inscrição preservadas {"records":0,"writes":0,"exhibitions":0,"registrations":0}
+file:///C:/Users/joseo/AppData/Local/Temp/claude/c--Projetos-Padel-Legacy-Integracao/c30568b6-74eb-4669-a220-226fd9f5549c/scratchpad/wt-b270e04/scripts/test-local-8g1-preseason-initialization.mjs:263
