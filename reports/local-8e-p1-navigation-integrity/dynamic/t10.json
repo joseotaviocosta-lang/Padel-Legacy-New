@@ -1,0 +1,148 @@
+{
+  "scenario": "t10",
+  "routes": {
+    "/world-market": {
+      "route": "/world-market",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/world-market"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/world-market"
+      }
+    },
+    "/world/circuit": {
+      "route": "/world/circuit",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/world/circuit"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/world/circuit"
+      }
+    },
+    "/career/training?tab=shop": {
+      "route": "/career/training?tab=shop",
+      "open1": {
+        "diff": {
+          "created": {
+            "ShopItem": {
+              "count": 111,
+              "sample": [
+                "shopitem-1792579106515-i6hx1z",
+                "shopitem-1792579106515-3fme16",
+                "shopitem-1792579106515-r0rpol",
+                "shopitem-1792579106515-b6ih3k"
+              ]
+            }
+          },
+          "removed": {},
+          "changed": {
+            "ShopItem": {
+              "count": 4,
+              "fields": {
+                "image_url": 4,
+                "updated_date": 4
+              }
+            }
+          },
+          "top": {
+            "save_version": [
+              "(valor)"
+            ],
+            "updated_at": [
+              "(valor)"
+            ],
+            "player": [
+              "updated_date",
+              "tutorial_onboarding"
+            ],
+            "tutorial": [
+              "pageIntroductionsSeen"
+            ]
+          }
+        },
+        "mathRandomCalls": 112,
+        "persistCalls": 37,
+        "careerWrites": 6,
+        "path": "/career/training?tab=shop"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/career/training?tab=shop"
+      }
+    }
+  },
+  "boot": null,
+  "jsErrors": []
+}

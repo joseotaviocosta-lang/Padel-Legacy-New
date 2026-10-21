@@ -1,0 +1,41 @@
+{
+  "label": "before-fix",
+  "saves": {
+    "t5-com-dupla": {
+      "matches": 258,
+      "changedByJournal": 23,
+      "playerRecognizedBefore": 23,
+      "playerRecognizedAfter": 0
+    },
+    "t1": {
+      "matches": 73,
+      "changedByJournal": 12,
+      "playerRecognizedBefore": 12,
+      "playerRecognizedAfter": 0
+    },
+    "t5": {
+      "matches": 258,
+      "changedByJournal": 23,
+      "playerRecognizedBefore": 23,
+      "playerRecognizedAfter": 0
+    },
+    "t10": {
+      "matches": 485,
+      "changedByJournal": 23,
+      "playerRecognizedBefore": 23,
+      "playerRecognizedAfter": 0
+    }
+  },
+  "passed": 13,
+  "failures": [
+    "t5-com-dupla: Jornal ×3 não altera partidas (23 de 258 alteradas)",
+    "t5-com-dupla: partidas do jogador seguem reconhecidas (23 → 0 entre as 30 recentes)",
+    "t1: Jornal ×3 não altera partidas (12 de 73 alteradas)",
+    "t1: partidas do jogador seguem reconhecidas (12 → 0 entre as 30 recentes)",
+    "t5: Jornal ×3 não altera partidas (23 de 258 alteradas)",
+    "t5: partidas do jogador seguem reconhecidas (23 → 0 entre as 30 recentes)",
+    "t10: Jornal ×3 não altera partidas (23 de 485 alteradas)",
+    "t10: partidas do jogador seguem reconhecidas (23 → 0 entre as 30 recentes)",
+    "nomes iguais/ordem invertida: registros intactos"
+  ]
+}

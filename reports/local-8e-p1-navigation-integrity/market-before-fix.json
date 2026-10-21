@@ -1,0 +1,83 @@
+{
+  "label": "before-fix",
+  "saves": {
+    "carreira-nova": {
+      "athletesShown": 500,
+      "recordsChanged": 618,
+      "openMs": [
+        159,
+        53,
+        42
+      ],
+      "persistedFilesBefore": 3,
+      "mismatchVsLegacy": 0,
+      "incompleteShown": 0
+    },
+    "t5-com-dupla": {
+      "athletesShown": 500,
+      "recordsChanged": 618,
+      "openMs": [
+        2161,
+        670,
+        720
+      ],
+      "persistedFilesBefore": 3,
+      "mismatchVsLegacy": 0,
+      "incompleteShown": 21
+    },
+    "t1": {
+      "athletesShown": 500,
+      "recordsChanged": 618,
+      "openMs": [
+        793,
+        385,
+        239
+      ],
+      "persistedFilesBefore": 3,
+      "mismatchVsLegacy": 0,
+      "incompleteShown": 28
+    },
+    "t5": {
+      "athletesShown": 500,
+      "recordsChanged": 618,
+      "openMs": [
+        2341,
+        731,
+        678
+      ],
+      "persistedFilesBefore": 3,
+      "mismatchVsLegacy": 0,
+      "incompleteShown": 21
+    },
+    "t10": {
+      "athletesShown": 500,
+      "recordsChanged": 618,
+      "openMs": [
+        3445,
+        1178,
+        1345
+      ],
+      "persistedFilesBefore": 3,
+      "mismatchVsLegacy": 0,
+      "incompleteShown": 31
+    }
+  },
+  "passed": 26,
+  "failures": [
+    "carreira-nova: Mercado ×3 não altera o save (618 registro(s) {\"AthleteProfile\":{\"created\":0,\"removed\":0,\"changed\":500},\"Coach\":{\"created\":118,\"removed\":0,\"changed\":0}})",
+    "carreira-nova: atletas e treinadores intactos (AthleteProfile 500, Coach 0)",
+    "carreira-nova: save → load → Mercado → save com entidades idênticas",
+    "t5-com-dupla: Mercado ×3 não altera o save (618 registro(s) {\"AthleteProfile\":{\"created\":0,\"removed\":0,\"changed\":500},\"Coach\":{\"created\":118,\"removed\":0,\"changed\":0}})",
+    "t5-com-dupla: atletas e treinadores intactos (AthleteProfile 500, Coach 0)",
+    "t5-com-dupla: save → load → Mercado → save com entidades idênticas",
+    "t1: Mercado ×3 não altera o save (618 registro(s) {\"AthleteProfile\":{\"created\":0,\"removed\":0,\"changed\":500},\"Coach\":{\"created\":118,\"removed\":0,\"changed\":0}})",
+    "t1: atletas e treinadores intactos (AthleteProfile 500, Coach 0)",
+    "t1: save → load → Mercado → save com entidades idênticas",
+    "t5: Mercado ×3 não altera o save (618 registro(s) {\"AthleteProfile\":{\"created\":0,\"removed\":0,\"changed\":500},\"Coach\":{\"created\":118,\"removed\":0,\"changed\":0}})",
+    "t5: atletas e treinadores intactos (AthleteProfile 500, Coach 0)",
+    "t5: save → load → Mercado → save com entidades idênticas",
+    "t10: Mercado ×3 não altera o save (618 registro(s) {\"AthleteProfile\":{\"created\":0,\"removed\":0,\"changed\":500},\"Coach\":{\"created\":118,\"removed\":0,\"changed\":0}})",
+    "t10: atletas e treinadores intactos (AthleteProfile 500, Coach 0)",
+    "t10: save → load → Mercado → save com entidades idênticas"
+  ]
+}

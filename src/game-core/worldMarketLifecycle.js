@@ -262,6 +262,44 @@ export async function evolveWorldMarket(careerDate) {
   };
 }
 
+// LOCAL-8E (8D-01): projeção SOMENTE LEITURA do mercado de atletas para a
+// tela do Mercado Mundial. Mesma regra de initializeWorldMarket (top 500 por
+// OVR×2+forma recebem os campos de mercado que faltam; lista final pelos 500
+// maiores market_value), mas em memória: abrir a tela não grava atleta
+// nenhum — antes, a primeira visita do mês regravava current_form,
+// potential, world_rank, career_status etc. de até 500 atletas e o avanço
+// do dia seguinte divergia de quem não visitou. A gravação continua só no
+// processamento explícito do mês (evolveWorldMarket → ensureWorldMarket).
+export async function readWorldMarketSnapshot(careerDate) {
+  const all = (await localGame.entities.AthleteProfile.list('-overall_rating', 5000)) || [];
+  const top = all.slice(0, 500);
+  const sorted = [...top].sort((a, b) => {
+    const scoreA = (Number(a.overall_rating) || overallRating(a)) * 2 + (Number(a.current_form) || 60);
+    const scoreB = (Number(b.overall_rating) || overallRating(b)) * 2 + (Number(b.current_form) || 60);
+    return scoreB - scoreA;
+  });
+  const projected = new Map();
+  sorted.forEach((athlete, index) => {
+    const needsUpdate = !athlete.market_value || !athlete.expected_salary || !athlete.world_rank || !athlete.market_status;
+    if (needsUpdate) projected.set(athlete.id, { ...normalizeAthlete(athlete, index, careerDate), id: athlete.id });
+  });
+  const athletes = all
+    .map((athlete) => projected.get(athlete.id) || athlete)
+    .sort((a, b) => (Number(b.market_value) || 0) - (Number(a.market_value) || 0))
+    .slice(0, 500);
+  const active = athletes.filter(a => a.career_status !== 'aposentado');
+  return {
+    month: monthKey(careerDate),
+    athletes,
+    active,
+    freeAgents: active.filter(a => a.market_status === 'livre'),
+    injured: active.filter(a => a.market_status === 'lesionado'),
+    retired: athletes.filter(a => a.career_status === 'aposentado'),
+    totalValue: active.reduce((sum, athlete) => sum + (Number(athlete.market_value) || 0), 0),
+    processed: active.length > 0 && active.every(a => a.last_market_month === monthKey(careerDate)),
+  };
+}
+
 export async function getWorldMarketSnapshot(careerDate) {
   const athletes = await ensureWorldMarket(careerDate);
   const active = athletes.filter(a => a.career_status !== 'aposentado');

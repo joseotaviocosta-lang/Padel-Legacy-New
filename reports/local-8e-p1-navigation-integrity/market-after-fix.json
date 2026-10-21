@@ -1,0 +1,67 @@
+{
+  "label": "after-fix",
+  "saves": {
+    "carreira-nova": {
+      "athletesShown": 500,
+      "recordsChanged": 0,
+      "openMs": [
+        11,
+        6,
+        5
+      ],
+      "persistedFilesBefore": 3,
+      "mismatchVsLegacy": 0,
+      "incompleteShown": 0
+    },
+    "t5-com-dupla": {
+      "athletesShown": 500,
+      "recordsChanged": 0,
+      "openMs": [
+        56,
+        48,
+        26
+      ],
+      "persistedFilesBefore": 3,
+      "mismatchVsLegacy": 0,
+      "incompleteShown": 21
+    },
+    "t1": {
+      "athletesShown": 500,
+      "recordsChanged": 0,
+      "openMs": [
+        35,
+        29,
+        18
+      ],
+      "persistedFilesBefore": 3,
+      "mismatchVsLegacy": 0,
+      "incompleteShown": 28
+    },
+    "t5": {
+      "athletesShown": 500,
+      "recordsChanged": 0,
+      "openMs": [
+        38,
+        33,
+        25
+      ],
+      "persistedFilesBefore": 3,
+      "mismatchVsLegacy": 0,
+      "incompleteShown": 21
+    },
+    "t10": {
+      "athletesShown": 500,
+      "recordsChanged": 0,
+      "openMs": [
+        48,
+        32,
+        26
+      ],
+      "persistedFilesBefore": 3,
+      "mismatchVsLegacy": 0,
+      "incompleteShown": 31
+    }
+  },
+  "passed": 41,
+  "failures": []
+}

@@ -493,8 +493,21 @@ export async function seedMarket() {
   const existingHistorical = await localGame.asServiceRole.entities.ShopItem.filter({ manufacturer: 'Padel Heritage' });
   const historicalByKey = new Map(HISTORICAL_RARE_ITEMS.map((item) => [`${item.release_year}:${item.category}`, item]));
   for (const existingItem of existingHistorical) {
+    // LOCAL-8E (8D-03): o par release_year+category NÃO é exclusivo dos 10
+    // históricos — os colecionáveis "Padel Heritage" do catálogo ampliado
+    // (storeCatalog.js) têm release_year da raridade: "Medalha Circuito
+    // Local" (raro → 2023) e "Réplica Troféu Major" (épico → 2024) casavam
+    // com "Bola Dourada WPT Final (2023)"/"Raquete Dourada do Circuito
+    // (2024)", eram renomeados com preço de relíquia e o catálogo, que
+    // reconcilia por nome, recriava o original na visita seguinte (+2 itens
+    // por abertura da Loja). Item do catálogo ampliado tem catalog_order e a
+    // raridade do catálogo; relíquia histórica não tem catalog_order e é
+    // sempre 'exclusivo'. Cópias já renomeadas por saves antigos ficam como
+    // estão (nada é apagado nem repreçado).
+    if (existingItem.catalog_order != null) continue;
     const template = historicalByKey.get(`${existingItem.release_year}:${existingItem.category}`);
     if (!template) continue;
+    if (String(existingItem.rarity || '').trim().toLowerCase() !== template.rarity) continue;
     const patch = {};
     ['name', 'description', 'price', 'history', 'collection'].forEach((field) => {
       if (template[field] !== undefined && existingItem[field] !== template[field]) patch[field] = template[field];

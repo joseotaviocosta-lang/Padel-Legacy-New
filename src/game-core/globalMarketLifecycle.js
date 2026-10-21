@@ -1,6 +1,6 @@
 import { localGame } from '@/api/localGameClient.js';
 import { COACHES_DATA, COACH_TIERS, COACH_SPECIALTY_INFO } from '@/lib/coaches';
-import { ensureWorldMarket, evolveWorldMarket, getWorldMarketSnapshot } from './worldMarketLifecycle';
+import { evolveWorldMarket, readWorldMarketSnapshot } from './worldMarketLifecycle';
 import { fnv1aHash } from '@/lib/hashUtils.js';
 
 const TIER_MINIMUMS = Object.freeze({ iniciante: 6, regional: 5, profissional: 4, elite: 2, lendario: 1 });
@@ -91,13 +91,26 @@ function normalizeTeam(team, index) {
   };
 }
 
+// LOCAL-8E (8D-01): leitura dos treinadores para a tela do Mercado, sem
+// gravar. Antes a abertura chamava updateCoachMarket (bulkUpdate de todos os
+// treinadores a cada visita) e criava os do catálogo que faltassem. Os que
+// faltam entram só na projeção (sem id) — a criação continua com a tela de
+// Treinadores (coachLifecycle.ensureCoachCatalog).
+async function readCoachMarket() {
+  const coaches = (await localGame.entities.Coach.list('-reputation', 500)) || [];
+  const existing = new Set(coaches.map((coach) => normalizeName(coach.name)));
+  const missing = COACHES_DATA.filter((coach) => !existing.has(normalizeName(coach.name))).map((coach) => ({ ...coach }));
+  return [...coaches, ...missing];
+}
+
 export async function getGlobalMarketSnapshot(profile, date) {
   const careerDate = date || profile?.career_date || new Date().toISOString().slice(0, 10);
-  await ensureWorldMarket(careerDate);
+  // Abrir o Mercado é somente leitura (LOCAL-8E). O processamento do mês —
+  // que grava atletas e treinadores — fica em processGlobalMarketMonth.
   const [athleteMarket, teamsRaw, coachesRaw, events] = await Promise.all([
-    getWorldMarketSnapshot(careerDate),
+    readWorldMarketSnapshot(careerDate),
     localGame.entities.TeamRanking.list('-ranking_points', 600).catch(() => []),
-    updateCoachMarket(careerDate),
+    readCoachMarket(),
     localGame.entities.WorldEvent.list('-event_date', 100).catch(() => []),
   ]);
   const teams = (teamsRaw || []).map(normalizeTeam).sort((a, b) => b.ranking_points - a.ranking_points).map((team, index) => ({ ...team, ranking_position: index + 1 }));

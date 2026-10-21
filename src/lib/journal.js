@@ -35,8 +35,12 @@ export async function generateJournal() {
     // Rivalries (teams that appear in multiple matches)
     const rivalryMap = {};
     allMatches.forEach(m => {
-      const teamA = (m.team_a || []).sort().join(' & ');
-      const teamB = (m.team_b || []).sort().join(' & ');
+      // LOCAL-8E (8D-02): ordenar uma CÓPIA. O repositório devolve cópia rasa
+      // dos registros — `.sort()` direto em m.team_a reordenava a dupla dentro
+      // da partida salva, e Torneios (que reconhece o jogador por team_a[0])
+      // deixava de reconhecer as partidas dele. A ordem é só da apresentação.
+      const teamA = [...(m.team_a || [])].sort().join(' & ');
+      const teamB = [...(m.team_b || [])].sort().join(' & ');
       const key = [teamA, teamB].sort().join(' vs ');
       if (!rivalryMap[key]) rivalryMap[key] = { count: 0, teamA, teamB, aWins: 0, bWins: 0 };
       rivalryMap[key].count++;

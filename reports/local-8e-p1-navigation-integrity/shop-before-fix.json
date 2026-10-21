@@ -1,0 +1,688 @@
+{
+  "label": "before-fix",
+  "saves": {
+    "carreira-nova": {
+      "timeline": [
+        {
+          "open": 1,
+          "items": 115,
+          "created": 111,
+          "rewritten": 4,
+          "removed": 0,
+          "ms": 147,
+          "createdNames": [
+            "Padel Start Control One Club",
+            "Padel Start Control One Sport",
+            "Padel Start Control One Pro",
+            "Padel Start Control One Elite"
+          ]
+        },
+        {
+          "open": 2,
+          "items": 117,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 3144,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 3,
+          "items": 119,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 3312,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 4,
+          "items": 121,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 3186,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 5,
+          "items": 123,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 3630,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 6,
+          "items": 125,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 3478,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 7,
+          "items": 127,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 3777,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 8,
+          "items": 129,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 3128,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 9,
+          "items": 131,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 3183,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 10,
+          "items": 133,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 3569,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        }
+      ],
+      "totalMs": 30556,
+      "items": 133,
+      "relics": 0,
+      "itemsInSave": 4
+    },
+    "t1": {
+      "timeline": [
+        {
+          "open": 1,
+          "items": 115,
+          "created": 111,
+          "rewritten": 4,
+          "removed": 0,
+          "ms": 984,
+          "createdNames": [
+            "Padel Start Control One Club",
+            "Padel Start Control One Sport",
+            "Padel Start Control One Pro",
+            "Padel Start Control One Elite"
+          ]
+        },
+        {
+          "open": 2,
+          "items": 117,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 22978,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 3,
+          "items": 119,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 23897,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 4,
+          "items": 121,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 23672,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 5,
+          "items": 123,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 24521,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 6,
+          "items": 125,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 24596,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 7,
+          "items": 127,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 24958,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 8,
+          "items": 129,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 25747,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 9,
+          "items": 131,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 24240,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 10,
+          "items": 133,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 23793,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        }
+      ],
+      "totalMs": 219389,
+      "items": 133,
+      "relics": 0,
+      "itemsInSave": 4
+    },
+    "t5": {
+      "timeline": [
+        {
+          "open": 1,
+          "items": 115,
+          "created": 111,
+          "rewritten": 4,
+          "removed": 0,
+          "ms": 4215,
+          "createdNames": [
+            "Padel Start Control One Club",
+            "Padel Start Control One Sport",
+            "Padel Start Control One Pro",
+            "Padel Start Control One Elite"
+          ]
+        },
+        {
+          "open": 2,
+          "items": 117,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 80985,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 3,
+          "items": 119,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 80005,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 4,
+          "items": 121,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 80454,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 5,
+          "items": 123,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 80224,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 6,
+          "items": 125,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 80686,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 7,
+          "items": 127,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 81816,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 8,
+          "items": 129,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 78924,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 9,
+          "items": 131,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 80944,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 10,
+          "items": 133,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 80244,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        }
+      ],
+      "totalMs": 728501,
+      "items": 133,
+      "relics": 0,
+      "itemsInSave": 4
+    },
+    "t10": {
+      "timeline": [
+        {
+          "open": 1,
+          "items": 115,
+          "created": 111,
+          "rewritten": 4,
+          "removed": 0,
+          "ms": 7036,
+          "createdNames": [
+            "Padel Start Control One Club",
+            "Padel Start Control One Sport",
+            "Padel Start Control One Pro",
+            "Padel Start Control One Elite"
+          ]
+        },
+        {
+          "open": 2,
+          "items": 117,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 137866,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 3,
+          "items": 119,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 139795,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 4,
+          "items": 121,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 134473,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 5,
+          "items": 123,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 136862,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 6,
+          "items": 125,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 138487,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 7,
+          "items": 127,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 138191,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 8,
+          "items": 129,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 138591,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 9,
+          "items": 131,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 138841,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 10,
+          "items": 133,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 137468,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        }
+      ],
+      "totalMs": 1247615,
+      "items": 133,
+      "relics": 0,
+      "itemsInSave": 4
+    },
+    "fixture-legado-contaminado": {
+      "timeline": [
+        {
+          "open": 1,
+          "items": 124,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 78438,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 2,
+          "items": 126,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 78548,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 3,
+          "items": 128,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 78648,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 4,
+          "items": 130,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 78977,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 5,
+          "items": 132,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 77549,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 6,
+          "items": 134,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 79999,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 7,
+          "items": 136,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 78716,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 8,
+          "items": 138,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 80207,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 9,
+          "items": 140,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 80375,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        },
+        {
+          "open": 10,
+          "items": 142,
+          "created": 2,
+          "rewritten": 111,
+          "removed": 0,
+          "ms": 78069,
+          "createdNames": [
+            "Medalha Circuito Local",
+            "Réplica Troféu Major"
+          ]
+        }
+      ],
+      "totalMs": 789527,
+      "items": 142,
+      "relics": 2,
+      "legacyRenamedCopies": 3,
+      "inventoryRows": 4
+    }
+  },
+  "passed": 21,
+  "failures": [
+    "carreira-nova: contagem estável da 2ª à 10ª abertura (115→117→119→121→123→125→127→129→131→133)",
+    "carreira-nova: nenhuma criação depois da 1ª abertura (18)",
+    "carreira-nova: nenhuma regravação redundante depois da 1ª abertura (999 registro(s))",
+    "carreira-nova: nome/preço/raridade/bônus/disponibilidade preservados após 10 aberturas (2 divergente(s))",
+    "carreira-nova: relíquias estáveis (0 → 0) e nenhuma nova cópia renomeada como relíquia (0 → 18)",
+    "carreira-nova: save → load → Loja: zero criações/regravações (2/111)",
+    "t1: contagem estável da 2ª à 10ª abertura (115→117→119→121→123→125→127→129→131→133)",
+    "t1: nenhuma criação depois da 1ª abertura (18)",
+    "t1: nenhuma regravação redundante depois da 1ª abertura (999 registro(s))",
+    "t1: nome/preço/raridade/bônus/disponibilidade preservados após 10 aberturas (2 divergente(s))",
+    "t1: relíquias estáveis (0 → 0) e nenhuma nova cópia renomeada como relíquia (0 → 18)",
+    "t1: save → load → Loja: zero criações/regravações (2/111)",
+    "t5: contagem estável da 2ª à 10ª abertura (115→117→119→121→123→125→127→129→131→133)",
+    "t5: nenhuma criação depois da 1ª abertura (18)",
+    "t5: nenhuma regravação redundante depois da 1ª abertura (999 registro(s))",
+    "t5: nome/preço/raridade/bônus/disponibilidade preservados após 10 aberturas (2 divergente(s))",
+    "t5: relíquias estáveis (0 → 0) e nenhuma nova cópia renomeada como relíquia (0 → 18)",
+    "t5: save → load → Loja: zero criações/regravações (2/111)",
+    "t10: contagem estável da 2ª à 10ª abertura (115→117→119→121→123→125→127→129→131→133)",
+    "t10: nenhuma criação depois da 1ª abertura (18)",
+    "t10: nenhuma regravação redundante depois da 1ª abertura (999 registro(s))",
+    "t10: nome/preço/raridade/bônus/disponibilidade preservados após 10 aberturas (2 divergente(s))",
+    "t10: relíquias estáveis (0 → 0) e nenhuma nova cópia renomeada como relíquia (0 → 18)",
+    "t10: save → load → Loja: zero criações/regravações (2/111)",
+    "fixture-legado-contaminado: contagem estável da 2ª à 10ª abertura (124→126→128→130→132→134→136→138→140→142)",
+    "fixture-legado-contaminado: nenhuma criação depois da 1ª abertura (18)",
+    "fixture-legado-contaminado: nenhuma regravação redundante depois da 1ª abertura (999 registro(s))",
+    "fixture-legado-contaminado: nome/preço/raridade/bônus/disponibilidade preservados após 10 aberturas (2 divergente(s))",
+    "fixture-legado-contaminado: relíquias estáveis (2 → 2) e nenhuma nova cópia renomeada como relíquia (5 → 25)",
+    "fixture-legado-contaminado: save → load → Loja: zero criações/regravações (2/111)",
+    "fixture: abertura sobre catálogo contaminado não cria nem reescreve (20/111)"
+  ]
+}

@@ -1,0 +1,518 @@
+{
+  "label": "after-fix",
+  "saves": {
+    "carreira-nova": {
+      "timeline": [
+        {
+          "open": 1,
+          "items": 115,
+          "created": 111,
+          "rewritten": 4,
+          "removed": 0,
+          "ms": 175,
+          "createdNames": [
+            "Padel Start Control One Club",
+            "Padel Start Control One Sport",
+            "Padel Start Control One Pro",
+            "Padel Start Control One Elite"
+          ]
+        },
+        {
+          "open": 2,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 22,
+          "createdNames": []
+        },
+        {
+          "open": 3,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 30,
+          "createdNames": []
+        },
+        {
+          "open": 4,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 22,
+          "createdNames": []
+        },
+        {
+          "open": 5,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 17,
+          "createdNames": []
+        },
+        {
+          "open": 6,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 17,
+          "createdNames": []
+        },
+        {
+          "open": 7,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 15,
+          "createdNames": []
+        },
+        {
+          "open": 8,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 17,
+          "createdNames": []
+        },
+        {
+          "open": 9,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 14,
+          "createdNames": []
+        },
+        {
+          "open": 10,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 15,
+          "createdNames": []
+        }
+      ],
+      "totalMs": 344,
+      "items": 115,
+      "relics": 0,
+      "itemsInSave": 4
+    },
+    "t1": {
+      "timeline": [
+        {
+          "open": 1,
+          "items": 115,
+          "created": 111,
+          "rewritten": 4,
+          "removed": 0,
+          "ms": 1088,
+          "createdNames": [
+            "Padel Start Control One Club",
+            "Padel Start Control One Sport",
+            "Padel Start Control One Pro",
+            "Padel Start Control One Elite"
+          ]
+        },
+        {
+          "open": 2,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 108,
+          "createdNames": []
+        },
+        {
+          "open": 3,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 120,
+          "createdNames": []
+        },
+        {
+          "open": 4,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 106,
+          "createdNames": []
+        },
+        {
+          "open": 5,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 119,
+          "createdNames": []
+        },
+        {
+          "open": 6,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 100,
+          "createdNames": []
+        },
+        {
+          "open": 7,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 101,
+          "createdNames": []
+        },
+        {
+          "open": 8,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 110,
+          "createdNames": []
+        },
+        {
+          "open": 9,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 100,
+          "createdNames": []
+        },
+        {
+          "open": 10,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 134,
+          "createdNames": []
+        }
+      ],
+      "totalMs": 2087,
+      "items": 115,
+      "relics": 0,
+      "itemsInSave": 4
+    },
+    "t5": {
+      "timeline": [
+        {
+          "open": 1,
+          "items": 115,
+          "created": 111,
+          "rewritten": 4,
+          "removed": 0,
+          "ms": 3762,
+          "createdNames": [
+            "Padel Start Control One Club",
+            "Padel Start Control One Sport",
+            "Padel Start Control One Pro",
+            "Padel Start Control One Elite"
+          ]
+        },
+        {
+          "open": 2,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 361,
+          "createdNames": []
+        },
+        {
+          "open": 3,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 365,
+          "createdNames": []
+        },
+        {
+          "open": 4,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 477,
+          "createdNames": []
+        },
+        {
+          "open": 5,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 385,
+          "createdNames": []
+        },
+        {
+          "open": 6,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 404,
+          "createdNames": []
+        },
+        {
+          "open": 7,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 573,
+          "createdNames": []
+        },
+        {
+          "open": 8,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 389,
+          "createdNames": []
+        },
+        {
+          "open": 9,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 376,
+          "createdNames": []
+        },
+        {
+          "open": 10,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 498,
+          "createdNames": []
+        }
+      ],
+      "totalMs": 7591,
+      "items": 115,
+      "relics": 0,
+      "itemsInSave": 4
+    },
+    "t10": {
+      "timeline": [
+        {
+          "open": 1,
+          "items": 115,
+          "created": 111,
+          "rewritten": 4,
+          "removed": 0,
+          "ms": 6685,
+          "createdNames": [
+            "Padel Start Control One Club",
+            "Padel Start Control One Sport",
+            "Padel Start Control One Pro",
+            "Padel Start Control One Elite"
+          ]
+        },
+        {
+          "open": 2,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 663,
+          "createdNames": []
+        },
+        {
+          "open": 3,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 743,
+          "createdNames": []
+        },
+        {
+          "open": 4,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 884,
+          "createdNames": []
+        },
+        {
+          "open": 5,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 723,
+          "createdNames": []
+        },
+        {
+          "open": 6,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 644,
+          "createdNames": []
+        },
+        {
+          "open": 7,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 681,
+          "createdNames": []
+        },
+        {
+          "open": 8,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 721,
+          "createdNames": []
+        },
+        {
+          "open": 9,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 915,
+          "createdNames": []
+        },
+        {
+          "open": 10,
+          "items": 115,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 880,
+          "createdNames": []
+        }
+      ],
+      "totalMs": 13540,
+      "items": 115,
+      "relics": 0,
+      "itemsInSave": 4
+    },
+    "fixture-legado-contaminado": {
+      "timeline": [
+        {
+          "open": 1,
+          "items": 120,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 355,
+          "createdNames": []
+        },
+        {
+          "open": 2,
+          "items": 120,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 376,
+          "createdNames": []
+        },
+        {
+          "open": 3,
+          "items": 120,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 402,
+          "createdNames": []
+        },
+        {
+          "open": 4,
+          "items": 120,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 386,
+          "createdNames": []
+        },
+        {
+          "open": 5,
+          "items": 120,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 390,
+          "createdNames": []
+        },
+        {
+          "open": 6,
+          "items": 120,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 410,
+          "createdNames": []
+        },
+        {
+          "open": 7,
+          "items": 120,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 424,
+          "createdNames": []
+        },
+        {
+          "open": 8,
+          "items": 120,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 549,
+          "createdNames": []
+        },
+        {
+          "open": 9,
+          "items": 120,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 427,
+          "createdNames": []
+        },
+        {
+          "open": 10,
+          "items": 120,
+          "created": 0,
+          "rewritten": 0,
+          "removed": 0,
+          "ms": 404,
+          "createdNames": []
+        }
+      ],
+      "totalMs": 4122,
+      "items": 120,
+      "relics": 2,
+      "legacyRenamedCopies": 3,
+      "inventoryRows": 4
+    }
+  },
+  "passed": 52,
+  "failures": []
+}

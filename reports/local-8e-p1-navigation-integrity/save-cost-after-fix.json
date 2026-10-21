@@ -1,0 +1,157 @@
+{
+  "label": "after-fix",
+  "scenarios": {
+    "carreira-nova": {
+      "mercado": {
+        "openMs": [
+          14,
+          8,
+          5
+        ],
+        "saveWrites": 0,
+        "bytesWritten": 0,
+        "saveBytesBefore": 2116109,
+        "saveBytesDelta": 0,
+        "exportSerializeMs": 22
+      },
+      "jornal": {
+        "openMs": [
+          4,
+          1,
+          1
+        ],
+        "saveWrites": 0,
+        "bytesWritten": 0,
+        "saveBytesBefore": 2116109,
+        "saveBytesDelta": 0,
+        "exportSerializeMs": 20
+      },
+      "loja": {
+        "openMs": [
+          358,
+          14,
+          2
+        ],
+        "saveWrites": 6,
+        "bytesWritten": 10672181,
+        "saveBytesBefore": 2116109,
+        "saveBytesDelta": 90282,
+        "exportSerializeMs": 22
+      }
+    },
+    "t1": {
+      "mercado": {
+        "openMs": [
+          43,
+          19,
+          55
+        ],
+        "saveWrites": 0,
+        "bytesWritten": 0,
+        "saveBytesBefore": 12988576,
+        "saveBytesDelta": 0,
+        "exportSerializeMs": 113
+      },
+      "jornal": {
+        "openMs": [
+          9,
+          4,
+          4
+        ],
+        "saveWrites": 0,
+        "bytesWritten": 0,
+        "saveBytesBefore": 12988576,
+        "saveBytesDelta": 0,
+        "exportSerializeMs": 200
+      },
+      "loja": {
+        "openMs": [
+          968,
+          2,
+          1
+        ],
+        "saveWrites": 5,
+        "bytesWritten": 65034034,
+        "saveBytesBefore": 12988576,
+        "saveBytesDelta": 90282,
+        "exportSerializeMs": 127
+      }
+    },
+    "t5": {
+      "mercado": {
+        "openMs": [
+          65,
+          21,
+          29
+        ],
+        "saveWrites": 0,
+        "bytesWritten": 0,
+        "saveBytesBefore": 38599805,
+        "saveBytesDelta": 0,
+        "exportSerializeMs": 370
+      },
+      "jornal": {
+        "openMs": [
+          15,
+          6,
+          6
+        ],
+        "saveWrites": 0,
+        "bytesWritten": 0,
+        "saveBytesBefore": 38599805,
+        "saveBytesDelta": 0,
+        "exportSerializeMs": 483
+      },
+      "loja": {
+        "openMs": [
+          3562,
+          1,
+          1
+        ],
+        "saveWrites": 6,
+        "bytesWritten": 193090660,
+        "saveBytesBefore": 38599805,
+        "saveBytesDelta": 90282,
+        "exportSerializeMs": 371
+      }
+    },
+    "t10": {
+      "mercado": {
+        "openMs": [
+          61,
+          30,
+          34
+        ],
+        "saveWrites": 0,
+        "bytesWritten": 0,
+        "saveBytesBefore": 67095584,
+        "saveBytesDelta": 0,
+        "exportSerializeMs": 611
+      },
+      "jornal": {
+        "openMs": [
+          26,
+          25,
+          10
+        ],
+        "saveWrites": 0,
+        "bytesWritten": 0,
+        "saveBytesBefore": 67095584,
+        "saveBytesDelta": 0,
+        "exportSerializeMs": 643
+      },
+      "loja": {
+        "openMs": [
+          5772,
+          1,
+          1
+        ],
+        "saveWrites": 6,
+        "bytesWritten": 335569555,
+        "saveBytesBefore": 67095584,
+        "saveBytesDelta": 90282,
+        "exportSerializeMs": 623
+      }
+    }
+  }
+}

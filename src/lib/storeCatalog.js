@@ -364,10 +364,17 @@ export async function ensureExpandedShopCatalog() {
     const normalized = normalizeShopItem(item);
     const patch = {};
     const fields = ['price','category','subcategory','rarity','manufacturer','description','durability','release_year','is_available','is_exclusive','collection','icon','country','history','min_career_level','max_ranking','min_reputation','progression_label','shape','balance','weight'];
+    // LOCAL-8E (8D-03): só grava quando o valor SALVO difere do template.
+    // `normalized` aplica o multiplicador de preço do balanceamento (5.27) e
+    // os pisos de raridade, então normalized.price nunca bate com o template
+    // e o mesmo preço era regravado em todo item a cada abertura da Loja.
+    // Exigir as duas divergências mantém exatamente os reparos de antes e
+    // descarta só a gravação do valor que já está no save.
     fields.forEach(field => {
-      if (template[field] !== undefined && normalized[field] !== template[field]) patch[field] = template[field];
+      if (template[field] !== undefined && normalized[field] !== template[field] && item[field] !== template[field]) patch[field] = template[field];
     });
-    if (JSON.stringify(normalized.attribute_bonus || {}) !== JSON.stringify(template.attribute_bonus || {})) patch.attribute_bonus = template.attribute_bonus;
+    if (JSON.stringify(normalized.attribute_bonus || {}) !== JSON.stringify(template.attribute_bonus || {})
+      && JSON.stringify(item.attribute_bonus || {}) !== JSON.stringify(template.attribute_bonus || {})) patch.attribute_bonus = template.attribute_bonus;
     // Fase 1: sponsor_id é preenchido só quando AUSENTE — diferente do resto
     // de `fields` acima (que sempre sincroniza com o template), aqui um
     // valor explícito já salvo (mesmo que divirja do template) nunca é

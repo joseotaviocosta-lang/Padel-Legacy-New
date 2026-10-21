@@ -1,0 +1,51 @@
+{
+  "label": "after-fix",
+  "saves": {
+    "t5-com-dupla": {
+      "matches": 258,
+      "changedByJournal": 0,
+      "playerRecognizedBefore": 23,
+      "playerRecognizedAfter": 23,
+      "openMs": [
+        11,
+        25,
+        6
+      ]
+    },
+    "t1": {
+      "matches": 73,
+      "changedByJournal": 0,
+      "playerRecognizedBefore": 12,
+      "playerRecognizedAfter": 12,
+      "openMs": [
+        4,
+        9,
+        2
+      ]
+    },
+    "t5": {
+      "matches": 258,
+      "changedByJournal": 0,
+      "playerRecognizedBefore": 23,
+      "playerRecognizedAfter": 23,
+      "openMs": [
+        9,
+        21,
+        5
+      ]
+    },
+    "t10": {
+      "matches": 485,
+      "changedByJournal": 0,
+      "playerRecognizedBefore": 23,
+      "playerRecognizedAfter": 23,
+      "openMs": [
+        14,
+        20,
+        7
+      ]
+    }
+  },
+  "passed": 22,
+  "failures": []
+}

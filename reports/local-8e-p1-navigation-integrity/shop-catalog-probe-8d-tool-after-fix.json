@@ -1,0 +1,49 @@
+[
+  {
+    "open": 1,
+    "items": 115,
+    "created": 111,
+    "createdNames": [
+      "Padel Start Control One Club",
+      "Padel Start Control One Sport",
+      "Padel Start Control One Pro",
+      "Padel Start Control One Elite"
+    ],
+    "rewritten": 4,
+    "sample": {
+      "id": "shop-001",
+      "before": {
+        "name": "Raquete Starter Control",
+        "price": 500
+      },
+      "after": {
+        "name": "Raquete Starter Control",
+        "price": 500
+      }
+    }
+  },
+  {
+    "open": 2,
+    "items": 115,
+    "created": 0,
+    "createdNames": [],
+    "rewritten": 0,
+    "sample": null
+  },
+  {
+    "open": 3,
+    "items": 115,
+    "created": 0,
+    "createdNames": [],
+    "rewritten": 0,
+    "sample": null
+  },
+  {
+    "open": 4,
+    "items": 115,
+    "created": 0,
+    "createdNames": [],
+    "rewritten": 0,
+    "sample": null
+  }
+]

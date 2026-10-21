@@ -16,7 +16,7 @@ export {
 export { finalizeTrainingSession, registerRecovery } from './trainingLifecycle';
 export { evaluateSponsorContracts, getSponsorEvaluationStatus } from './sponsorLifecycle';
 export { getOrCreatePlayerFanBase, evaluateMonthlyFanEngagement, getFanEvaluationStatus } from './fanLifecycle';
-export { ensureWorldMarket, evolveWorldMarket, getWorldMarketSnapshot } from './worldMarketLifecycle';
+export { ensureWorldMarket, evolveWorldMarket, getWorldMarketSnapshot, readWorldMarketSnapshot } from './worldMarketLifecycle';
 export { getScoutingLevels, getPlayerScoutingReports, toggleShortlist, scoutAthlete } from './scoutingLifecycle';
 export { getNegotiationPreview, submitPartnerOffer } from './marketNegotiationLifecycle';
 export {
