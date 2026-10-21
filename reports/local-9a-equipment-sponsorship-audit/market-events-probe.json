@@ -1,0 +1,29 @@
+{
+ "generatedBy": "LOCAL-9A market-events-probe",
+ "seedResult": {
+  "alreadySeeded": true,
+  "count": 1
+ },
+ "events": [
+  {
+   "id": "market-event-001",
+   "title": "Semana de lançamento",
+   "start": "2026-01-01",
+   "end": "2026-01-07",
+   "is_active": true,
+   "modifier": 0.9
+  }
+ ],
+ "activeByDate": {
+  "2026-01-01": 1,
+  "2026-01-08": 0,
+  "2026-01-15": 0,
+  "2026-03-01": 0,
+  "2027-06-01": 0
+ },
+ "priceHistory": {
+  "rows": 14,
+  "limitedStock": 10
+ },
+ "processMarketTickCallers": []
+}

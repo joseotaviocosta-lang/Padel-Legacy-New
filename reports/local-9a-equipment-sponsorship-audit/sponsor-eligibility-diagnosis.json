@@ -1,0 +1,105 @@
+{
+ "generatedBy": "LOCAL-9A sponsor-eligibility-diagnosis",
+ "variants": {
+  "fixture_original_do_teste": {
+   "passed": 3,
+   "total": 7,
+   "rows": [
+    {
+     "name": "1. os 9 originais sem is_available são elegíveis",
+     "ok": false,
+     "reason": "recusados: babolat=\"Requer prova de carreira (1 torneios disputados)\"; siux=\"Requer prova de carreira (1 torneios disputados)\"; varlion=\"Requer prova de carreira (1 torneios disputados)\"; nox=\"Requer prova de carreira (1 torneios disputados)\"; wilson=\"Requer prova de carreira (1 torneios disputados)\"; adidas=\"Requer prova de carreira (1 torneios disputados)\"; joma=\"Requer prova de carreira (1 torneios disputados)\"; bullpadel=\"Requer prova de carreira (1 torneios disputados)\"; head=\"Requer prova de carreira (1 torneios disputados)\""
+    },
+    {
+     "name": "2. is_available:false explícito bloqueia",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "3. limiares: barra 1 abaixo e libera no valor exato",
+     "ok": false,
+     "reason": "no limiar recusados: babolat=\"Requer prova de carreira (1 torneios disputados)\"; siux=\"Requer prova de carreira (1 torneios disputados)\"; varlion=\"Requer prova de carreira (1 torneios disputados)\"; nox=\"Requer prova de carreira (1 torneios disputados)\" (+17)"
+    },
+    {
+     "name": "4. idade pela data da carreira",
+     "ok": false,
+     "reason": "Requer prova de carreira (1 torneios disputados)"
+    },
+    {
+     "name": "5. signSponsorContract recusa com o motivo do canSign",
+     "ok": true,
+     "detail": {
+      "reason": "Requer prova de carreira (1 torneios disputados)"
+     }
+    },
+    {
+     "name": "6. signSponsorContract assina um original",
+     "ok": false,
+     "reason": "Requer prova de carreira (1 torneios disputados)"
+    },
+    {
+     "name": "7. tela, modal e harness usam canSign",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  },
+  "fixture_com_tournaments_played_1": {
+   "passed": 7,
+   "total": 7,
+   "rows": [
+    {
+     "name": "1. os 9 originais sem is_available são elegíveis",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "2. is_available:false explícito bloqueia",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "3. limiares: barra 1 abaixo e libera no valor exato",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "4. idade pela data da carreira",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "5. signSponsorContract recusa com o motivo do canSign",
+     "ok": true,
+     "detail": {
+      "reason": "Requer 5000 XP"
+     }
+    },
+    {
+     "name": "6. signSponsorContract assina um original",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "7. tela, modal e harness usam canSign",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  }
+ },
+ "preset": "balanced",
+ "proofGate": {
+  "requireProof": true,
+  "proofMinTournaments": 1,
+  "rule": "balance527.hasSponsorProof: tournaments_played >= proofMinTournaments"
+ },
+ "careerProfileTournamentsPlayed": null,
+ "uiVsEngine": {
+  "panelUsesMonthlyMarket": true,
+  "panelUsesCanSign": true,
+  "signUsesCanSign": true,
+  "renewContractChecksCanSign": false,
+  "renewContractKeepsSponsorCategory": false
+ }
+}

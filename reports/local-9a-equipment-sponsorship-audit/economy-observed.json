@@ -1,0 +1,668 @@
+{
+ "generatedBy": "LOCAL-9A economy-observed",
+ "runs": [
+  {
+   "id": "527j-normal-003",
+   "file": "reports/rebalance-527j/seed3-527h-config/normal-003.json",
+   "note": "preset 5.27 (moedas iniciais 900) — economia atual",
+   "days": 730,
+   "startDate": "2026-01-01",
+   "finalCoins": 1722,
+   "years": {
+    "ano 1": {
+     "months": 12,
+     "income": {
+      "prize": 9788,
+      "match_reward": 1730,
+      "sponsor_monthly": 13740,
+      "sponsor_signing": 3158,
+      "missions": 0,
+      "achievements": 18000,
+      "investment_income": 0,
+      "passive_income": 0,
+      "other_income": 0
+     },
+     "expense": {
+      "coach": 1701,
+      "staff": 2763,
+      "club_fee": 0,
+      "partner_salary": 1627,
+      "reward_overwrite": 0,
+      "maintenance": 0,
+      "training": 12456,
+      "equipment": 18150,
+      "entry_fee": 790,
+      "coach_signing": 217,
+      "staff_signing": 0,
+      "other_expense": 0
+     },
+     "incomeTotal": 46416,
+     "expenseTotal": 37704,
+     "closing": 9612,
+     "minClosing": 1724,
+     "negativeMonths": 0,
+     "sponsorSharePct": 36,
+     "prizeSharePct": 21,
+     "equipmentSharePct": 48,
+     "net": 8712
+    },
+    "ano 2": {
+     "months": 12,
+     "income": {
+      "prize": 26366,
+      "match_reward": 1030,
+      "sponsor_monthly": 22184,
+      "sponsor_signing": 3395,
+      "missions": 0,
+      "achievements": 18000,
+      "investment_income": 0,
+      "passive_income": 0,
+      "other_income": 0
+     },
+     "expense": {
+      "coach": 5001,
+      "staff": 11441,
+      "club_fee": 0,
+      "partner_salary": 1052,
+      "reward_overwrite": 0,
+      "maintenance": 0,
+      "training": 19073,
+      "equipment": 32073,
+      "entry_fee": 3800,
+      "coach_signing": 5000,
+      "staff_signing": 0,
+      "other_expense": 0
+     },
+     "incomeTotal": 70975,
+     "expenseTotal": 77440,
+     "closing": 3147,
+     "minClosing": 3147,
+     "negativeMonths": 0,
+     "sponsorSharePct": 36,
+     "prizeSharePct": 37,
+     "equipmentSharePct": 41,
+     "net": -6465
+    },
+    "ano 3": {
+     "months": 1,
+     "income": {
+      "prize": 0,
+      "match_reward": 0,
+      "sponsor_monthly": 2119,
+      "sponsor_signing": 0,
+      "missions": 0,
+      "achievements": 0,
+      "investment_income": 0,
+      "passive_income": 0,
+      "other_income": 0
+     },
+     "expense": {
+      "coach": 2328,
+      "staff": 1116,
+      "club_fee": 0,
+      "partner_salary": 100,
+      "reward_overwrite": 0,
+      "maintenance": 0,
+      "training": 0,
+      "equipment": 0,
+      "entry_fee": 0,
+      "coach_signing": 0,
+      "staff_signing": 0,
+      "other_expense": 0
+     },
+     "incomeTotal": 2119,
+     "expenseTotal": 3544,
+     "closing": 1722,
+     "minClosing": 1722,
+     "negativeMonths": 0,
+     "sponsorSharePct": 100,
+     "prizeSharePct": 0,
+     "equipmentSharePct": 0,
+     "net": -1425
+    }
+   },
+   "snapshots": [
+    {
+     "day": 0,
+     "date": "2026-01-01",
+     "ovr": 22,
+     "rank": 1002,
+     "coins": 900,
+     "sponsors": 1,
+     "sponsorMonthly": 0,
+     "coachSalary": 0,
+     "staffMonthly": 0,
+     "gearOwned": 1,
+     "gearEquipped": 0,
+     "shopUnlockedRarity": "comum",
+     "careerLevel": 1,
+     "reputation": 0
+    },
+    {
+     "day": 182,
+     "date": "2026-07-02",
+     "ovr": 45,
+     "rank": 548,
+     "coins": 16401,
+     "sponsors": 4,
+     "sponsorMonthly": 1693,
+     "coachSalary": 250,
+     "staffMonthly": 0,
+     "gearOwned": 9,
+     "gearEquipped": 8,
+     "shopUnlockedRarity": "incomum",
+     "careerLevel": 16,
+     "reputation": 100
+    },
+    {
+     "day": 364,
+     "date": "2026-12-31",
+     "ovr": 57,
+     "rank": 221,
+     "coins": 9702,
+     "sponsors": 4,
+     "sponsorMonthly": 1530,
+     "coachSalary": 250,
+     "staffMonthly": 950,
+     "gearOwned": 18,
+     "gearEquipped": 9,
+     "shopUnlockedRarity": "raro",
+     "careerLevel": 22,
+     "reputation": 100
+    },
+    {
+     "day": 546,
+     "date": "2027-07-01",
+     "ovr": 64,
+     "rank": 207,
+     "coins": 17965,
+     "sponsors": 4,
+     "sponsorMonthly": 2423,
+     "coachSalary": 250,
+     "staffMonthly": 950,
+     "gearOwned": 18,
+     "gearEquipped": 9,
+     "shopUnlockedRarity": "raro",
+     "careerLevel": 26,
+     "reputation": 100
+    },
+    {
+     "day": 730,
+     "date": "2028-01-01",
+     "ovr": 67,
+     "rank": 111,
+     "coins": 1722,
+     "sponsors": 3,
+     "sponsorMonthly": 2119,
+     "coachSalary": 2400,
+     "staffMonthly": 1150,
+     "gearOwned": 24,
+     "gearEquipped": 9,
+     "shopUnlockedRarity": "epico",
+     "careerLevel": 31,
+     "reputation": 100
+    }
+   ],
+   "purchases": {
+    "count": 23,
+    "spent": 50223,
+    "byRarity": {
+     "comum": {
+      "n": 7,
+      "spent": 1838,
+      "firstDay": 0
+     },
+     "incomum": {
+      "n": 1,
+      "spent": 981,
+      "firstDay": 63
+     },
+     "raro": {
+      "n": 9,
+      "spent": 15331,
+      "firstDay": 203
+     },
+     "epico": {
+      "n": 6,
+      "spent": 32073,
+      "firstDay": 560
+     }
+    },
+    "maxShareOfCash": 0.292
+   },
+   "sponsors": {
+    "signed": 13,
+    "byTier": {
+     "Bronze": 12,
+     "Prata": 1
+    },
+    "firstDay": 35,
+    "firstPrataDay": 490,
+    "firstOuroDay": null
+   },
+   "investments": 0,
+   "coaches": 2,
+   "staff": 2
+  },
+  {
+   "id": "526c-normal-008",
+   "file": "reports/progression-clean-526c/repro-resign/normal-008.json",
+   "note": "anterior à 5.27 (moedas iniciais 100, patrocínio sem redutor) — referência histórica",
+   "days": 862,
+   "startDate": "2026-01-01",
+   "finalCoins": 123012,
+   "years": {
+    "ano 1": {
+     "months": 12,
+     "income": {
+      "prize": 1706,
+      "match_reward": 1010,
+      "sponsor_monthly": 66268,
+      "sponsor_signing": 13490,
+      "missions": 0,
+      "achievements": 8800,
+      "investment_income": 0,
+      "passive_income": 0,
+      "other_income": 0
+     },
+     "expense": {
+      "coach": 17461,
+      "staff": 14743,
+      "club_fee": 0,
+      "partner_salary": 800,
+      "reward_overwrite": 0,
+      "maintenance": 0,
+      "training": 20222,
+      "equipment": 15069,
+      "entry_fee": 480,
+      "coach_signing": 5217,
+      "staff_signing": 0,
+      "other_expense": 0
+     },
+     "incomeTotal": 91274,
+     "expenseTotal": 73992,
+     "closing": 17382,
+     "minClosing": 9256,
+     "negativeMonths": 0,
+     "sponsorSharePct": 87,
+     "prizeSharePct": 2,
+     "equipmentSharePct": 20,
+     "net": 17282
+    },
+    "ano 2": {
+     "months": 12,
+     "income": {
+      "prize": 43974,
+      "match_reward": 3210,
+      "sponsor_monthly": 102562,
+      "sponsor_signing": 19457,
+      "missions": 0,
+      "achievements": 86200,
+      "investment_income": 0,
+      "passive_income": 0,
+      "other_income": 0
+     },
+     "expense": {
+      "coach": 29100,
+      "staff": 31518,
+      "club_fee": 0,
+      "partner_salary": 0,
+      "reward_overwrite": 0,
+      "maintenance": 0,
+      "training": 34612,
+      "equipment": 123179,
+      "entry_fee": 5275,
+      "coach_signing": 0,
+      "staff_signing": 0,
+      "other_expense": 0
+     },
+     "incomeTotal": 255403,
+     "expenseTotal": 223684,
+     "closing": 49101,
+     "minClosing": 11038,
+     "negativeMonths": 0,
+     "sponsorSharePct": 48,
+     "prizeSharePct": 17,
+     "equipmentSharePct": 55,
+     "net": 31719
+    },
+    "ano 3": {
+     "months": 5,
+     "income": {
+      "prize": 42282,
+      "match_reward": 1360,
+      "sponsor_monthly": 127670,
+      "sponsor_signing": 32797,
+      "missions": 0,
+      "achievements": 132500,
+      "investment_income": 0,
+      "passive_income": 0,
+      "other_income": 0
+     },
+     "expense": {
+      "coach": 12125,
+      "staff": 23361,
+      "club_fee": 0,
+      "partner_salary": 1386,
+      "reward_overwrite": 0,
+      "maintenance": 0,
+      "training": 15300,
+      "equipment": 207856,
+      "entry_fee": 2670,
+      "coach_signing": 0,
+      "staff_signing": 0,
+      "other_expense": 0
+     },
+     "incomeTotal": 336609,
+     "expenseTotal": 262698,
+     "closing": 123012,
+     "minClosing": 51830,
+     "negativeMonths": 0,
+     "sponsorSharePct": 48,
+     "prizeSharePct": 13,
+     "equipmentSharePct": 79,
+     "net": 73911
+    }
+   },
+   "snapshots": [
+    {
+     "day": 0,
+     "date": "2026-01-01",
+     "ovr": 12,
+     "rank": 1001,
+     "coins": 100,
+     "sponsors": 1,
+     "sponsorMonthly": 0,
+     "coachSalary": 0,
+     "staffMonthly": 0,
+     "gearOwned": 1,
+     "gearEquipped": 0,
+     "shopUnlockedRarity": "comum",
+     "careerLevel": 1,
+     "reputation": 0
+    },
+    {
+     "day": 182,
+     "date": "2026-07-02",
+     "ovr": 52,
+     "rank": 649,
+     "coins": 27622,
+     "sponsors": 4,
+     "sponsorMonthly": 7164,
+     "coachSalary": 2500,
+     "staffMonthly": 1900,
+     "gearOwned": 9,
+     "gearEquipped": 8,
+     "shopUnlockedRarity": "incomum",
+     "careerLevel": 16,
+     "reputation": 100
+    },
+    {
+     "day": 364,
+     "date": "2026-12-31",
+     "ovr": 74,
+     "rank": 317,
+     "coins": 17472,
+     "sponsors": 4,
+     "sponsorMonthly": 6597,
+     "coachSalary": 2500,
+     "staffMonthly": 1900,
+     "gearOwned": 18,
+     "gearEquipped": 9,
+     "shopUnlockedRarity": "raro",
+     "careerLevel": 22,
+     "reputation": 100
+    },
+    {
+     "day": 546,
+     "date": "2027-07-01",
+     "ovr": 81,
+     "rank": 16,
+     "coins": 26142,
+     "sponsors": 4,
+     "sponsorMonthly": 11942,
+     "coachSalary": 2500,
+     "staffMonthly": 3200,
+     "gearOwned": 28,
+     "gearEquipped": 9,
+     "shopUnlockedRarity": "lendario",
+     "careerLevel": 33,
+     "reputation": 100
+    },
+    {
+     "day": 728,
+     "date": "2027-12-30",
+     "ovr": 84,
+     "rank": 5,
+     "coins": 32210,
+     "sponsors": 4,
+     "sponsorMonthly": 12277,
+     "coachSalary": 2500,
+     "staffMonthly": 4400,
+     "gearOwned": 34,
+     "gearEquipped": 9,
+     "shopUnlockedRarity": "mitico",
+     "careerLevel": 43,
+     "reputation": 100
+    }
+   ],
+   "purchases": {
+    "count": 42,
+    "spent": 346104,
+    "byRarity": {
+     "comum": {
+      "n": 7,
+      "spent": 1533,
+      "firstDay": 0
+     },
+     "incomum": {
+      "n": 1,
+      "spent": 806,
+      "firstDay": 49
+     },
+     "raro": {
+      "n": 9,
+      "spent": 12730,
+      "firstDay": 252
+     },
+     "epico": {
+      "n": 13,
+      "spent": 78222,
+      "firstDay": 427
+     },
+     "lendario": {
+      "n": 10,
+      "spent": 195115,
+      "firstDay": 609
+     },
+     "mitico": {
+      "n": 2,
+      "spent": 57698,
+      "firstDay": 798
+     }
+    },
+    "maxShareOfCash": 0.298
+   },
+   "sponsors": {
+    "signed": 19,
+    "byTier": {
+     "Bronze": 15,
+     "Prata": 3,
+     "Ouro": 1
+    },
+    "firstDay": 0,
+    "firstPrataDay": 518,
+    "firstOuroDay": 777
+   },
+   "investments": 0,
+   "coaches": 2,
+   "staff": 11
+  },
+  {
+   "id": "526b-normal-001",
+   "file": "reports/progression-integrity-526b/freeze-after/normal-001.json",
+   "note": "anterior à 5.27 — referência histórica",
+   "days": 400,
+   "startDate": "2026-01-01",
+   "finalCoins": 41725,
+   "years": {
+    "ano 1": {
+     "months": 12,
+     "income": {
+      "prize": 1183,
+      "match_reward": 720,
+      "sponsor_monthly": 48423,
+      "sponsor_signing": 12738,
+      "missions": 0,
+      "achievements": 7700,
+      "investment_income": 0,
+      "passive_income": 0,
+      "other_income": 0
+     },
+     "expense": {
+      "coach": 1619,
+      "staff": 9604,
+      "partner_salary": 800,
+      "reward_overwrite": 0,
+      "maintenance": 0,
+      "training": 17052,
+      "equipment": 2344,
+      "entry_fee": 480,
+      "coach_signing": 217,
+      "staff_signing": 0,
+      "other_expense": 0
+     },
+     "incomeTotal": 70764,
+     "expenseTotal": 32116,
+     "closing": 38748,
+     "minClosing": 5947,
+     "negativeMonths": 0,
+     "sponsorSharePct": 86,
+     "prizeSharePct": 2,
+     "equipmentSharePct": 7,
+     "net": 38648
+    },
+    "ano 2": {
+     "months": 2,
+     "income": {
+      "prize": 0,
+      "match_reward": 30,
+      "sponsor_monthly": 8509,
+      "sponsor_signing": 2195,
+      "missions": 0,
+      "achievements": 4600,
+      "investment_income": 0,
+      "passive_income": 0,
+      "other_income": 0
+     },
+     "expense": {
+      "coach": 294,
+      "staff": 2716,
+      "partner_salary": 0,
+      "reward_overwrite": 0,
+      "maintenance": 0,
+      "training": 2820,
+      "equipment": 6337,
+      "entry_fee": 190,
+      "coach_signing": 0,
+      "staff_signing": 0,
+      "other_expense": 0
+     },
+     "incomeTotal": 15334,
+     "expenseTotal": 12357,
+     "closing": 41725,
+     "minClosing": 34862,
+     "negativeMonths": 0,
+     "sponsorSharePct": 70,
+     "prizeSharePct": 0,
+     "equipmentSharePct": 51,
+     "net": 2977
+    }
+   },
+   "snapshots": [
+    {
+     "day": 0,
+     "date": "2026-01-01",
+     "ovr": 12,
+     "rank": 1002,
+     "coins": 100,
+     "sponsors": 1,
+     "sponsorMonthly": 0,
+     "coachSalary": 0,
+     "staffMonthly": 0,
+     "gearOwned": 1,
+     "gearEquipped": 0,
+     "shopUnlockedRarity": "comum",
+     "careerLevel": 1,
+     "reputation": 0
+    },
+    {
+     "day": 182,
+     "date": "2026-07-02",
+     "ovr": 42,
+     "rank": 823,
+     "coins": 25578,
+     "sponsors": 3,
+     "sponsorMonthly": 5382,
+     "coachSalary": 250,
+     "staffMonthly": 1400,
+     "gearOwned": 9,
+     "gearEquipped": 8,
+     "shopUnlockedRarity": "incomum",
+     "careerLevel": 15,
+     "reputation": 100
+    },
+    {
+     "day": 364,
+     "date": "2026-12-31",
+     "ovr": 57,
+     "rank": 667,
+     "coins": 38808,
+     "sponsors": 3,
+     "sponsorMonthly": 5162,
+     "coachSalary": 250,
+     "staffMonthly": 1400,
+     "gearOwned": 9,
+     "gearEquipped": 8,
+     "shopUnlockedRarity": "incomum",
+     "careerLevel": 21,
+     "reputation": 100
+    }
+   ],
+   "purchases": {
+    "count": 13,
+    "spent": 8681,
+    "byRarity": {
+     "comum": {
+      "n": 7,
+      "spent": 1533,
+      "firstDay": 0
+     },
+     "incomum": {
+      "n": 1,
+      "spent": 811,
+      "firstDay": 49
+     },
+     "raro": {
+      "n": 5,
+      "spent": 6337,
+      "firstDay": 371
+     }
+    },
+    "maxShareOfCash": 0.128
+   },
+   "sponsors": {
+    "signed": 7,
+    "byTier": {
+     "Bronze": 7
+    },
+    "firstDay": 0,
+    "firstPrataDay": null,
+    "firstOuroDay": null
+   },
+   "investments": 0,
+   "coaches": 1,
+   "staff": 2
+  }
+ ]
+}

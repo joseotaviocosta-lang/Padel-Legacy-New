@@ -1,0 +1,1861 @@
+{
+ "generatedBy": "LOCAL-9A equipment-impact",
+ "matchesPerScenario": 400,
+ "fixtures": {
+  "medio_60": {
+   "level": 60,
+   "rows": {
+    "A_sem_equipamento": {
+     "items": 0,
+     "declaredBonusTotal": 0,
+     "expectedStored": {
+      "serve": 60,
+      "forehand": 60,
+      "backhand": 60,
+      "volley": 60,
+      "bandeja": 60,
+      "smash": 60,
+      "defense": 60,
+      "agility": 60,
+      "strategy": 60,
+      "emotional_control": 60
+     },
+     "stored": {
+      "serve": 60,
+      "forehand": 60,
+      "backhand": 60,
+      "volley": 60,
+      "bandeja": 60,
+      "smash": 60,
+      "defense": 60,
+      "agility": 60,
+      "strategy": 60,
+      "emotional_control": 60
+     },
+     "storedOvr": 60,
+     "engine": {
+      "overall": 60,
+      "attributes": {
+       "serve": 60,
+       "forehand": 60,
+       "backhand": 60,
+       "volley": 60,
+       "bandeja": 60,
+       "smash": 60,
+       "defense": 60,
+       "agility": 60,
+       "strategy": 60,
+       "emotional": 60
+      }
+     },
+     "wins": 215,
+     "winRate": 0.5375,
+     "pointShare": 0.5046,
+     "pairedVsA": {
+      "onlyEquipWins": 0,
+      "onlyBaseWins": 0,
+      "winRateDiff": 0,
+      "ci95": [
+       0,
+       0
+      ]
+     }
+    },
+    "B_basicos": {
+     "items": 7,
+     "declaredBonusTotal": 8,
+     "expectedStored": {
+      "serve": 61,
+      "forehand": 62,
+      "backhand": 61,
+      "volley": 60,
+      "bandeja": 60,
+      "smash": 60,
+      "defense": 60,
+      "agility": 62,
+      "strategy": 61,
+      "emotional_control": 61
+     },
+     "stored": {
+      "serve": 61,
+      "forehand": 62,
+      "backhand": 61,
+      "volley": 60,
+      "bandeja": 60,
+      "smash": 60,
+      "defense": 60,
+      "agility": 62,
+      "strategy": 61,
+      "emotional_control": 61
+     },
+     "storedOvr": 61,
+     "engine": {
+      "overall": 61,
+      "attributes": {
+       "serve": 61,
+       "forehand": 62,
+       "backhand": 61,
+       "volley": 60,
+       "bandeja": 60,
+       "smash": 60,
+       "defense": 60,
+       "agility": 62,
+       "strategy": 61,
+       "emotional": 61
+      }
+     },
+     "wins": 224,
+     "winRate": 0.56,
+     "pointShare": 0.5067,
+     "pairedVsA": {
+      "onlyEquipWins": 35,
+      "onlyBaseWins": 26,
+      "winRateDiff": 0.0225,
+      "ci95": [
+       -0.0157,
+       0.0607
+      ]
+     }
+    },
+    "C_intermediarios": {
+     "items": 9,
+     "declaredBonusTotal": 45,
+     "expectedStored": {
+      "serve": 60,
+      "forehand": 66,
+      "backhand": 63,
+      "volley": 63,
+      "bandeja": 60,
+      "smash": 60,
+      "defense": 63,
+      "agility": 69,
+      "strategy": 69,
+      "emotional_control": 72
+     },
+     "stored": {
+      "serve": 60,
+      "forehand": 66,
+      "backhand": 63,
+      "volley": 63,
+      "bandeja": 60,
+      "smash": 60,
+      "defense": 63,
+      "agility": 69,
+      "strategy": 69,
+      "emotional_control": 72
+     },
+     "storedOvr": 65,
+     "engine": {
+      "overall": 65,
+      "attributes": {
+       "serve": 60,
+       "forehand": 66,
+       "backhand": 63,
+       "volley": 63,
+       "bandeja": 60,
+       "smash": 60,
+       "defense": 63,
+       "agility": 69,
+       "strategy": 69,
+       "emotional": 72
+      }
+     },
+     "wins": 245,
+     "winRate": 0.6125,
+     "pointShare": 0.5155,
+     "pairedVsA": {
+      "onlyEquipWins": 92,
+      "onlyBaseWins": 62,
+      "winRateDiff": 0.075,
+      "ci95": [
+       0.0146,
+       0.1354
+      ]
+     }
+    },
+    "D_melhores_catalogo": {
+     "items": 9,
+     "declaredBonusTotal": 88,
+     "expectedStored": {
+      "serve": 60,
+      "forehand": 60,
+      "backhand": 60,
+      "volley": 65,
+      "bandeja": 66,
+      "smash": 71,
+      "defense": 65,
+      "agility": 79,
+      "strategy": 81,
+      "emotional_control": 81
+     },
+     "stored": {
+      "serve": 60,
+      "forehand": 60,
+      "backhand": 60,
+      "volley": 65,
+      "bandeja": 66,
+      "smash": 71,
+      "defense": 65,
+      "agility": 79,
+      "strategy": 81,
+      "emotional_control": 81
+     },
+     "storedOvr": 69,
+     "engine": {
+      "overall": 69,
+      "attributes": {
+       "serve": 60,
+       "forehand": 60,
+       "backhand": 60,
+       "volley": 65,
+       "bandeja": 66,
+       "smash": 71,
+       "defense": 65,
+       "agility": 79,
+       "strategy": 81,
+       "emotional": 81
+      }
+     },
+     "wins": 276,
+     "winRate": 0.69,
+     "pointShare": 0.5232,
+     "pairedVsA": {
+      "onlyEquipWins": 124,
+      "onlyBaseWins": 63,
+      "winRateDiff": 0.1525,
+      "ci95": [
+       0.0872,
+       0.2178
+      ]
+     }
+    },
+    "D2_melhores_com_reliquias": {
+     "items": 9,
+     "declaredBonusTotal": 155,
+     "expectedStored": {
+      "serve": 60,
+      "forehand": 78,
+      "backhand": 60,
+      "volley": 65,
+      "bandeja": 60,
+      "smash": 92,
+      "defense": 65,
+      "agility": 75,
+      "strategy": 92,
+      "emotional_control": 100
+     },
+     "stored": {
+      "serve": 60,
+      "forehand": 78,
+      "backhand": 60,
+      "volley": 65,
+      "bandeja": 60,
+      "smash": 92,
+      "defense": 65,
+      "agility": 75,
+      "strategy": 92,
+      "emotional_control": 100
+     },
+     "storedOvr": 75,
+     "engine": {
+      "overall": 75,
+      "attributes": {
+       "serve": 60,
+       "forehand": 78,
+       "backhand": 60,
+       "volley": 65,
+       "bandeja": 60,
+       "smash": 92,
+       "defense": 65,
+       "agility": 75,
+       "strategy": 92,
+       "emotional": 100
+      }
+     },
+     "wins": 338,
+     "winRate": 0.845,
+     "pointShare": 0.5475,
+     "pairedVsA": {
+      "onlyEquipWins": 158,
+      "onlyBaseWins": 35,
+      "winRateDiff": 0.3075,
+      "ci95": [
+       0.2465,
+       0.3685
+      ]
+     }
+    }
+   }
+  },
+  "elite_85": {
+   "level": 85,
+   "rows": {
+    "A_sem_equipamento": {
+     "items": 0,
+     "declaredBonusTotal": 0,
+     "expectedStored": {
+      "serve": 85,
+      "forehand": 85,
+      "backhand": 85,
+      "volley": 85,
+      "bandeja": 85,
+      "smash": 85,
+      "defense": 85,
+      "agility": 85,
+      "strategy": 85,
+      "emotional_control": 85
+     },
+     "stored": {
+      "serve": 85,
+      "forehand": 85,
+      "backhand": 85,
+      "volley": 85,
+      "bandeja": 85,
+      "smash": 85,
+      "defense": 85,
+      "agility": 85,
+      "strategy": 85,
+      "emotional_control": 85
+     },
+     "storedOvr": 85,
+     "engine": {
+      "overall": 85,
+      "attributes": {
+       "serve": 85,
+       "forehand": 85,
+       "backhand": 85,
+       "volley": 85,
+       "bandeja": 85,
+       "smash": 85,
+       "defense": 85,
+       "agility": 85,
+       "strategy": 85,
+       "emotional": 85
+      }
+     },
+     "wins": 197,
+     "winRate": 0.4925,
+     "pointShare": 0.5019,
+     "pairedVsA": {
+      "onlyEquipWins": 0,
+      "onlyBaseWins": 0,
+      "winRateDiff": 0,
+      "ci95": [
+       0,
+       0
+      ]
+     }
+    },
+    "B_basicos": {
+     "items": 7,
+     "declaredBonusTotal": 8,
+     "expectedStored": {
+      "serve": 86,
+      "forehand": 87,
+      "backhand": 86,
+      "volley": 85,
+      "bandeja": 85,
+      "smash": 85,
+      "defense": 85,
+      "agility": 87,
+      "strategy": 86,
+      "emotional_control": 86
+     },
+     "stored": {
+      "serve": 86,
+      "forehand": 87,
+      "backhand": 86,
+      "volley": 85,
+      "bandeja": 85,
+      "smash": 85,
+      "defense": 85,
+      "agility": 87,
+      "strategy": 86,
+      "emotional_control": 86
+     },
+     "storedOvr": 86,
+     "engine": {
+      "overall": 86,
+      "attributes": {
+       "serve": 86,
+       "forehand": 87,
+       "backhand": 86,
+       "volley": 85,
+       "bandeja": 85,
+       "smash": 85,
+       "defense": 85,
+       "agility": 87,
+       "strategy": 86,
+       "emotional": 86
+      }
+     },
+     "wins": 205,
+     "winRate": 0.5125,
+     "pointShare": 0.5056,
+     "pairedVsA": {
+      "onlyEquipWins": 46,
+      "onlyBaseWins": 38,
+      "winRateDiff": 0.02,
+      "ci95": [
+       -0.0249,
+       0.0649
+      ]
+     }
+    },
+    "C_intermediarios": {
+     "items": 9,
+     "declaredBonusTotal": 45,
+     "expectedStored": {
+      "serve": 85,
+      "forehand": 91,
+      "backhand": 88,
+      "volley": 88,
+      "bandeja": 85,
+      "smash": 85,
+      "defense": 88,
+      "agility": 94,
+      "strategy": 94,
+      "emotional_control": 97
+     },
+     "stored": {
+      "serve": 85,
+      "forehand": 91,
+      "backhand": 88,
+      "volley": 88,
+      "bandeja": 85,
+      "smash": 85,
+      "defense": 88,
+      "agility": 94,
+      "strategy": 94,
+      "emotional_control": 97
+     },
+     "storedOvr": 90,
+     "engine": {
+      "overall": 90,
+      "attributes": {
+       "serve": 85,
+       "forehand": 91,
+       "backhand": 88,
+       "volley": 88,
+       "bandeja": 85,
+       "smash": 85,
+       "defense": 88,
+       "agility": 94,
+       "strategy": 94,
+       "emotional": 97
+      }
+     },
+     "wins": 239,
+     "winRate": 0.5975,
+     "pointShare": 0.5157,
+     "pairedVsA": {
+      "onlyEquipWins": 103,
+      "onlyBaseWins": 61,
+      "winRateDiff": 0.105,
+      "ci95": [
+       0.0431,
+       0.1669
+      ]
+     }
+    },
+    "D_melhores_catalogo": {
+     "items": 9,
+     "declaredBonusTotal": 88,
+     "expectedStored": {
+      "serve": 85,
+      "forehand": 85,
+      "backhand": 85,
+      "volley": 90,
+      "bandeja": 91,
+      "smash": 96,
+      "defense": 90,
+      "agility": 100,
+      "strategy": 100,
+      "emotional_control": 100
+     },
+     "stored": {
+      "serve": 85,
+      "forehand": 85,
+      "backhand": 85,
+      "volley": 90,
+      "bandeja": 91,
+      "smash": 96,
+      "defense": 90,
+      "agility": 100,
+      "strategy": 100,
+      "emotional_control": 100
+     },
+     "storedOvr": 92,
+     "engine": {
+      "overall": 92,
+      "attributes": {
+       "serve": 85,
+       "forehand": 85,
+       "backhand": 85,
+       "volley": 90,
+       "bandeja": 91,
+       "smash": 96,
+       "defense": 90,
+       "agility": 100,
+       "strategy": 100,
+       "emotional": 100
+      }
+     },
+     "wins": 280,
+     "winRate": 0.7,
+     "pointShare": 0.5248,
+     "pairedVsA": {
+      "onlyEquipWins": 129,
+      "onlyBaseWins": 46,
+      "winRateDiff": 0.2075,
+      "ci95": [
+       0.146,
+       0.269
+      ]
+     }
+    },
+    "D2_melhores_com_reliquias": {
+     "items": 9,
+     "declaredBonusTotal": 155,
+     "expectedStored": {
+      "serve": 85,
+      "forehand": 100,
+      "backhand": 85,
+      "volley": 90,
+      "bandeja": 85,
+      "smash": 100,
+      "defense": 90,
+      "agility": 100,
+      "strategy": 100,
+      "emotional_control": 100
+     },
+     "stored": {
+      "serve": 85,
+      "forehand": 100,
+      "backhand": 85,
+      "volley": 90,
+      "bandeja": 85,
+      "smash": 100,
+      "defense": 90,
+      "agility": 100,
+      "strategy": 100,
+      "emotional_control": 100
+     },
+     "storedOvr": 94,
+     "engine": {
+      "overall": 94,
+      "attributes": {
+       "serve": 85,
+       "forehand": 100,
+       "backhand": 85,
+       "volley": 90,
+       "bandeja": 85,
+       "smash": 100,
+       "defense": 90,
+       "agility": 100,
+       "strategy": 100,
+       "emotional": 100
+      }
+     },
+     "wins": 316,
+     "winRate": 0.79,
+     "pointShare": 0.539,
+     "pairedVsA": {
+      "onlyEquipWins": 159,
+      "onlyBaseWins": 40,
+      "winRateDiff": 0.2975,
+      "ci95": [
+       0.2348,
+       0.3602
+      ]
+     }
+    }
+   }
+  }
+ },
+ "checks": [
+  {
+   "name": "medio_60/A_sem_equipamento: atributo gravado = base + bônus (teto 100)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "medio_60/A_sem_equipamento: motor recebe o atributo gravado (normalizePlayer)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "medio_60/B_basicos: atributo gravado = base + bônus (teto 100)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "medio_60/B_basicos: motor recebe o atributo gravado (normalizePlayer)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "medio_60/C_intermediarios: atributo gravado = base + bônus (teto 100)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "medio_60/C_intermediarios: motor recebe o atributo gravado (normalizePlayer)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "medio_60/D_melhores_catalogo: atributo gravado = base + bônus (teto 100)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "medio_60/D_melhores_catalogo: motor recebe o atributo gravado (normalizePlayer)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "medio_60/D2_melhores_com_reliquias: atributo gravado = base + bônus (teto 100)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "medio_60/D2_melhores_com_reliquias: motor recebe o atributo gravado (normalizePlayer)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "elite_85/A_sem_equipamento: atributo gravado = base + bônus (teto 100)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "elite_85/A_sem_equipamento: motor recebe o atributo gravado (normalizePlayer)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "elite_85/B_basicos: atributo gravado = base + bônus (teto 100)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "elite_85/B_basicos: motor recebe o atributo gravado (normalizePlayer)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "elite_85/C_intermediarios: atributo gravado = base + bônus (teto 100)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "elite_85/C_intermediarios: motor recebe o atributo gravado (normalizePlayer)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "elite_85/D_melhores_catalogo: atributo gravado = base + bônus (teto 100)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "elite_85/D_melhores_catalogo: motor recebe o atributo gravado (normalizePlayer)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "elite_85/D2_melhores_com_reliquias: atributo gravado = base + bônus (teto 100)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "elite_85/D2_melhores_com_reliquias: motor recebe o atributo gravado (normalizePlayer)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "troca de raquete (épica → melhor) remove o bônus antigo e aplica só o novo",
+   "ok": true,
+   "detail": {
+    "racketC": "Head Flash Motion Elite",
+    "racketD": "Bullpadel Legacy Crown"
+   }
+  },
+  {
+   "name": "apenas 1 item equipado por categoria após a troca",
+   "ok": true,
+   "detail": {
+    "equipped": 1
+   }
+  },
+  {
+   "name": "item duplicado no inventário não acumula bônus (mesma categoria desequipa a cópia)",
+   "ok": true,
+   "detail": {
+    "copies": 2,
+    "equippedCopies": 1
+   }
+  },
+  {
+   "name": "save → load preserva atributos efetivos, itens equipados e applied_bonus",
+   "ok": true,
+   "detail": {
+    "equipped": 9
+   }
+  },
+  {
+   "name": "após recarregar, desequipar tudo devolve o atributo-base exato",
+   "ok": true,
+   "detail": null
+  }
+ ],
+ "ceiling": {
+  "sessions": 6000,
+  "startOvr": 40,
+  "ceilings": {
+   "serve": 85,
+   "forehand": 85,
+   "backhand": 85,
+   "volley": 85,
+   "bandeja": 85,
+   "smash": 85,
+   "defense": 85,
+   "agility": 85,
+   "strategy": 85,
+   "emotional_control": 85
+  },
+  "ceilingOvr": 85,
+  "fullBonus": {
+   "smash": 11,
+   "bandeja": 6,
+   "volley": 5,
+   "strategy": 21,
+   "agility": 19,
+   "emotional_control": 21,
+   "defense": 5
+  },
+  "fullBonusTotal": 88,
+  "declaredOvrGain": 8.8,
+  "horizons": [
+   {
+    "session": 0,
+    "semEquip": 40,
+    "equipCedoEfetivo": 48.8,
+    "equipCedoBase": 40,
+    "vantagemEfetiva": 8.8,
+    "perdaDeDesenvolvimentoBase": 0
+   },
+   {
+    "session": 250,
+    "semEquip": 47.5,
+    "equipCedoEfetivo": 53.8,
+    "equipCedoBase": 45,
+    "vantagemEfetiva": 6.3,
+    "perdaDeDesenvolvimentoBase": 2.5
+   },
+   {
+    "session": 500,
+    "semEquip": 53.4,
+    "equipCedoEfetivo": 58.1,
+    "equipCedoBase": 49.3,
+    "vantagemEfetiva": 4.7,
+    "perdaDeDesenvolvimentoBase": 4.1
+   },
+   {
+    "session": 750,
+    "semEquip": 57.6,
+    "equipCedoEfetivo": 60.8,
+    "equipCedoBase": 52,
+    "vantagemEfetiva": 3.2,
+    "perdaDeDesenvolvimentoBase": 5.6
+   },
+   {
+    "session": 1000,
+    "semEquip": 60.2,
+    "equipCedoEfetivo": 63,
+    "equipCedoBase": 54.2,
+    "vantagemEfetiva": 2.8,
+    "perdaDeDesenvolvimentoBase": 6
+   },
+   {
+    "session": 1250,
+    "semEquip": 62.3,
+    "equipCedoEfetivo": 64.9,
+    "equipCedoBase": 56.1,
+    "vantagemEfetiva": 2.6,
+    "perdaDeDesenvolvimentoBase": 6.2
+   },
+   {
+    "session": 1500,
+    "semEquip": 64.5,
+    "equipCedoEfetivo": 66.9,
+    "equipCedoBase": 58.1,
+    "vantagemEfetiva": 2.4,
+    "perdaDeDesenvolvimentoBase": 6.4
+   },
+   {
+    "session": 1750,
+    "semEquip": 66.5,
+    "equipCedoEfetivo": 68.7,
+    "equipCedoBase": 59.9,
+    "vantagemEfetiva": 2.2,
+    "perdaDeDesenvolvimentoBase": 6.6
+   },
+   {
+    "session": 2000,
+    "semEquip": 68.5,
+    "equipCedoEfetivo": 70.2,
+    "equipCedoBase": 61.4,
+    "vantagemEfetiva": 1.7,
+    "perdaDeDesenvolvimentoBase": 7.1
+   },
+   {
+    "session": 2250,
+    "semEquip": 70.3,
+    "equipCedoEfetivo": 71.7,
+    "equipCedoBase": 62.9,
+    "vantagemEfetiva": 1.4,
+    "perdaDeDesenvolvimentoBase": 7.4
+   },
+   {
+    "session": 2500,
+    "semEquip": 71.8,
+    "equipCedoEfetivo": 73.1,
+    "equipCedoBase": 64.3,
+    "vantagemEfetiva": 1.3,
+    "perdaDeDesenvolvimentoBase": 7.5
+   },
+   {
+    "session": 2750,
+    "semEquip": 73,
+    "equipCedoEfetivo": 74.3,
+    "equipCedoBase": 65.5,
+    "vantagemEfetiva": 1.3,
+    "perdaDeDesenvolvimentoBase": 7.5
+   },
+   {
+    "session": 3000,
+    "semEquip": 73.9,
+    "equipCedoEfetivo": 75.1,
+    "equipCedoBase": 66.3,
+    "vantagemEfetiva": 1.2,
+    "perdaDeDesenvolvimentoBase": 7.6
+   },
+   {
+    "session": 3250,
+    "semEquip": 74.6,
+    "equipCedoEfetivo": 75.9,
+    "equipCedoBase": 67.1,
+    "vantagemEfetiva": 1.3,
+    "perdaDeDesenvolvimentoBase": 7.5
+   },
+   {
+    "session": 3500,
+    "semEquip": 75.3,
+    "equipCedoEfetivo": 76.5,
+    "equipCedoBase": 67.7,
+    "vantagemEfetiva": 1.2,
+    "perdaDeDesenvolvimentoBase": 7.6
+   },
+   {
+    "session": 3750,
+    "semEquip": 75.8,
+    "equipCedoEfetivo": 77,
+    "equipCedoBase": 68.2,
+    "vantagemEfetiva": 1.2,
+    "perdaDeDesenvolvimentoBase": 7.6
+   },
+   {
+    "session": 4000,
+    "semEquip": 76.1,
+    "equipCedoEfetivo": 77.3,
+    "equipCedoBase": 68.5,
+    "vantagemEfetiva": 1.2,
+    "perdaDeDesenvolvimentoBase": 7.6
+   },
+   {
+    "session": 4250,
+    "semEquip": 76.4,
+    "equipCedoEfetivo": 77.6,
+    "equipCedoBase": 68.8,
+    "vantagemEfetiva": 1.2,
+    "perdaDeDesenvolvimentoBase": 7.6
+   },
+   {
+    "session": 4500,
+    "semEquip": 76.6,
+    "equipCedoEfetivo": 77.9,
+    "equipCedoBase": 69.1,
+    "vantagemEfetiva": 1.3,
+    "perdaDeDesenvolvimentoBase": 7.5
+   },
+   {
+    "session": 4750,
+    "semEquip": 76.9,
+    "equipCedoEfetivo": 78.1,
+    "equipCedoBase": 69.3,
+    "vantagemEfetiva": 1.2,
+    "perdaDeDesenvolvimentoBase": 7.6
+   },
+   {
+    "session": 5000,
+    "semEquip": 77.3,
+    "equipCedoEfetivo": 78.4,
+    "equipCedoBase": 69.6,
+    "vantagemEfetiva": 1.1,
+    "perdaDeDesenvolvimentoBase": 7.7
+   },
+   {
+    "session": 5250,
+    "semEquip": 77.6,
+    "equipCedoEfetivo": 78.6,
+    "equipCedoBase": 69.8,
+    "vantagemEfetiva": 1,
+    "perdaDeDesenvolvimentoBase": 7.8
+   },
+   {
+    "session": 5500,
+    "semEquip": 77.7,
+    "equipCedoEfetivo": 78.7,
+    "equipCedoBase": 69.9,
+    "vantagemEfetiva": 1,
+    "perdaDeDesenvolvimentoBase": 7.8
+   },
+   {
+    "session": 5750,
+    "semEquip": 77.8,
+    "equipCedoEfetivo": 78.9,
+    "equipCedoBase": 70.1,
+    "vantagemEfetiva": 1.1,
+    "perdaDeDesenvolvimentoBase": 7.7
+   },
+   {
+    "session": 6000,
+    "semEquip": 77.9,
+    "equipCedoEfetivo": 78.9,
+    "equipCedoBase": 70.1,
+    "vantagemEfetiva": 1,
+    "perdaDeDesenvolvimentoBase": 7.8
+   }
+  ],
+  "noEquip": {
+   "effective": {
+    "serve": 40,
+    "forehand": 85,
+    "backhand": 84,
+    "volley": 85,
+    "bandeja": 82,
+    "smash": 63,
+    "defense": 85,
+    "agility": 85,
+    "strategy": 85,
+    "emotional_control": 85
+   },
+   "effectiveOvr": 77.9,
+   "base": {
+    "serve": 40,
+    "forehand": 85,
+    "backhand": 84,
+    "volley": 85,
+    "bandeja": 82,
+    "smash": 63,
+    "defense": 85,
+    "agility": 85,
+    "strategy": 85,
+    "emotional_control": 85
+   },
+   "baseOvr": 77.9,
+   "applied": {},
+   "curve": [
+    {
+     "session": 0,
+     "effectiveOvr": 40,
+     "baseOvr": 40,
+     "window": 0.42
+    },
+    {
+     "session": 250,
+     "effectiveOvr": 47.5,
+     "baseOvr": 47.5,
+     "window": 0.35
+    },
+    {
+     "session": 500,
+     "effectiveOvr": 53.4,
+     "baseOvr": 53.4,
+     "window": 0.2949
+    },
+    {
+     "session": 750,
+     "effectiveOvr": 57.6,
+     "baseOvr": 57.6,
+     "window": 0.2557
+    },
+    {
+     "session": 1000,
+     "effectiveOvr": 60.2,
+     "baseOvr": 60.2,
+     "window": 0.2315
+    },
+    {
+     "session": 1250,
+     "effectiveOvr": 62.3,
+     "baseOvr": 62.3,
+     "window": 0.224
+    },
+    {
+     "session": 1500,
+     "effectiveOvr": 64.5,
+     "baseOvr": 64.5,
+     "window": 0.224
+    },
+    {
+     "session": 1750,
+     "effectiveOvr": 66.5,
+     "baseOvr": 66.5,
+     "window": 0.224
+    },
+    {
+     "session": 2000,
+     "effectiveOvr": 68.5,
+     "baseOvr": 68.5,
+     "window": 0.224
+    },
+    {
+     "session": 2250,
+     "effectiveOvr": 70.3,
+     "baseOvr": 70.3,
+     "window": 0.224
+    },
+    {
+     "session": 2500,
+     "effectiveOvr": 71.8,
+     "baseOvr": 71.8,
+     "window": 0.224
+    },
+    {
+     "session": 2750,
+     "effectiveOvr": 73,
+     "baseOvr": 73,
+     "window": 0.224
+    },
+    {
+     "session": 3000,
+     "effectiveOvr": 73.9,
+     "baseOvr": 73.9,
+     "window": 0.224
+    },
+    {
+     "session": 3250,
+     "effectiveOvr": 74.6,
+     "baseOvr": 74.6,
+     "window": 0.224
+    },
+    {
+     "session": 3500,
+     "effectiveOvr": 75.3,
+     "baseOvr": 75.3,
+     "window": 0.224
+    },
+    {
+     "session": 3750,
+     "effectiveOvr": 75.8,
+     "baseOvr": 75.8,
+     "window": 0.224
+    },
+    {
+     "session": 4000,
+     "effectiveOvr": 76.1,
+     "baseOvr": 76.1,
+     "window": 0.224
+    },
+    {
+     "session": 4250,
+     "effectiveOvr": 76.4,
+     "baseOvr": 76.4,
+     "window": 0.224
+    },
+    {
+     "session": 4500,
+     "effectiveOvr": 76.6,
+     "baseOvr": 76.6,
+     "window": 0.224
+    },
+    {
+     "session": 4750,
+     "effectiveOvr": 76.9,
+     "baseOvr": 76.9,
+     "window": 0.224
+    },
+    {
+     "session": 5000,
+     "effectiveOvr": 77.3,
+     "baseOvr": 77.3,
+     "window": 0.224
+    },
+    {
+     "session": 5250,
+     "effectiveOvr": 77.6,
+     "baseOvr": 77.6,
+     "window": 0.224
+    },
+    {
+     "session": 5500,
+     "effectiveOvr": 77.7,
+     "baseOvr": 77.7,
+     "window": 0.224
+    },
+    {
+     "session": 5750,
+     "effectiveOvr": 77.8,
+     "baseOvr": 77.8,
+     "window": 0.224
+    },
+    {
+     "session": 6000,
+     "effectiveOvr": 77.9,
+     "baseOvr": 77.9,
+     "window": 0.224
+    }
+   ]
+  },
+  "equipEarly": {
+   "effective": {
+    "serve": 40,
+    "forehand": 85,
+    "backhand": 84,
+    "volley": 85,
+    "bandeja": 83,
+    "smash": 72,
+    "defense": 85,
+    "agility": 85,
+    "strategy": 85,
+    "emotional_control": 85
+   },
+   "effectiveOvr": 78.9,
+   "base": {
+    "serve": 40,
+    "forehand": 85,
+    "backhand": 84,
+    "volley": 80,
+    "bandeja": 77,
+    "smash": 61,
+    "defense": 80,
+    "agility": 66,
+    "strategy": 64,
+    "emotional_control": 64
+   },
+   "baseOvr": 70.1,
+   "applied": {
+    "smash": 11,
+    "bandeja": 6,
+    "volley": 5,
+    "strategy": 21,
+    "agility": 19,
+    "emotional_control": 21,
+    "defense": 5
+   },
+   "curve": [
+    {
+     "session": 0,
+     "effectiveOvr": 48.8,
+     "baseOvr": 40,
+     "window": 0.3379
+    },
+    {
+     "session": 250,
+     "effectiveOvr": 53.8,
+     "baseOvr": 45,
+     "window": 0.2912
+    },
+    {
+     "session": 500,
+     "effectiveOvr": 58.1,
+     "baseOvr": 49.3,
+     "window": 0.2511
+    },
+    {
+     "session": 750,
+     "effectiveOvr": 60.8,
+     "baseOvr": 52,
+     "window": 0.2259
+    },
+    {
+     "session": 1000,
+     "effectiveOvr": 63,
+     "baseOvr": 54.2,
+     "window": 0.224
+    },
+    {
+     "session": 1250,
+     "effectiveOvr": 64.9,
+     "baseOvr": 56.1,
+     "window": 0.224
+    },
+    {
+     "session": 1500,
+     "effectiveOvr": 66.9,
+     "baseOvr": 58.1,
+     "window": 0.224
+    },
+    {
+     "session": 1750,
+     "effectiveOvr": 68.7,
+     "baseOvr": 59.9,
+     "window": 0.224
+    },
+    {
+     "session": 2000,
+     "effectiveOvr": 70.2,
+     "baseOvr": 61.4,
+     "window": 0.224
+    },
+    {
+     "session": 2250,
+     "effectiveOvr": 71.7,
+     "baseOvr": 62.9,
+     "window": 0.224
+    },
+    {
+     "session": 2500,
+     "effectiveOvr": 73.1,
+     "baseOvr": 64.3,
+     "window": 0.224
+    },
+    {
+     "session": 2750,
+     "effectiveOvr": 74.3,
+     "baseOvr": 65.5,
+     "window": 0.224
+    },
+    {
+     "session": 3000,
+     "effectiveOvr": 75.1,
+     "baseOvr": 66.3,
+     "window": 0.224
+    },
+    {
+     "session": 3250,
+     "effectiveOvr": 75.9,
+     "baseOvr": 67.1,
+     "window": 0.224
+    },
+    {
+     "session": 3500,
+     "effectiveOvr": 76.5,
+     "baseOvr": 67.7,
+     "window": 0.224
+    },
+    {
+     "session": 3750,
+     "effectiveOvr": 77,
+     "baseOvr": 68.2,
+     "window": 0.224
+    },
+    {
+     "session": 4000,
+     "effectiveOvr": 77.3,
+     "baseOvr": 68.5,
+     "window": 0.224
+    },
+    {
+     "session": 4250,
+     "effectiveOvr": 77.6,
+     "baseOvr": 68.8,
+     "window": 0.224
+    },
+    {
+     "session": 4500,
+     "effectiveOvr": 77.9,
+     "baseOvr": 69.1,
+     "window": 0.224
+    },
+    {
+     "session": 4750,
+     "effectiveOvr": 78.1,
+     "baseOvr": 69.3,
+     "window": 0.224
+    },
+    {
+     "session": 5000,
+     "effectiveOvr": 78.4,
+     "baseOvr": 69.6,
+     "window": 0.224
+    },
+    {
+     "session": 5250,
+     "effectiveOvr": 78.6,
+     "baseOvr": 69.8,
+     "window": 0.224
+    },
+    {
+     "session": 5500,
+     "effectiveOvr": 78.7,
+     "baseOvr": 69.9,
+     "window": 0.224
+    },
+    {
+     "session": 5750,
+     "effectiveOvr": 78.9,
+     "baseOvr": 70.1,
+     "window": 0.224
+    },
+    {
+     "session": 6000,
+     "effectiveOvr": 78.9,
+     "baseOvr": 70.1,
+     "window": 0.224
+    }
+   ]
+  },
+  "equipLate": {
+   "effective": {
+    "serve": 40,
+    "forehand": 85,
+    "backhand": 84,
+    "volley": 90,
+    "bandeja": 88,
+    "smash": 74,
+    "defense": 90,
+    "agility": 100,
+    "strategy": 100,
+    "emotional_control": 100
+   },
+   "effectiveOvr": 85.1,
+   "base": {
+    "serve": 40,
+    "forehand": 85,
+    "backhand": 84,
+    "volley": 85,
+    "bandeja": 82,
+    "smash": 63,
+    "defense": 85,
+    "agility": 85,
+    "strategy": 85,
+    "emotional_control": 85
+   },
+   "baseOvr": 77.9,
+   "applied": {
+    "smash": 11,
+    "bandeja": 6,
+    "volley": 5,
+    "strategy": 15,
+    "agility": 15,
+    "emotional_control": 15,
+    "defense": 5
+   },
+   "curve": [
+    {
+     "session": 0,
+     "effectiveOvr": 40,
+     "baseOvr": 40,
+     "window": 0.42
+    },
+    {
+     "session": 250,
+     "effectiveOvr": 47.5,
+     "baseOvr": 47.5,
+     "window": 0.35
+    },
+    {
+     "session": 500,
+     "effectiveOvr": 53.4,
+     "baseOvr": 53.4,
+     "window": 0.2949
+    },
+    {
+     "session": 750,
+     "effectiveOvr": 57.6,
+     "baseOvr": 57.6,
+     "window": 0.2557
+    },
+    {
+     "session": 1000,
+     "effectiveOvr": 60.2,
+     "baseOvr": 60.2,
+     "window": 0.2315
+    },
+    {
+     "session": 1250,
+     "effectiveOvr": 62.3,
+     "baseOvr": 62.3,
+     "window": 0.224
+    },
+    {
+     "session": 1500,
+     "effectiveOvr": 64.5,
+     "baseOvr": 64.5,
+     "window": 0.224
+    },
+    {
+     "session": 1750,
+     "effectiveOvr": 66.5,
+     "baseOvr": 66.5,
+     "window": 0.224
+    },
+    {
+     "session": 2000,
+     "effectiveOvr": 68.5,
+     "baseOvr": 68.5,
+     "window": 0.224
+    },
+    {
+     "session": 2250,
+     "effectiveOvr": 70.3,
+     "baseOvr": 70.3,
+     "window": 0.224
+    },
+    {
+     "session": 2500,
+     "effectiveOvr": 71.8,
+     "baseOvr": 71.8,
+     "window": 0.224
+    },
+    {
+     "session": 2750,
+     "effectiveOvr": 73,
+     "baseOvr": 73,
+     "window": 0.224
+    },
+    {
+     "session": 3000,
+     "effectiveOvr": 73.9,
+     "baseOvr": 73.9,
+     "window": 0.224
+    },
+    {
+     "session": 3250,
+     "effectiveOvr": 74.6,
+     "baseOvr": 74.6,
+     "window": 0.224
+    },
+    {
+     "session": 3500,
+     "effectiveOvr": 75.3,
+     "baseOvr": 75.3,
+     "window": 0.224
+    },
+    {
+     "session": 3750,
+     "effectiveOvr": 75.8,
+     "baseOvr": 75.8,
+     "window": 0.224
+    },
+    {
+     "session": 4000,
+     "effectiveOvr": 76.1,
+     "baseOvr": 76.1,
+     "window": 0.224
+    },
+    {
+     "session": 4250,
+     "effectiveOvr": 76.4,
+     "baseOvr": 76.4,
+     "window": 0.224
+    },
+    {
+     "session": 4500,
+     "effectiveOvr": 76.6,
+     "baseOvr": 76.6,
+     "window": 0.224
+    },
+    {
+     "session": 4750,
+     "effectiveOvr": 76.9,
+     "baseOvr": 76.9,
+     "window": 0.224
+    },
+    {
+     "session": 5000,
+     "effectiveOvr": 77.3,
+     "baseOvr": 77.3,
+     "window": 0.224
+    },
+    {
+     "session": 5250,
+     "effectiveOvr": 77.6,
+     "baseOvr": 77.6,
+     "window": 0.224
+    },
+    {
+     "session": 5500,
+     "effectiveOvr": 77.7,
+     "baseOvr": 77.7,
+     "window": 0.224
+    },
+    {
+     "session": 5750,
+     "effectiveOvr": 77.8,
+     "baseOvr": 77.8,
+     "window": 0.224
+    },
+    {
+     "session": 6000,
+     "effectiveOvr": 85.1,
+     "baseOvr": 77.9,
+     "window": 0.08
+    }
+   ]
+  }
+ },
+ "callChain": [
+  "Shop.jsx buy(): PlayerInventory.create(equipped:false) + PlayerProfile.update(coins - preço) + recordFinancialEntry",
+  "Inventory.jsx toggleEquip(): desequipa a mesma categoria (subtrai applied_bonus), soma attribute_bonus ao ATRIBUTO-BASE do PlayerProfile com piso 0/teto 100, grava applied_bonus no PlayerInventory",
+  "TournamentModal.jsx:1064 playerForMatch = {...profile, _chemistryBonus, _energyPenalty, _coachMatchBonus, _partnerBondBonus} → LiveMatch → createMatch",
+  "practiceMatchSession.js:36 playerForMatch = {...profile, ...} → createMatch",
+  "engine/match/playerModel.js normalizePlayer(): attributes.<k> = raw.<k>; overall = baseOverallRating(raw) (média dos 10) + química/treinador/vínculo",
+  "trainingSystemV2.js applyAttributeGains(): teto aplicado sobre o valor GRAVADO (que já contém o bônus); getDevelopmentWindow usa o mesmo valor",
+  "padel.js buildMatchRewardsPatch(): bônus de vitória limitado pelo mesmo teto (headroom = teto - valor gravado)"
+ ],
+ "loadouts": {
+  "A_sem_equipamento": [],
+  "B_basicos": [
+   {
+    "name": "Head Flash Motion Club",
+    "category": "raquete",
+    "rarity": "comum",
+    "price": 698,
+    "bonus": {
+     "forehand": 1,
+     "backhand": 1
+    }
+   },
+   {
+    "name": "Tour Grip Dry Start",
+    "category": "grip",
+    "rarity": "comum",
+    "price": 66,
+    "bonus": {
+     "forehand": 1
+    }
+   },
+   {
+    "name": "Padel Start Training x3",
+    "category": "bola",
+    "rarity": "comum",
+    "price": 54,
+    "bonus": {
+     "serve": 1
+    }
+   },
+   {
+    "name": "Joma Training Tee",
+    "category": "roupa",
+    "rarity": "comum",
+    "price": 264,
+    "bonus": {
+     "agility": 1
+    }
+   },
+   {
+    "name": "Joma Court Basic",
+    "category": "tenis",
+    "rarity": "comum",
+    "price": 576,
+    "bonus": {
+     "agility": 1
+    }
+   },
+   {
+    "name": "Padel Start Compact",
+    "category": "mochila",
+    "rarity": "comum",
+    "price": 312,
+    "bonus": {
+     "strategy": 1
+    }
+   },
+   {
+    "name": "Joma Wristband Base",
+    "category": "acessorio",
+    "rarity": "comum",
+    "price": 72,
+    "bonus": {
+     "emotional_control": 1
+    }
+   }
+  ],
+  "C_intermediarios": [
+   {
+    "name": "Head Flash Motion Elite",
+    "category": "raquete",
+    "rarity": "epico",
+    "price": 6290,
+    "bonus": {
+     "forehand": 3,
+     "backhand": 3
+    }
+   },
+   {
+    "name": "Babolat Pro Touch Elite",
+    "category": "grip",
+    "rarity": "epico",
+    "price": 10200,
+    "bonus": {
+     "forehand": 3,
+     "volley": 3
+    }
+   },
+   {
+    "name": "Bullpadel Premium Final x3",
+    "category": "bola",
+    "rarity": "epico",
+    "price": 6000,
+    "bonus": {
+     "strategy": 3
+    }
+   },
+   {
+    "name": "Nox Pro Competition Kit",
+    "category": "roupa",
+    "rarity": "epico",
+    "price": 11400,
+    "bonus": {
+     "emotional_control": 3,
+     "agility": 3
+    }
+   },
+   {
+    "name": "Joma Elite Court",
+    "category": "tenis",
+    "rarity": "epico",
+    "price": 10800,
+    "bonus": {
+     "agility": 3,
+     "defense": 3
+    }
+   },
+   {
+    "name": "Head Tour Elite Bag",
+    "category": "mochila",
+    "rarity": "epico",
+    "price": 10560,
+    "bonus": {
+     "emotional_control": 3,
+     "strategy": 3
+    }
+   },
+   {
+    "name": "Garmin Padel Elite",
+    "category": "acessorio_tec",
+    "rarity": "epico",
+    "price": 13200,
+    "bonus": {
+     "strategy": 3,
+     "agility": 3
+    }
+   },
+   {
+    "name": "HydroSport Thermal Pro",
+    "category": "acessorio",
+    "rarity": "epico",
+    "price": 6000,
+    "bonus": {
+     "emotional_control": 3
+    }
+   },
+   {
+    "name": "Réplica Troféu Major",
+    "category": "colecionavel",
+    "rarity": "epico",
+    "price": 6000,
+    "bonus": {
+     "emotional_control": 3
+    }
+   }
+  ],
+  "D_melhores_catalogo": [
+   {
+    "name": "Bullpadel Legacy Crown",
+    "category": "raquete",
+    "rarity": "exclusivo",
+    "price": 78000,
+    "bonus": {
+     "smash": 6,
+     "bandeja": 6
+    }
+   },
+   {
+    "name": "Bullpadel Master Grip Pro",
+    "category": "grip",
+    "rarity": "mitico",
+    "price": 69600,
+    "bonus": {
+     "volley": 5,
+     "strategy": 5
+    }
+   },
+   {
+    "name": "Premier Championship Case",
+    "category": "bola",
+    "rarity": "lendario",
+    "price": 19200,
+    "bonus": {
+     "agility": 4
+    }
+   },
+   {
+    "name": "Bullpadel Champion Series",
+    "category": "roupa",
+    "rarity": "mitico",
+    "price": 72000,
+    "bonus": {
+     "emotional_control": 5,
+     "agility": 5
+    }
+   },
+   {
+    "name": "Adidas Master Series",
+    "category": "tenis",
+    "rarity": "mitico",
+    "price": 66000,
+    "bonus": {
+     "agility": 5,
+     "smash": 5
+    }
+   },
+   {
+    "name": "Bullpadel Master Pro 20",
+    "category": "mochila",
+    "rarity": "mitico",
+    "price": 62400,
+    "bonus": {
+     "strategy": 5,
+     "emotional_control": 5
+    }
+   },
+   {
+    "name": "Movistar Smart Analytics Pro",
+    "category": "acessorio_tec",
+    "rarity": "mitico",
+    "price": 64800,
+    "bonus": {
+     "strategy": 5,
+     "agility": 5
+    }
+   },
+   {
+    "name": "Therabody Recovery Master",
+    "category": "acessorio",
+    "rarity": "mitico",
+    "price": 57600,
+    "bonus": {
+     "emotional_control": 5,
+     "defense": 5
+    }
+   },
+   {
+    "name": "Coroa do Grand Slam",
+    "category": "colecionavel",
+    "rarity": "exclusivo",
+    "price": 78000,
+    "bonus": {
+     "emotional_control": 6,
+     "strategy": 6
+    }
+   }
+  ],
+  "D2_melhores_com_reliquias": [
+   {
+    "name": "Raquete Olímpica Paris 2024",
+    "category": "raquete",
+    "rarity": "exclusivo",
+    "price": 94800,
+    "bonus": {
+     "smash": 12,
+     "forehand": 8,
+     "emotional_control": 15,
+     "strategy": 5
+    }
+   },
+   {
+    "name": "Bullpadel Master Grip Pro",
+    "category": "grip",
+    "rarity": "mitico",
+    "price": 69600,
+    "bonus": {
+     "volley": 5,
+     "strategy": 5
+    }
+   },
+   {
+    "name": "Bola de Padel Original (1970)",
+    "category": "bola",
+    "rarity": "exclusivo",
+    "price": 78000,
+    "bonus": {
+     "emotional_control": 8,
+     "strategy": 4
+    }
+   },
+   {
+    "name": "Bullpadel Champion Series",
+    "category": "roupa",
+    "rarity": "mitico",
+    "price": 72000,
+    "bonus": {
+     "emotional_control": 5,
+     "agility": 5
+    }
+   },
+   {
+    "name": "Adidas Master Series",
+    "category": "tenis",
+    "rarity": "mitico",
+    "price": 66000,
+    "bonus": {
+     "agility": 5,
+     "smash": 5
+    }
+   },
+   {
+    "name": "Bullpadel Master Pro 20",
+    "category": "mochila",
+    "rarity": "mitico",
+    "price": 62400,
+    "bonus": {
+     "strategy": 5,
+     "emotional_control": 5
+    }
+   },
+   {
+    "name": "Movistar Smart Analytics Pro",
+    "category": "acessorio_tec",
+    "rarity": "mitico",
+    "price": 64800,
+    "bonus": {
+     "strategy": 5,
+     "agility": 5
+    }
+   },
+   {
+    "name": "Therabody Recovery Master",
+    "category": "acessorio",
+    "rarity": "mitico",
+    "price": 57600,
+    "bonus": {
+     "emotional_control": 5,
+     "defense": 5
+    }
+   },
+   {
+    "name": "Raquete Dourada do Circuito (2024)",
+    "category": "colecionavel",
+    "rarity": "exclusivo",
+    "price": 97200,
+    "bonus": {
+     "smash": 15,
+     "forehand": 10,
+     "emotional_control": 10,
+     "strategy": 8
+    }
+   }
+  ]
+ },
+ "duplicateCopiesCreated": 2,
+ "summary": {
+  "checks": 25,
+  "failed": 0
+ }
+}

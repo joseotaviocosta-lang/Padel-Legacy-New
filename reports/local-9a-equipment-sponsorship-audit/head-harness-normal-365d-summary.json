@@ -1,0 +1,312 @@
+{
+ "generatedBy": "LOCAL-9A — scripts/sim-progression-economy-v526.mjs no HEAD b270e04",
+ "command": "TZ=UTC node --max-old-space-size=6144 scripts/sim-progression-economy-v526.mjs --profile=normal --seeds=1-1 --days=365 --out=<scratchpad>",
+ "days": 365,
+ "errors": 0,
+ "finalCoins": 7021,
+ "minMonthlyClosing": 777,
+ "income": {
+  "prize": 6034,
+  "match_reward": 420,
+  "sponsor_monthly": 14587,
+  "sponsor_signing": 3013,
+  "missions": 0,
+  "achievements": 6100,
+  "investment_income": 0,
+  "passive_income": 0,
+  "other_income": 5900
+ },
+ "expense": {
+  "coach": 3638,
+  "staff": 0,
+  "club_fee": 0,
+  "partner_salary": 1040,
+  "reward_overwrite": 0,
+  "maintenance": 0,
+  "training": 18035,
+  "equipment": 5355,
+  "entry_fee": 1315,
+  "coach_signing": 550,
+  "staff_signing": 0,
+  "other_expense": 0
+ },
+ "gameTx": {
+  "expense:inscricao": {
+   "n": 36,
+   "amount": 1315
+  },
+  "expense:treino": {
+   "n": 584,
+   "amount": 18035
+  },
+  "income:conquista": {
+   "n": 15,
+   "amount": 12000
+  },
+  "income:partida": {
+   "n": 36,
+   "amount": 420
+  },
+  "income:torneio": {
+   "n": 33,
+   "amount": 6034
+  },
+  "monthly_close:": {
+   "n": 12,
+   "amount": 0
+  },
+  "expense:parceria": {
+   "n": 11,
+   "amount": 1040
+  },
+  "income:patrocinio": {
+   "n": 8,
+   "amount": 3013
+  },
+  "expense:treinador": {
+   "n": 2,
+   "amount": 550
+  }
+ },
+ "purchases": [
+  {
+   "day": 0,
+   "name": "Padel Start Training x3",
+   "rarity": "comum",
+   "price": 49,
+   "bonusTotal": 1,
+   "coinsBefore": 900,
+   "ovr": 22
+  },
+  {
+   "day": 7,
+   "name": "Tour Grip Dry Start",
+   "rarity": "comum",
+   "price": 59,
+   "bonusTotal": 1,
+   "coinsBefore": 961,
+   "ovr": 23
+  },
+  {
+   "day": 14,
+   "name": "Joma Wristband Base",
+   "rarity": "comum",
+   "price": 65,
+   "bonusTotal": 1,
+   "coinsBefore": 602,
+   "ovr": 24
+  },
+  {
+   "day": 35,
+   "name": "Joma Training Tee",
+   "rarity": "comum",
+   "price": 238,
+   "bonusTotal": 1,
+   "coinsBefore": 1322,
+   "ovr": 26
+  },
+  {
+   "day": 42,
+   "name": "Padel Start Compact",
+   "rarity": "comum",
+   "price": 281,
+   "bonusTotal": 1,
+   "coinsBefore": 4378,
+   "ovr": 27
+  },
+  {
+   "day": 49,
+   "name": "Head Flash Motion Club",
+   "rarity": "comum",
+   "price": 628,
+   "bonusTotal": 2,
+   "coinsBefore": 3991,
+   "ovr": 28
+  },
+  {
+   "day": 56,
+   "name": "Joma Court Basic",
+   "rarity": "comum",
+   "price": 518,
+   "bonusTotal": 1,
+   "coinsBefore": 3037,
+   "ovr": 29
+  },
+  {
+   "day": 63,
+   "name": "Pulse Training Band",
+   "rarity": "incomum",
+   "price": 976,
+   "bonusTotal": 1,
+   "coinsBefore": 3838,
+   "ovr": 29
+  },
+  {
+   "day": 280,
+   "name": "Wilson Tacky Pro",
+   "rarity": "raro",
+   "price": 1277,
+   "bonusTotal": 4,
+   "coinsBefore": 6050,
+   "ovr": 43
+  },
+  {
+   "day": 287,
+   "name": "Wilson Pro Tour x3",
+   "rarity": "raro",
+   "price": 1264,
+   "bonusTotal": 2,
+   "coinsBefore": 4256,
+   "ovr": 43
+  }
+ ],
+ "sponsors": [
+  {
+   "day": 35,
+   "sponsor": "babolat",
+   "tier": "Bronze",
+   "monthly": 405,
+   "signBonus": 77,
+   "duration": 6
+  },
+  {
+   "day": 35,
+   "sponsor": "paddleague",
+   "tier": "Bronze",
+   "monthly": 359,
+   "signBonus": 429,
+   "duration": 6
+  },
+  {
+   "day": 35,
+   "sponsor": "localfit",
+   "tier": "Bronze",
+   "monthly": 256,
+   "signBonus": 299,
+   "duration": 4
+  },
+  {
+   "day": 63,
+   "sponsor": "asics",
+   "tier": "Bronze",
+   "monthly": 487,
+   "signBonus": 620,
+   "duration": 8
+  },
+  {
+   "day": 245,
+   "sponsor": "siux",
+   "tier": "Bronze",
+   "monthly": 435,
+   "signBonus": 92,
+   "duration": 6
+  },
+  {
+   "day": 245,
+   "sponsor": "decathlon",
+   "tier": "Bronze",
+   "monthly": 388,
+   "signBonus": 468,
+   "duration": 6
+  },
+  {
+   "day": 245,
+   "sponsor": "paddleague",
+   "tier": "Bronze",
+   "monthly": 321,
+   "signBonus": 383,
+   "duration": 6
+  },
+  {
+   "day": 336,
+   "sponsor": "asics",
+   "tier": "Bronze",
+   "monthly": 507,
+   "signBonus": 645,
+   "duration": 8
+  }
+ ],
+ "coaches": [
+  {
+   "day": 126,
+   "tier": "iniciante",
+   "salary": 250
+  },
+  {
+   "day": 168,
+   "tier": "regional",
+   "salary": 510
+  }
+ ],
+ "staff": 0,
+ "investments": 0,
+ "tournaments": 33,
+ "matches": 36,
+ "snapshots": [
+  {
+   "day": 0,
+   "ovr": 22,
+   "rank": 1001,
+   "coins": 900,
+   "sponsors": 1,
+   "sponsorMonthly": 0,
+   "gearOwned": 1,
+   "gearEquipped": 0,
+   "shopUnlockedRarity": "comum",
+   "careerLevel": 1,
+   "reputation": 0
+  },
+  {
+   "day": 91,
+   "ovr": 31,
+   "rank": 926,
+   "coins": 3179,
+   "sponsors": 5,
+   "sponsorMonthly": 1507,
+   "gearOwned": 9,
+   "gearEquipped": 8,
+   "shopUnlockedRarity": "incomum",
+   "careerLevel": 11,
+   "reputation": 61
+  },
+  {
+   "day": 182,
+   "ovr": 37,
+   "rank": 798,
+   "coins": 3492,
+   "sponsors": 3,
+   "sponsorMonthly": 1251,
+   "gearOwned": 9,
+   "gearEquipped": 8,
+   "shopUnlockedRarity": "incomum",
+   "careerLevel": 15,
+   "reputation": 100
+  },
+  {
+   "day": 273,
+   "ovr": 42,
+   "rank": 509,
+   "coins": 5389,
+   "sponsors": 4,
+   "sponsorMonthly": 1631,
+   "gearOwned": 9,
+   "gearEquipped": 8,
+   "shopUnlockedRarity": "incomum",
+   "careerLevel": 18,
+   "reputation": 100
+  },
+  {
+   "day": 364,
+   "ovr": 47,
+   "rank": 331,
+   "coins": 2045,
+   "sponsors": 4,
+   "sponsorMonthly": 1651,
+   "gearOwned": 11,
+   "gearEquipped": 8,
+   "shopUnlockedRarity": "raro",
+   "careerLevel": 20,
+   "reputation": 100
+  }
+ ]
+}
