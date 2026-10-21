@@ -1,0 +1,186 @@
+{
+  "label": "after-fix",
+  "mode": "corrigido",
+  "sections": {
+    "tournaments": {
+      "t1": {
+        "open1": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 1
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 97
+        }
+      },
+      "t5": {
+        "open1": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 2
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 330
+        }
+      },
+      "t10": {
+        "open1": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 4
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 536
+        }
+      },
+      "virada de mês": {
+        "A": {
+          "date": "2031-04-02",
+          "tournaments": 810,
+          "seasons": [
+            2026,
+            2027,
+            2028,
+            2029,
+            2030,
+            2031,
+            2032
+          ],
+          "last": "2032-07-01"
+        },
+        "B": {
+          "date": "2031-04-02",
+          "tournaments": 810,
+          "seasons": [
+            2026,
+            2027,
+            2028,
+            2029,
+            2030,
+            2031,
+            2032
+          ],
+          "last": "2032-07-01"
+        }
+      },
+      "virada de temporada": {
+        "A": {
+          "date": "2032-01-02",
+          "tournaments": 895,
+          "seasons": [
+            2026,
+            2027,
+            2028,
+            2029,
+            2030,
+            2031,
+            2032,
+            2033
+          ],
+          "last": "2033-03-31"
+        },
+        "B": {
+          "date": "2032-01-02",
+          "tournaments": 895,
+          "seasons": [
+            2026,
+            2027,
+            2028,
+            2029,
+            2030,
+            2031,
+            2032,
+            2033
+          ],
+          "last": "2033-03-31"
+        }
+      }
+    },
+    "partners": {
+      "windows": {
+        "d3": 4,
+        "d7": 0,
+        "d10": 4,
+        "reasons": [
+          null,
+          "never-separated",
+          null
+        ]
+      }
+    },
+    "catalogs": {
+      "press": {
+        "open1": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 0
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 286
+        }
+      },
+      "encyclopedia": {
+        "open1": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 0
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 305
+        }
+      }
+    },
+    "dates": {
+      "price": {
+        "pc1": 5126,
+        "pc2": 5126
+      },
+      "relationship": {
+        "last": "2031-01-24",
+        "interaction": "2031-01-24",
+        "career": "2031-01-24"
+      },
+      "conflict": "2031-01-24",
+      "fans": "2031-01-24"
+    },
+    "interviews": {
+      "pending": 1,
+      "reopen": {
+        "open1": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 1
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 301
+        }
+      }
+    }
+  },
+  "passed": 31,
+  "failures": []
+}

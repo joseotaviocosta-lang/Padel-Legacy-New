@@ -1,4 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
+import { getActiveCareerDate } from '@/lib/careerClock.js';
 import { overallRating, levelForXp, LEVELS, ATTRIBUTE_KEYS, incrementMissionProgress } from '@/lib/padel';
 import { getAvailablePartners, getPartnerBot, canChangePartner, daysUntilPartnerUnlock, CAREER_START_DATE, addDays, daysBetween } from '@/lib/career';
 import { getRelationshipEffects, getOrCreateRelationship, getPartnerChemistryBonus } from '@/lib/relationships';
@@ -473,7 +474,8 @@ export async function recordPartnershipMatch(partnershipId, won, tournamentName)
   try {
     const p = await localGame.entities.Partnership.get(partnershipId);
     if (!p) return null;
-    const patch = buildPartnershipMatchPatch(p, won, tournamentName);
+    // LOCAL-8G: data da CARREIRA no histórico (o default do builder é o relógio do PC).
+    const patch = buildPartnershipMatchPatch(p, won, tournamentName, await getActiveCareerDate());
     const updatedPartnership = await localGame.entities.Partnership.update(partnershipId, patch);
     if (p.profile_id) {
       await localGame.entities.PlayerProfile.update(p.profile_id, {
@@ -505,7 +507,7 @@ export async function recordPartnershipTitle(partnershipId) {
   try {
     const p = await localGame.entities.Partnership.get(partnershipId);
     if (!p) return null;
-    const patch = buildPartnershipTitlePatch(p);
+    const patch = buildPartnershipTitlePatch(p, await getActiveCareerDate());
     const updatedPartnership = await localGame.entities.Partnership.update(partnershipId, patch);
     if (p.profile_id) {
       await localGame.entities.PlayerProfile.update(p.profile_id, {
@@ -524,11 +526,12 @@ export async function addConflict(partnershipId, title, description, severity = 
     const p = await localGame.entities.Partnership.get(partnershipId);
     if (!p) return null;
     const chemDrop = severity === 'alta' ? -8 : severity === 'media' ? -5 : -2;
+    const today = await getActiveCareerDate(); // LOCAL-8G: data da carreira, não do PC
     const newChem = Math.max(0, (p.chemistry || 50) + chemDrop);
     return await localGame.entities.Partnership.update(partnershipId, {
       chemistry: newChem,
-      conflicts: [...(p.conflicts || []), { date: new Date().toISOString().slice(0, 10), title, description, severity, resolved: false }].slice(-20),
-      chemistry_history: [...(p.chemistry_history || []), { date: new Date().toISOString().slice(0, 10), chemistry: newChem, event: `Conflito: ${title}` }].slice(-30),
+      conflicts: [...(p.conflicts || []), { date: today, title, description, severity, resolved: false }].slice(-20),
+      chemistry_history: [...(p.chemistry_history || []), { date: today, chemistry: newChem, event: `Conflito: ${title}` }].slice(-30),
     });
   } catch (e) { return null; }
 }

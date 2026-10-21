@@ -3,8 +3,7 @@ import { localGame } from '@/api/localGameClient.js';
 import { Crown, Flame, Coins, Zap, Star, Calendar, Trophy, Award, Play, CheckCircle, Lock, Newspaper, BarChart3, TrendingUp, AlertCircle, Shield, ChevronDown, ChevronUp, Clock3 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { ensureMyProfile, formatDate } from '@/lib/padel';
-import { careerMonth, daysBetween, ensureFutureTournaments } from '@/lib/career';
-import { simulatePastTournaments } from '@/lib/teamRanking';
+import { careerMonth, daysBetween } from '@/lib/career';
 import CareerStatusBar from '@/components/career/CareerStatusBar';
 import PartnerSelection from '@/components/career/PartnerSelection';
 import TournamentModal from '@/components/tournaments/TournamentModal';
@@ -140,12 +139,13 @@ export default function Tournaments() {
         const p = await ensureMyProfile(user);
         setProfile(p);
 
-        // Simulate champions for past tournaments the player didn't play
-        // and ensure the calendar extends into the future
-        if (p?.career_date) {
-          await simulatePastTournaments(p.career_date);
-          await ensureFutureTournaments(p.career_date);
-        }
+        // LOCAL-8G (8D-04): abrir Torneios só CONSULTA. O calendário futuro
+        // (15 meses) é mantido pelo motor na virada de cada mês
+        // (career.js, monthlyBoundary:ensureFutureTournaments) e nasce com a
+        // temporada inicial (localSeed). Antes, cada abertura antecipava a
+        // borda do horizonte (e, perto do fim do ano, criava a Season do ano
+        // seguinte com id aleatório) e rodava simulatePastTournaments — um
+        // reparo legado que não faz nada nos torneios do circuito mundial.
 
         // Fetch all tournaments — the calendar spans multiple seasons now.
         // Hotfix — 200 com ordenação DESCENDENTE ia truncando o passado à

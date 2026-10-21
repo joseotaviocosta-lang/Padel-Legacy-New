@@ -1,0 +1,223 @@
+{
+  "scenario": "carreira-nova",
+  "routes": {
+    "/tournaments": {
+      "route": "/tournaments",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 842,
+        "persistCalls": 11,
+        "careerWrites": 1,
+        "path": "/tournaments"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 861,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/tournaments"
+      }
+    },
+    "/tournaments?tab=calendar": {
+      "route": "/tournaments?tab=calendar",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 867,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/tournaments?tab=calendar"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 853,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/tournaments?tab=calendar"
+      }
+    },
+    "/world/circuit?tab=press": {
+      "route": "/world/circuit?tab=press",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/world/circuit?tab=press"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/world/circuit?tab=press"
+      }
+    },
+    "/encyclopedia": {
+      "route": "/encyclopedia",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/encyclopedia"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/encyclopedia"
+      }
+    },
+    "/communications": {
+      "route": "/communications",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 5,
+        "careerWrites": 1,
+        "path": "/communications"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/communications"
+      }
+    },
+    "/game": {
+      "route": "/game",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/game"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/game"
+      }
+    },
+    "/career/training?tab=shop": {
+      "route": "/career/training?tab=shop",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/career/training?tab=shop"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/career/training?tab=shop"
+      }
+    },
+    "/partners?view=offers": {
+      "route": "/partners?view=offers",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 5,
+        "careerWrites": 1,
+        "path": "/partners?view=offers"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/partners?view=offers"
+      }
+    }
+  },
+  "boot": null,
+  "jsErrors": []
+}

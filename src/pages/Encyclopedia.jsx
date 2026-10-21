@@ -20,13 +20,16 @@ export default function Encyclopedia() {
     (async () => {
       try {
         const existing = await safeModuleTask(() => localGame.entities.EncyclopediaEntry.list('-created_date', 500), { label: 'enciclopédia', fallback: [] });
-        const existingNames = new Set((existing || []).map((entry) => entry.name));
-        const missing = ENCYCLOPEDIA_ENTRIES.filter((entry) => !existingNames.has(entry.name));
-        if (missing.length > 0) {
-          await safeModuleTask(() => localGame.entities.EncyclopediaEntry.bulkCreate(missing), { label: 'criação da enciclopédia', fallback: null });
-          const all = await safeModuleTask(() => localGame.entities.EncyclopediaEntry.list('-created_date', 500), { label: 'releitura da enciclopédia', fallback: ENCYCLOPEDIA_ENTRIES });
-          setEntries(all || ENCYCLOPEDIA_ENTRIES);
-        } else setEntries(existing || []);
+        // LOCAL-8G (8D-12): a enciclopédia é conteúdo ESTÁTICO
+        // (encyclopediaData.js), sem estado de jogo. Antes, a 1ª visita
+        // copiava as 62 entradas para o save. Agora a tela lê o catálogo
+        // estático e só acrescenta entradas que um save antigo já tenha
+        // persistido com nome fora dele — nada é gravado.
+        const staticNames = new Set(ENCYCLOPEDIA_ENTRIES.map((entry) => entry.name));
+        setEntries([
+          ...ENCYCLOPEDIA_ENTRIES.map((entry) => (existing || []).find((row) => row.name === entry.name) || entry),
+          ...(existing || []).filter((row) => row?.name && !staticNames.has(row.name)),
+        ]);
       } catch (error) {
         console.error(error);
         setEntries(ENCYCLOPEDIA_ENTRIES);

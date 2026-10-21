@@ -100,13 +100,13 @@ export default function Press() {
 
         // Load or seed journalists for this profile
         const existing = await localGame.entities.PressJournalist.filter({ profile_id: p.id }, null, 50);
+        // LOCAL-8G (8D-11): o catálogo de jornalistas é estático
+        // (pressData.JOURNALISTS) e só ganha estado próprio quando o jogador
+        // responde uma entrevista. Abrir a Imprensa monta os registros em
+        // memória; antes, a 1ª visita gravava um upsert por jornalista (12
+        // serializações do save). O jornalista é persistido na 1ª resposta.
         const reconciliation = reconcileJournalistCatalog(existing, p.id);
-        const created = [];
-        for (const journalist of reconciliation.missing) {
-          created.push(await localGame.entities.PressJournalist.upsert(journalist.id, journalist));
-        }
-        const createdById = new Map(created.map(item => [item.id, item]));
-        setJournalists(reconciliation.records.map(item => createdById.get(item.id) || item));
+        setJournalists(reconciliation.records);
       }
     } catch (e) { console.error(e); }
     setLoading(false);
@@ -298,7 +298,11 @@ export default function Press() {
       if (journalist.id && !alreadyProcessed) {
         try {
           const newBias = Math.max(-100, Math.min(100, (journalist.bias_toward_player || 0) + (effects.journalist_bias || 0)));
-          await localGame.entities.PressJournalist.update(journalist.id, {
+          // upsert com o registro inteiro: o jornalista pode ainda não estar
+          // persistido (o catálogo é montado em memória até a 1ª interação).
+          await localGame.entities.PressJournalist.upsert(journalist.id, {
+            ...journalist,
+            profile_id: profile.id,
             bias_toward_player: newBias,
             interviews_done: (journalist.interviews_done || 0) + 1,
           });

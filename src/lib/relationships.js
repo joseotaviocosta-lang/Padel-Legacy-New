@@ -1,4 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
+import { getActiveCareerDate } from '@/lib/careerClock.js';
 import { generateInterviewQuote, getInterviewStyle } from '@/lib/personalityTraits';
 
 // ─── Relationship Types ────────────────────────────────────────────────────
@@ -63,11 +64,13 @@ export async function updateRelationshipScore(relId, scoreChange, event, descrip
     const rel = await localGame.entities.Relationship.get(relId);
     if (!rel) return null;
 
+    // LOCAL-8G: datas do histórico pela data da CARREIRA (antes, relógio do PC).
+    const today = await getActiveCareerDate();
     const newScore = Math.max(-100, Math.min(100, (rel.score || 0) + scoreChange));
     const newType = getRelationshipType(newScore, extra.isMentor);
 
     const history = [...(rel.history || []), {
-      date: new Date().toISOString().slice(0, 10),
+      date: today,
       event,
       score_change: scoreChange,
       description,
@@ -77,7 +80,7 @@ export async function updateRelationshipScore(relId, scoreChange, event, descrip
       score: newScore,
       relationship_type: newType,
       history,
-      last_interaction_date: new Date().toISOString().slice(0, 10),
+      last_interaction_date: today,
       ...extra,
     };
 
@@ -335,7 +338,7 @@ export async function seedInitialRelationships(profileId, athleteProfiles = []) 
     .sort((a, b) => (b.overall_rating || 0) - (a.overall_rating || 0))
     .slice(0, 5);
 
-  const careerDate = new Date().toISOString().slice(0, 10);
+  const careerDate = await getActiveCareerDate();
   const toCreate = sorted.map((athlete) => ({
     profile_id: profileId,
     target_athlete_id: athlete.bot_id || athlete.id,

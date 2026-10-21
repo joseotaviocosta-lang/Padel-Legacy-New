@@ -208,9 +208,12 @@ export function reactToEvent(fanBase, eventType, context = {}) {
   const reactions = eventDef.reactions;
   const reaction = reactions[Math.floor(Math.random() * reactions.length)];
 
+  // LOCAL-8G: data da CARREIRA (context.careerDate) no histórico; o relógio
+  // do PC só sem contexto (ação manual da tela de fãs, sem perfil à mão).
+  const eventDate = String(context.careerDate || '').slice(0, 10) || new Date().toISOString().slice(0, 10);
   // History entry
   const historyEntry = {
-    date: new Date().toISOString().slice(0, 10),
+    date: eventDate,
     event: eventDef.label,
     reaction,
     morale_change: Math.round(moraleChange),
@@ -227,7 +230,7 @@ export function reactToEvent(fanBase, eventType, context = {}) {
     trend,
     last_event: eventDef.label,
     last_reaction: reaction,
-    last_reaction_date: new Date().toISOString().slice(0, 10),
+    last_reaction_date: eventDate,
     reaction_history: [historyEntry, ...(fanBase.reaction_history || [])].slice(0, 20),
   };
 }

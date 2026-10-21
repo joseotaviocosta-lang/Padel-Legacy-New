@@ -117,10 +117,10 @@ export default function Shop() {
     const histMap = {};
     (priceHistories || []).forEach(h => { histMap[h.item_id] = h; });
     (items || []).forEach(item => {
-      map[item.id] = computeItemPrice(item, marketEvents, histMap[item.id], playerSponsors);
+      map[item.id] = computeItemPrice(item, marketEvents, histMap[item.id], playerSponsors, profile?.career_date);
     });
     return map;
-  }, [items, marketEvents, priceHistories, playerSponsors]);
+  }, [items, marketEvents, priceHistories, playerSponsors, profile?.career_date]);
 
   const accessMap = useMemo(() => {
     const map = {};
@@ -232,7 +232,7 @@ export default function Shop() {
         category: item.category,
         rarity: item.rarity,
         equipped: false,
-        acquired_date: new Date().toISOString().slice(0, 10),
+        acquired_date: profile.career_date || new Date().toISOString().slice(0, 10),
         current_durability: item.durability || 100,
         usage_count: 0,
       });

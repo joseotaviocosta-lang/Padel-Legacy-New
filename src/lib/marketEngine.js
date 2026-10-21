@@ -22,7 +22,7 @@ export { isMarketEventActive, normalizeMarketEvent } from '@/lib/marketPromotion
  *   sponsor_name mantém o fallback de 10% por fuzzy match)
  * @returns {Object} { currentPrice, basePrice, modifier, discount, badge, trend, demandScore, events }
  */
-export function computeItemPrice(item, marketEvents = [], priceHistory = null, playerSponsors = []) {
+export function computeItemPrice(item, marketEvents = [], priceHistory = null, playerSponsors = [], careerDate = null) {
   const parsedBasePrice = Number(item?.price);
   const basePrice = Number.isFinite(parsedBasePrice) && parsedBasePrice > 0 ? parsedBasePrice : 100;
   let modifier = 1;
@@ -85,7 +85,9 @@ export function computeItemPrice(item, marketEvents = [], priceHistory = null, p
   };
   const vol = rarityVolatility[item.rarity] || 0;
   // Deterministic pseudo-random based on item id + current day
-  const day = new Date().getDate();
+  // LOCAL-8G: dia da data da CARREIRA (antes, o relógio do computador —
+  // mudar a data do PC mudava os preços da Loja). Sem data, dia 1.
+  const day = Number(String(careerDate || '').slice(8, 10)) || 1;
   const seed = (item.id?.charCodeAt(item.id.length - 1) || 1) * day;
   const randomSwing = vol * Math.sin(seed) * 0.5;
   modifier *= (1 + randomSwing);

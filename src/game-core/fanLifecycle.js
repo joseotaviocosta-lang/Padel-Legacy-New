@@ -71,6 +71,7 @@ export async function evaluateMonthlyFanEngagement(profile) {
   else if (monthlyMatches.length === 0 && monthlyPosts.length === 0) eventType = 'bad_performance';
 
   let updated = reactToEvent(fanBase, eventType, {
+    careerDate: profile.career_date,
     description: `${wins} vitórias, ${losses} derrotas, ${monthlyPosts.length} publicações e ${monthlyArticles.length} matérias no mês.`,
   });
 

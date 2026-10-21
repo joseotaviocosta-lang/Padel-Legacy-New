@@ -1,0 +1,227 @@
+{
+  "label": "before-fix",
+  "mode": "head",
+  "sections": {
+    "tournaments": {
+      "t1": {
+        "open1": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 18
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 116
+        }
+      },
+      "t5": {
+        "open1": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 11
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 368
+        }
+      },
+      "t10": {
+        "open1": {
+          "records": 2,
+          "diff": {
+            "Tournament": {
+              "created": 2,
+              "removed": 0,
+              "changed": 0
+            }
+          },
+          "writes": 1,
+          "ms": 877
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 586
+        }
+      },
+      "virada de mês": {
+        "A": {
+          "date": "2031-04-02",
+          "tournaments": 810,
+          "seasons": [
+            2026,
+            2027,
+            2028,
+            2029,
+            2030,
+            2031,
+            2032
+          ],
+          "last": "2032-07-01"
+        },
+        "B": {
+          "date": "2031-04-02",
+          "tournaments": 810,
+          "seasons": [
+            2026,
+            2027,
+            2028,
+            2029,
+            2030,
+            2031,
+            2032
+          ],
+          "last": "2032-07-01"
+        }
+      },
+      "virada de temporada": {
+        "A": {
+          "date": "2032-01-02",
+          "tournaments": 895,
+          "seasons": [
+            2026,
+            2027,
+            2028,
+            2029,
+            2030,
+            2031,
+            2032,
+            2033
+          ],
+          "last": "2033-03-31"
+        },
+        "B": {
+          "date": "2032-01-02",
+          "tournaments": 895,
+          "seasons": [
+            2026,
+            2027,
+            2028,
+            2029,
+            2030,
+            2031,
+            2032,
+            2033
+          ],
+          "last": "2033-03-31"
+        }
+      }
+    },
+    "partners": {
+      "windows": {
+        "d3": 4,
+        "d7": 0,
+        "d10": 4,
+        "reasons": [
+          null,
+          "never-separated",
+          null
+        ]
+      }
+    },
+    "catalogs": {
+      "press": {
+        "open1": {
+          "records": 14,
+          "diff": {
+            "PressJournalist": {
+              "created": 14,
+              "removed": 0,
+              "changed": 0
+            }
+          },
+          "writes": 12,
+          "ms": 4686
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 326
+        }
+      },
+      "encyclopedia": {
+        "open1": {
+          "records": 62,
+          "diff": {
+            "EncyclopediaEntry": {
+              "created": 62,
+              "removed": 0,
+              "changed": 0
+            }
+          },
+          "writes": 1,
+          "ms": 492
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 377
+        }
+      }
+    },
+    "dates": {
+      "price": {
+        "pc1": 5271,
+        "pc2": 4728
+      },
+      "relationship": {
+        "last": "2041-05-17",
+        "interaction": "2041-05-17",
+        "career": "2031-01-24"
+      },
+      "conflict": "2041-05-17",
+      "fans": "2041-05-17"
+    },
+    "interviews": {
+      "pending": 1,
+      "reopen": {
+        "open1": {
+          "records": 1,
+          "diff": {
+            "PressInterview": {
+              "created": 0,
+              "removed": 0,
+              "changed": 1
+            }
+          },
+          "writes": 1,
+          "ms": 339
+        },
+        "open2": {
+          "records": 1,
+          "diff": {
+            "PressInterview": {
+              "created": 0,
+              "removed": 0,
+              "changed": 1
+            }
+          },
+          "writes": 1,
+          "ms": 669
+        }
+      }
+    }
+  },
+  "passed": 21,
+  "failures": [
+    "t10: abrir Torneios não grava (2 registro(s), 1 gravação(ões) {\"Tournament\":{\"created\":2,\"removed\":0,\"changed\":0}})",
+    "Imprensa (1ª abertura) não grava (14 registro(s), 12 gravação(ões))",
+    "Enciclopédia não grava (62 registro(s), 1 gravação(ões))",
+    "preço da Loja independe do relógio do PC (5271 × 4728)",
+    "relacionamento: histórico e última interação na data da carreira (2041-05-17 / 2041-05-17)",
+    "conflito de dupla na data da carreira (2041-05-17)",
+    "reação de fãs na data da carreira (2041-05-17)",
+    "reabrir Home/Central não regrava entrevistas ({\"PressInterview\":{\"created\":0,\"removed\":0,\"changed\":1}}, 1 gravação(ões))",
+    "entrevista respondida nunca volta a \"available\" (available)",
+    "save → load → Central: entrevistas idênticas"
+  ]
+}

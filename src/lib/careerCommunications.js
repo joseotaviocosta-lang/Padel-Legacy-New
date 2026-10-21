@@ -665,7 +665,7 @@ export async function ensureContextualCareerCommunications(profile, context = {}
     const interviewMatchId = /** @type {any} */ (interview).matchId;
     if (interviewMatchId && existingInterviewMatchIds.has(String(interviewMatchId))) continue;
     const interviewRecordId = `press-interview-${profile.id}-${interview.sourceId}`.replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 180);
-    operations.push({ type: 'upsert', entityName: 'PressInterview', id: interviewRecordId, data: {
+    const interviewRecord = {
       id: interviewRecordId,
       profile_id: profile.id,
       source_id: interview.sourceId,
@@ -677,7 +677,17 @@ export async function ensureContextualCareerCommunications(profile, context = {}
       available_career_date: interview.availableFrom || careerDate,
       expires_career_date: interview.expiresAt || interview.expires_career_date || null,
       payload: interview,
-    } });
+    };
+    // LOCAL-8G (8D-13): grava só quando o registro não existe ou mudou de
+    // fato. Antes, toda abertura da Home/Central regravava cada entrevista
+    // pendente (mesmo conteúdo, só updated_date) — uma serialização do save
+    // por visita. Uma entrevista já respondida nunca volta a "available".
+    const persistedRecord = interviewRecordsBySource.get(interview.sourceId);
+    const recordChanged = !persistedRecord || Object.keys(interviewRecord)
+      .some((field) => JSON.stringify(persistedRecord[field] ?? null) !== JSON.stringify(interviewRecord[field] ?? null));
+    if (recordChanged && persistedRecord?.interview_status !== 'answered') {
+      operations.push({ type: 'upsert', entityName: 'PressInterview', id: interviewRecordId, data: interviewRecord });
+    }
     await createOnce(`press-interview:${interview.sourceId}`, {
       sender_type: 'imprensa',
       sender_name: 'Assessoria de Imprensa',
