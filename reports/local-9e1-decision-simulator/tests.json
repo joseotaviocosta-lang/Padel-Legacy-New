@@ -1,0 +1,301 @@
+{
+ "generatedBy": "scripts/test-local-9e1-decision-simulator.mjs",
+ "total": 48,
+ "failed": 0,
+ "results": [
+  {
+   "name": "três perfis definidos",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "perfil desconhecido é recusado",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "orçamento econômico: reserva = 4 meses de folha",
+   "ok": true,
+   "detail": {
+    "coins": 2000,
+    "reserve": 1200,
+    "free": 800
+   }
+  },
+  {
+   "name": "orçamento competitivo: reserva menor, caixa livre maior",
+   "ok": true,
+   "detail": {
+    "coins": 2000,
+    "reserve": 300,
+    "free": 1700
+   }
+  },
+  {
+   "name": "orçamento: piso de reserva sem folha",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "ganho de trocar raquete +2 por +5 com base 97 = +1 (limite 100)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "ganho de um slot vazio = bônus inteiro",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "ganho de item que só soma em atributo no limite = 0",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "ganho não depende de item duplicado no inventário",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "econômico escolhe o maior ROI (bola +1 por 50)",
+   "ok": true,
+   "detail": {
+    "id": "b1",
+    "roi": 20
+   }
+  },
+  {
+   "name": "competitivo escolhe o maior ganho que cabe no caixa (colecionável +10)",
+   "ok": true,
+   "detail": {
+    "id": "c1",
+    "gain": 10
+   }
+  },
+  {
+   "name": "item bloqueado nunca é escolhido",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "sem caixa livre não compra",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "não compra item sem ganho efetivo (base no limite)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "econômico ordena pelo valor total do contrato",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "competitivo ordena pelo tier",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "renovação: fora da janela não renova",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "renovação: dentro da janela renova",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "renovação: contrato não renovável",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "renovação competitiva cede a um tier melhor no slot",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "econômico: treinador só com salário ≤ 20% da receita",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "competitivo: melhor treinador sustentável",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "sem receita recorrente não contrata treinador",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "upgrade exige +8 de overall",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "econômico não contrata staff fora da prioridade",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "equilibrado segue a prioridade (fisioterapeuta)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "econômico: encaixe e taxa menor",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "competitivo: tier mais alto que o caixa permite",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "taxa acima da fração do caixa é descartada",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "econômico investe o excedente acima de 2× a reserva",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "competitivo nunca investe",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "políticas puras são determinísticas",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "sonda de renovação executada (achado registrado, regra não alterada)",
+   "ok": true,
+   "detail": {
+    "careerId": "4a604392-6659-48a5-be83-2cc257e54b54",
+    "sponsor": "paddleague",
+    "signBonus": 372,
+    "renewalBonusesSameDay": [
+     398,
+     398,
+     398
+    ],
+    "activeAfter": 1
+   },
+   "probe": {
+    "careerId": "4a604392-6659-48a5-be83-2cc257e54b54",
+    "sponsor": "paddleague",
+    "signBonus": 372,
+    "renewalBonusesSameDay": [
+     398,
+     398,
+     398
+    ],
+    "activeAfter": 1
+   }
+  },
+  {
+   "name": "driver: mesma seed e perfil → mesmo hash (determinismo)",
+   "ok": true,
+   "detail": {
+    "a": "9d5d7db3beb6dda7",
+    "b": "9d5d7db3beb6dda7",
+    "economico": "8ad7e8bbd2ac1bfc",
+    "competitivo": "3a1f68658c604aa0"
+   }
+  },
+  {
+   "name": "driver: os três perfis partem do mesmo estado (pareamento)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "driver econômico: 14 dias, sem erro",
+   "ok": true,
+   "detail": []
+  },
+  {
+   "name": "driver econômico: zero violações de integridade",
+   "ok": true,
+   "detail": []
+  },
+  {
+   "name": "driver econômico: save/load idêntico (base, modificadores, efetivo, inventário)",
+   "ok": true,
+   "detail": []
+  },
+  {
+   "name": "driver econômico: livro-caixa sem resíduo não atribuído",
+   "ok": true,
+   "detail": {
+    "unattributed": 0
+   }
+  },
+  {
+   "name": "driver equilibrado: 14 dias, sem erro",
+   "ok": true,
+   "detail": []
+  },
+  {
+   "name": "driver equilibrado: zero violações de integridade",
+   "ok": true,
+   "detail": []
+  },
+  {
+   "name": "driver equilibrado: save/load idêntico (base, modificadores, efetivo, inventário)",
+   "ok": true,
+   "detail": []
+  },
+  {
+   "name": "driver equilibrado: livro-caixa sem resíduo não atribuído",
+   "ok": true,
+   "detail": {
+    "unattributed": 0
+   }
+  },
+  {
+   "name": "driver competitivo: 14 dias, sem erro",
+   "ok": true,
+   "detail": []
+  },
+  {
+   "name": "driver competitivo: zero violações de integridade",
+   "ok": true,
+   "detail": []
+  },
+  {
+   "name": "driver competitivo: save/load idêntico (base, modificadores, efetivo, inventário)",
+   "ok": true,
+   "detail": []
+  },
+  {
+   "name": "driver competitivo: livro-caixa sem resíduo não atribuído",
+   "ok": true,
+   "detail": {
+    "unattributed": 0
+   }
+  },
+  {
+   "name": "driver: perfis divergem nas decisões",
+   "ok": true,
+   "detail": null
+  }
+ ],
+ "driver": {
+  "hashes": {
+   "a": "9d5d7db3beb6dda7",
+   "b": "9d5d7db3beb6dda7",
+   "economico": "8ad7e8bbd2ac1bfc",
+   "competitivo": "3a1f68658c604aa0"
+  }
+ }
+}

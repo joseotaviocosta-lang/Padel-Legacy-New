@@ -1,0 +1,4196 @@
+{
+ "generatedBy": "scripts/analyze-local-9e1-decisions.mjs",
+ "runs": 24,
+ "horizons": [
+  30,
+  365,
+  730
+ ],
+ "groups": [
+  {
+   "days": 30,
+   "profile": "economico",
+   "seeds": [
+    1,
+    2,
+    3
+   ],
+   "ovrBaseEnd": {
+    "mean": 23.3,
+    "min": 23.3,
+    "max": 23.4
+   },
+   "ovrBaseGain": {
+    "mean": 1.5,
+    "min": 1.5,
+    "max": 1.6
+   },
+   "ovrEffectiveEnd": {
+    "mean": 23.6,
+    "min": 23.6,
+    "max": 23.7
+   },
+   "equipApplied": {
+    "mean": 3,
+    "min": 3,
+    "max": 3
+   },
+   "rankEnd": {
+    "mean": 997,
+    "min": 995,
+    "max": 1001
+   },
+   "rankBest": {
+    "mean": 997,
+    "min": 995,
+    "max": 1001
+   },
+   "matches": {
+    "mean": 1.3,
+    "min": 0,
+    "max": 2
+   },
+   "winRate": {
+    "mean": 50,
+    "min": 50,
+    "max": 50
+   },
+   "titles": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "tournaments": {
+    "mean": 0.7,
+    "min": 0,
+    "max": 1
+   },
+   "trainingSessions": {
+    "mean": 25,
+    "min": 25,
+    "max": 25
+   },
+   "forfeits": {
+    "mean": 0.3,
+    "min": 0,
+    "max": 1
+   },
+   "finalCoins": {
+    "mean": 1558.3,
+    "min": 1207,
+    "max": 1734
+   },
+   "netWorth": {
+    "mean": 1558.3,
+    "min": 1207,
+    "max": 1734
+   },
+   "minCoins": {
+    "mean": 707,
+    "min": 707,
+    "max": 707
+   },
+   "negativeWeeks": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "totalIncome": {
+    "mean": 1251.3,
+    "min": 900,
+    "max": 1427
+   },
+   "totalExpense": {
+    "mean": 593,
+    "min": 593,
+    "max": 593
+   },
+   "equipmentSpend": {
+    "mean": 173,
+    "min": 173,
+    "max": 173
+   },
+   "purchases": {
+    "mean": 3,
+    "min": 3,
+    "max": 3
+   },
+   "coinsPerEffectivePoint": {
+    "mean": 58,
+    "min": 58,
+    "max": 58
+   },
+   "trainingShareOfExpense": {
+    "mean": 59,
+    "min": 59,
+    "max": 59
+   },
+   "equipmentShareOfExpense": {
+    "mean": 29.2,
+    "min": 29.2,
+    "max": 29.2
+   },
+   "sponsorsSigned": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "sponsorMonthlyEnd": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "sponsorRenewals": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "coachHires": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "staffHires": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "investedAmount": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "errors": 0,
+   "violations": 0,
+   "unattributed": 0,
+   "saveLoadAllIdentical": true,
+   "advanceFailures": 0,
+   "income": {
+    "conquista": 1167,
+    "torneio": 58,
+    "partida": 27
+   },
+   "expense": {
+    "treino": 350,
+    "equipamento": 173,
+    "inscricao": 70
+   }
+  },
+  {
+   "days": 30,
+   "profile": "equilibrado",
+   "seeds": [
+    1,
+    2,
+    3
+   ],
+   "ovrBaseEnd": {
+    "mean": 25,
+    "min": 24.3,
+    "max": 25.5
+   },
+   "ovrBaseGain": {
+    "mean": 3.2,
+    "min": 2.5,
+    "max": 3.7
+   },
+   "ovrEffectiveEnd": {
+    "mean": 25.3,
+    "min": 24.6,
+    "max": 25.8
+   },
+   "equipApplied": {
+    "mean": 3,
+    "min": 3,
+    "max": 3
+   },
+   "rankEnd": {
+    "mean": 1001,
+    "min": 1001,
+    "max": 1001
+   },
+   "rankBest": {
+    "mean": 1001,
+    "min": 1001,
+    "max": 1001
+   },
+   "matches": {
+    "mean": 0.7,
+    "min": 0,
+    "max": 1
+   },
+   "winRate": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "titles": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "tournaments": {
+    "mean": 0.7,
+    "min": 0,
+    "max": 1
+   },
+   "trainingSessions": {
+    "mean": 42.3,
+    "min": 33,
+    "max": 48
+   },
+   "forfeits": {
+    "mean": 0.3,
+    "min": 0,
+    "max": 1
+   },
+   "finalCoins": {
+    "mean": 917,
+    "min": 603,
+    "max": 1251
+   },
+   "netWorth": {
+    "mean": 917,
+    "min": 603,
+    "max": 1251
+   },
+   "minCoins": {
+    "mean": 214.3,
+    "min": 103,
+    "max": 437
+   },
+   "negativeWeeks": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "totalIncome": {
+    "mean": 1136,
+    "min": 900,
+    "max": 1254
+   },
+   "totalExpense": {
+    "mean": 1119,
+    "min": 903,
+    "max": 1257
+   },
+   "equipmentSpend": {
+    "mean": 173,
+    "min": 173,
+    "max": 173
+   },
+   "purchases": {
+    "mean": 3,
+    "min": 3,
+    "max": 3
+   },
+   "coinsPerEffectivePoint": {
+    "mean": 58,
+    "min": 58,
+    "max": 58
+   },
+   "trainingShareOfExpense": {
+    "mean": 77.8,
+    "min": 73.1,
+    "max": 80.7
+   },
+   "equipmentShareOfExpense": {
+    "mean": 15.8,
+    "min": 13.8,
+    "max": 19.2
+   },
+   "sponsorsSigned": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "sponsorMonthlyEnd": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "sponsorRenewals": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "coachHires": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "staffHires": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "investedAmount": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "errors": 0,
+   "violations": 0,
+   "unattributed": 0,
+   "saveLoadAllIdentical": true,
+   "advanceFailures": 0,
+   "income": {
+    "conquista": 1100,
+    "torneio": 29,
+    "partida": 7
+   },
+   "expense": {
+    "treino": 876,
+    "equipamento": 173,
+    "inscricao": 70
+   }
+  },
+  {
+   "days": 30,
+   "profile": "competitivo",
+   "seeds": [
+    1,
+    2,
+    3
+   ],
+   "ovrBaseEnd": {
+    "mean": 23.6,
+    "min": 23.5,
+    "max": 23.8
+   },
+   "ovrBaseGain": {
+    "mean": 1.8,
+    "min": 1.7,
+    "max": 2
+   },
+   "ovrEffectiveEnd": {
+    "mean": 23.9,
+    "min": 23.8,
+    "max": 24.1
+   },
+   "equipApplied": {
+    "mean": 3,
+    "min": 3,
+    "max": 3
+   },
+   "rankEnd": {
+    "mean": 1001,
+    "min": 1001,
+    "max": 1001
+   },
+   "rankBest": {
+    "mean": 1001,
+    "min": 1001,
+    "max": 1001
+   },
+   "matches": {
+    "mean": 0.7,
+    "min": 0,
+    "max": 1
+   },
+   "winRate": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "titles": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "tournaments": {
+    "mean": 0.7,
+    "min": 0,
+    "max": 1
+   },
+   "trainingSessions": {
+    "mean": 26.3,
+    "min": 25,
+    "max": 27
+   },
+   "forfeits": {
+    "mean": 0.3,
+    "min": 0,
+    "max": 1
+   },
+   "finalCoins": {
+    "mean": 727.7,
+    "min": 529,
+    "max": 827
+   },
+   "netWorth": {
+    "mean": 727.7,
+    "min": 529,
+    "max": 827
+   },
+   "minCoins": {
+    "mean": 29,
+    "min": 29,
+    "max": 29
+   },
+   "negativeWeeks": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "totalIncome": {
+    "mean": 1136,
+    "min": 900,
+    "max": 1254
+   },
+   "totalExpense": {
+    "mean": 1308.3,
+    "min": 1271,
+    "max": 1327
+   },
+   "equipmentSpend": {
+    "mean": 677,
+    "min": 677,
+    "max": 677
+   },
+   "purchases": {
+    "mean": 2,
+    "min": 2,
+    "max": 2
+   },
+   "coinsPerEffectivePoint": {
+    "mean": 226,
+    "min": 226,
+    "max": 226
+   },
+   "trainingShareOfExpense": {
+    "mean": 42.9,
+    "min": 41.2,
+    "max": 43.7
+   },
+   "equipmentShareOfExpense": {
+    "mean": 51.8,
+    "min": 51,
+    "max": 53.3
+   },
+   "sponsorsSigned": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "sponsorMonthlyEnd": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "sponsorRenewals": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "coachHires": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "staffHires": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "investedAmount": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "errors": 0,
+   "violations": 0,
+   "unattributed": 0,
+   "saveLoadAllIdentical": true,
+   "advanceFailures": 0,
+   "income": {
+    "conquista": 1100,
+    "torneio": 29,
+    "partida": 7
+   },
+   "expense": {
+    "equipamento": 677,
+    "treino": 561,
+    "inscricao": 70
+   }
+  },
+  {
+   "days": 365,
+   "profile": "economico",
+   "seeds": [
+    1,
+    2,
+    3
+   ],
+   "ovrBaseEnd": {
+    "mean": 34,
+    "min": 32.7,
+    "max": 34.8
+   },
+   "ovrBaseGain": {
+    "mean": 12.2,
+    "min": 10.9,
+    "max": 13
+   },
+   "ovrEffectiveEnd": {
+    "mean": 34.3,
+    "min": 33,
+    "max": 35.1
+   },
+   "equipApplied": {
+    "mean": 3,
+    "min": 3,
+    "max": 3
+   },
+   "rankEnd": {
+    "mean": 373,
+    "min": 370,
+    "max": 378
+   },
+   "rankBest": {
+    "mean": 373,
+    "min": 370,
+    "max": 378
+   },
+   "matches": {
+    "mean": 49,
+    "min": 45,
+    "max": 53
+   },
+   "winRate": {
+    "mean": 24,
+    "min": 15.6,
+    "max": 34
+   },
+   "titles": {
+    "mean": 0.3,
+    "min": 0,
+    "max": 1
+   },
+   "tournaments": {
+    "mean": 37.3,
+    "min": 36,
+    "max": 38
+   },
+   "trainingSessions": {
+    "mean": 194.7,
+    "min": 185,
+    "max": 202
+   },
+   "forfeits": {
+    "mean": 1.3,
+    "min": 0,
+    "max": 3
+   },
+   "finalCoins": {
+    "mean": 8890,
+    "min": 8686,
+    "max": 9297
+   },
+   "netWorth": {
+    "mean": 36868.3,
+    "min": 35740,
+    "max": 37466
+   },
+   "minCoins": {
+    "mean": 707,
+    "min": 707,
+    "max": 707
+   },
+   "negativeWeeks": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "totalIncome": {
+    "mean": 44447.3,
+    "min": 43252,
+    "max": 45138
+   },
+   "totalExpense": {
+    "mean": 8479,
+    "min": 8412,
+    "max": 8572
+   },
+   "equipmentSpend": {
+    "mean": 173,
+    "min": 173,
+    "max": 173
+   },
+   "purchases": {
+    "mean": 3,
+    "min": 3,
+    "max": 3
+   },
+   "coinsPerEffectivePoint": {
+    "mean": 58,
+    "min": 58,
+    "max": 58
+   },
+   "trainingShareOfExpense": {
+    "mean": 53.2,
+    "min": 50.9,
+    "max": 54.9
+   },
+   "equipmentShareOfExpense": {
+    "mean": 2,
+    "min": 2,
+    "max": 2.1
+   },
+   "sponsorsSigned": {
+    "mean": 4,
+    "min": 4,
+    "max": 4
+   },
+   "sponsorMonthlyEnd": {
+    "mean": 1446.7,
+    "min": 1403,
+    "max": 1475
+   },
+   "sponsorRenewals": {
+    "mean": 7.7,
+    "min": 7,
+    "max": 8
+   },
+   "coachHires": {
+    "mean": 1,
+    "min": 1,
+    "max": 1
+   },
+   "staffHires": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "investedAmount": {
+    "mean": 27978.3,
+    "min": 27054,
+    "max": 28712
+   },
+   "errors": 0,
+   "violations": 0,
+   "unattributed": 0,
+   "saveLoadAllIdentical": true,
+   "advanceFailures": 0,
+   "income": {
+    "conquista": 18300,
+    "sponsor_monthly": 16248,
+    "torneio": 4432,
+    "patrocinio_renovacao": 2562,
+    "patrocinio_luvas": 1366,
+    "investment_income": 810,
+    "partida": 730
+   },
+   "expense": {
+    "treino": 4514,
+    "folha_mensal": 1782,
+    "parceria": 1055,
+    "inscricao": 755,
+    "treinador_luvas": 200,
+    "equipamento": 173
+   }
+  },
+  {
+   "days": 365,
+   "profile": "equilibrado",
+   "seeds": [
+    1,
+    2,
+    3
+   ],
+   "ovrBaseEnd": {
+    "mean": 42.9,
+    "min": 42,
+    "max": 44.1
+   },
+   "ovrBaseGain": {
+    "mean": 21.1,
+    "min": 20.2,
+    "max": 22.3
+   },
+   "ovrEffectiveEnd": {
+    "mean": 43.6,
+    "min": 42.7,
+    "max": 44.8
+   },
+   "equipApplied": {
+    "mean": 7,
+    "min": 7,
+    "max": 7
+   },
+   "rankEnd": {
+    "mean": 243.7,
+    "min": 163,
+    "max": 292
+   },
+   "rankBest": {
+    "mean": 243.3,
+    "min": 162,
+    "max": 292
+   },
+   "matches": {
+    "mean": 47.3,
+    "min": 45,
+    "max": 51
+   },
+   "winRate": {
+    "mean": 29.2,
+    "min": 23.9,
+    "max": 39.2
+   },
+   "titles": {
+    "mean": 0.7,
+    "min": 0,
+    "max": 1
+   },
+   "tournaments": {
+    "mean": 34,
+    "min": 32,
+    "max": 35
+   },
+   "trainingSessions": {
+    "mean": 394,
+    "min": 368,
+    "max": 418
+   },
+   "forfeits": {
+    "mean": 2,
+    "min": 1,
+    "max": 4
+   },
+   "finalCoins": {
+    "mean": 14613,
+    "min": 11108,
+    "max": 18415
+   },
+   "netWorth": {
+    "mean": 25503.7,
+    "min": 21237,
+    "max": 31505
+   },
+   "minCoins": {
+    "mean": 214.3,
+    "min": 103,
+    "max": 437
+   },
+   "negativeWeeks": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "totalIncome": {
+    "mean": 45452.7,
+    "min": 42190,
+    "max": 49468
+   },
+   "totalExpense": {
+    "mean": 20849,
+    "min": 18863,
+    "max": 24363
+   },
+   "equipmentSpend": {
+    "mean": 1320,
+    "min": 1320,
+    "max": 1320
+   },
+   "purchases": {
+    "mean": 6,
+    "min": 6,
+    "max": 6
+   },
+   "coinsPerEffectivePoint": {
+    "mean": 189,
+    "min": 189,
+    "max": 189
+   },
+   "trainingShareOfExpense": {
+    "mean": 65.4,
+    "min": 58.7,
+    "max": 69.8
+   },
+   "equipmentShareOfExpense": {
+    "mean": 6.4,
+    "min": 5.4,
+    "max": 7
+   },
+   "sponsorsSigned": {
+    "mean": 4,
+    "min": 4,
+    "max": 4
+   },
+   "sponsorMonthlyEnd": {
+    "mean": 1465.7,
+    "min": 1425,
+    "max": 1510
+   },
+   "sponsorRenewals": {
+    "mean": 7.7,
+    "min": 7,
+    "max": 8
+   },
+   "coachHires": {
+    "mean": 1,
+    "min": 1,
+    "max": 1
+   },
+   "staffHires": {
+    "mean": 0.7,
+    "min": 0,
+    "max": 1
+   },
+   "investedAmount": {
+    "mean": 10890.7,
+    "min": 6921,
+    "max": 13090
+   },
+   "errors": 0,
+   "violations": 0,
+   "unattributed": 0,
+   "saveLoadAllIdentical": true,
+   "advanceFailures": 0,
+   "income": {
+    "sponsor_monthly": 16252,
+    "conquista": 14733,
+    "torneio": 9557,
+    "patrocinio_renovacao": 2570,
+    "patrocinio_luvas": 1366,
+    "partida": 753,
+    "investment_income": 222
+   },
+   "expense": {
+    "treino": 13513,
+    "folha_mensal": 3621,
+    "equipamento": 1320,
+    "inscricao": 1273,
+    "parceria": 922,
+    "treinador_luvas": 200
+   }
+  },
+  {
+   "days": 365,
+   "profile": "competitivo",
+   "seeds": [
+    1,
+    2,
+    3
+   ],
+   "ovrBaseEnd": {
+    "mean": 41.2,
+    "min": 39.9,
+    "max": 42.3
+   },
+   "ovrBaseGain": {
+    "mean": 19.4,
+    "min": 18.1,
+    "max": 20.5
+   },
+   "ovrEffectiveEnd": {
+    "mean": 43.1,
+    "min": 41.7,
+    "max": 44.3
+   },
+   "equipApplied": {
+    "mean": 19.7,
+    "min": 18,
+    "max": 21
+   },
+   "rankEnd": {
+    "mean": 248.3,
+    "min": 234,
+    "max": 272
+   },
+   "rankBest": {
+    "mean": 248.3,
+    "min": 234,
+    "max": 272
+   },
+   "matches": {
+    "mean": 36.7,
+    "min": 34,
+    "max": 40
+   },
+   "winRate": {
+    "mean": 13.2,
+    "min": 8.3,
+    "max": 22.5
+   },
+   "titles": {
+    "mean": 0.3,
+    "min": 0,
+    "max": 1
+   },
+   "tournaments": {
+    "mean": 32,
+    "min": 31,
+    "max": 33
+   },
+   "trainingSessions": {
+    "mean": 327,
+    "min": 314,
+    "max": 343
+   },
+   "forfeits": {
+    "mean": 1,
+    "min": 0,
+    "max": 2
+   },
+   "finalCoins": {
+    "mean": 4666.3,
+    "min": 4121,
+    "max": 5208
+   },
+   "netWorth": {
+    "mean": 4666.3,
+    "min": 4121,
+    "max": 5208
+   },
+   "minCoins": {
+    "mean": -403,
+    "min": -1267,
+    "max": 29
+   },
+   "negativeWeeks": {
+    "mean": 1.7,
+    "min": 0,
+    "max": 5
+   },
+   "totalIncome": {
+    "mean": 43801,
+    "min": 42535,
+    "max": 45757
+   },
+   "totalExpense": {
+    "mean": 40034.7,
+    "min": 39314,
+    "max": 41449
+   },
+   "equipmentSpend": {
+    "mean": 13379,
+    "min": 10540,
+    "max": 15718
+   },
+   "purchases": {
+    "mean": 14.7,
+    "min": 13,
+    "max": 16
+   },
+   "coinsPerEffectivePoint": {
+    "mean": 676,
+    "min": 586,
+    "max": 748
+   },
+   "trainingShareOfExpense": {
+    "mean": 31.9,
+    "min": 29.2,
+    "max": 34.6
+   },
+   "equipmentShareOfExpense": {
+    "mean": 33.6,
+    "min": 25.4,
+    "max": 40
+   },
+   "sponsorsSigned": {
+    "mean": 4,
+    "min": 4,
+    "max": 4
+   },
+   "sponsorMonthlyEnd": {
+    "mean": 1470,
+    "min": 1437,
+    "max": 1498
+   },
+   "sponsorRenewals": {
+    "mean": 7.7,
+    "min": 7,
+    "max": 8
+   },
+   "coachHires": {
+    "mean": 2,
+    "min": 2,
+    "max": 2
+   },
+   "staffHires": {
+    "mean": 1,
+    "min": 1,
+    "max": 1
+   },
+   "investedAmount": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "errors": 0,
+   "violations": 0,
+   "unattributed": 0,
+   "saveLoadAllIdentical": true,
+   "advanceFailures": 0,
+   "income": {
+    "sponsor_monthly": 16398,
+    "conquista": 13000,
+    "torneio": 9962,
+    "patrocinio_renovacao": 2609,
+    "patrocinio_luvas": 1366,
+    "partida": 467
+   },
+   "expense": {
+    "equipamento": 13379,
+    "treino": 12758,
+    "folha_mensal": 9420,
+    "inscricao": 1952,
+    "treinador_luvas": 1467,
+    "parceria": 867,
+    "staff_rescisao": 192
+   }
+  },
+  {
+   "days": 730,
+   "profile": "economico",
+   "seeds": [
+    1,
+    2
+   ],
+   "ovrBaseEnd": {
+    "mean": 41.3,
+    "min": 39.7,
+    "max": 42.9
+   },
+   "ovrBaseGain": {
+    "mean": 19.5,
+    "min": 17.9,
+    "max": 21.1
+   },
+   "ovrEffectiveEnd": {
+    "mean": 41.6,
+    "min": 40,
+    "max": 43.2
+   },
+   "equipApplied": {
+    "mean": 3,
+    "min": 3,
+    "max": 3
+   },
+   "rankEnd": {
+    "mean": 305.5,
+    "min": 299,
+    "max": 312
+   },
+   "rankBest": {
+    "mean": 304,
+    "min": 299,
+    "max": 309
+   },
+   "matches": {
+    "mean": 86,
+    "min": 84,
+    "max": 88
+   },
+   "winRate": {
+    "mean": 12.2,
+    "min": 9.5,
+    "max": 14.8
+   },
+   "titles": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "tournaments": {
+    "mean": 75.5,
+    "min": 75,
+    "max": 76
+   },
+   "trainingSessions": {
+    "mean": 403.5,
+    "min": 397,
+    "max": 410
+   },
+   "forfeits": {
+    "mean": 2,
+    "min": 1,
+    "max": 3
+   },
+   "finalCoins": {
+    "mean": 4757.5,
+    "min": 4632,
+    "max": 4883
+   },
+   "netWorth": {
+    "mean": 70711.5,
+    "min": 70397,
+    "max": 71026
+   },
+   "minCoins": {
+    "mean": 707,
+    "min": 707,
+    "max": 707
+   },
+   "negativeWeeks": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "totalIncome": {
+    "mean": 90803.5,
+    "min": 90742,
+    "max": 90865
+   },
+   "totalExpense": {
+    "mean": 20992,
+    "min": 20739,
+    "max": 21245
+   },
+   "equipmentSpend": {
+    "mean": 173,
+    "min": 173,
+    "max": 173
+   },
+   "purchases": {
+    "mean": 3,
+    "min": 3,
+    "max": 3
+   },
+   "coinsPerEffectivePoint": {
+    "mean": 58,
+    "min": 58,
+    "max": 58
+   },
+   "trainingShareOfExpense": {
+    "mean": 52.3,
+    "min": 51.1,
+    "max": 53.5
+   },
+   "equipmentShareOfExpense": {
+    "mean": 0.8,
+    "min": 0.8,
+    "max": 0.8
+   },
+   "sponsorsSigned": {
+    "mean": 4,
+    "min": 4,
+    "max": 4
+   },
+   "sponsorMonthlyEnd": {
+    "mean": 1380,
+    "min": 1344,
+    "max": 1416
+   },
+   "sponsorRenewals": {
+    "mean": 18,
+    "min": 18,
+    "max": 18
+   },
+   "coachHires": {
+    "mean": 1,
+    "min": 1,
+    "max": 1
+   },
+   "staffHires": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "investedAmount": {
+    "mean": 65954,
+    "min": 65514,
+    "max": 66394
+   },
+   "errors": 0,
+   "violations": 0,
+   "unattributed": 0,
+   "saveLoadAllIdentical": true,
+   "advanceFailures": 0,
+   "income": {
+    "sponsor_monthly": 33697,
+    "conquista": 30300,
+    "torneio": 14844,
+    "patrocinio_renovacao": 5999,
+    "investment_income": 3499,
+    "patrocinio_luvas": 1396,
+    "partida": 1070
+   },
+   "expense": {
+    "treino": 10972,
+    "folha_mensal": 4739,
+    "inscricao": 2920,
+    "parceria": 1989,
+    "treinador_luvas": 200,
+    "equipamento": 173
+   }
+  },
+  {
+   "days": 730,
+   "profile": "equilibrado",
+   "seeds": [
+    1,
+    2
+   ],
+   "ovrBaseEnd": {
+    "mean": 50,
+    "min": 48.6,
+    "max": 51.4
+   },
+   "ovrBaseGain": {
+    "mean": 28.2,
+    "min": 26.8,
+    "max": 29.6
+   },
+   "ovrEffectiveEnd": {
+    "mean": 50.7,
+    "min": 49.3,
+    "max": 52.1
+   },
+   "equipApplied": {
+    "mean": 7,
+    "min": 7,
+    "max": 7
+   },
+   "rankEnd": {
+    "mean": 109,
+    "min": 89,
+    "max": 129
+   },
+   "rankBest": {
+    "mean": 109,
+    "min": 89,
+    "max": 129
+   },
+   "matches": {
+    "mean": 80.5,
+    "min": 77,
+    "max": 84
+   },
+   "winRate": {
+    "mean": 15.6,
+    "min": 15.5,
+    "max": 15.6
+   },
+   "titles": {
+    "mean": 0.5,
+    "min": 0,
+    "max": 1
+   },
+   "tournaments": {
+    "mean": 68.5,
+    "min": 66,
+    "max": 71
+   },
+   "trainingSessions": {
+    "mean": 817,
+    "min": 790,
+    "max": 844
+   },
+   "forfeits": {
+    "mean": 3.5,
+    "min": 3,
+    "max": 4
+   },
+   "finalCoins": {
+    "mean": 14631,
+    "min": 12864,
+    "max": 16398
+   },
+   "netWorth": {
+    "mean": 49325,
+    "min": 48899,
+    "max": 49751
+   },
+   "minCoins": {
+    "mean": 270,
+    "min": 103,
+    "max": 437
+   },
+   "negativeWeeks": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "totalIncome": {
+    "mean": 111109,
+    "min": 106533,
+    "max": 115685
+   },
+   "totalExpense": {
+    "mean": 62684,
+    "min": 57682,
+    "max": 67686
+   },
+   "equipmentSpend": {
+    "mean": 1320,
+    "min": 1320,
+    "max": 1320
+   },
+   "purchases": {
+    "mean": 6,
+    "min": 6,
+    "max": 6
+   },
+   "coinsPerEffectivePoint": {
+    "mean": 189,
+    "min": 189,
+    "max": 189
+   },
+   "trainingShareOfExpense": {
+    "mean": 57.6,
+    "min": 56.2,
+    "max": 59
+   },
+   "equipmentShareOfExpense": {
+    "mean": 2.2,
+    "min": 2,
+    "max": 2.3
+   },
+   "sponsorsSigned": {
+    "mean": 4,
+    "min": 4,
+    "max": 4
+   },
+   "sponsorMonthlyEnd": {
+    "mean": 1396,
+    "min": 1376,
+    "max": 1416
+   },
+   "sponsorRenewals": {
+    "mean": 18,
+    "min": 18,
+    "max": 18
+   },
+   "coachHires": {
+    "mean": 1,
+    "min": 1,
+    "max": 1
+   },
+   "staffHires": {
+    "mean": 1.5,
+    "min": 1,
+    "max": 2
+   },
+   "investedAmount": {
+    "mean": 34694,
+    "min": 32501,
+    "max": 36887
+   },
+   "errors": 0,
+   "violations": 0,
+   "unattributed": 0,
+   "saveLoadAllIdentical": true,
+   "advanceFailures": 0,
+   "income": {
+    "torneio": 33976,
+    "sponsor_monthly": 33959,
+    "conquista": 33250,
+    "patrocinio_renovacao": 6054,
+    "investment_income": 1421,
+    "patrocinio_luvas": 1396,
+    "partida": 1055
+   },
+   "expense": {
+    "treino": 36057,
+    "folha_mensal": 15382,
+    "inscricao": 6200,
+    "parceria": 3526,
+    "equipamento": 1320,
+    "treinador_luvas": 200
+   }
+  },
+  {
+   "days": 730,
+   "profile": "competitivo",
+   "seeds": [
+    1,
+    2
+   ],
+   "ovrBaseEnd": {
+    "mean": 49.9,
+    "min": 48.3,
+    "max": 51.5
+   },
+   "ovrBaseGain": {
+    "mean": 28.1,
+    "min": 26.5,
+    "max": 29.7
+   },
+   "ovrEffectiveEnd": {
+    "mean": 52,
+    "min": 50.2,
+    "max": 53.8
+   },
+   "equipApplied": {
+    "mean": 21,
+    "min": 19,
+    "max": 23
+   },
+   "rankEnd": {
+    "mean": 101.5,
+    "min": 83,
+    "max": 120
+   },
+   "rankBest": {
+    "mean": 101.5,
+    "min": 83,
+    "max": 120
+   },
+   "matches": {
+    "mean": 66,
+    "min": 53,
+    "max": 79
+   },
+   "winRate": {
+    "mean": 9.8,
+    "min": 5.7,
+    "max": 13.9
+   },
+   "titles": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "tournaments": {
+    "mean": 59,
+    "min": 50,
+    "max": 68
+   },
+   "trainingSessions": {
+    "mean": 694,
+    "min": 673,
+    "max": 715
+   },
+   "forfeits": {
+    "mean": 2,
+    "min": 1,
+    "max": 3
+   },
+   "finalCoins": {
+    "mean": -1060,
+    "min": -1932,
+    "max": -188
+   },
+   "netWorth": {
+    "mean": -1060,
+    "min": -1932,
+    "max": -188
+   },
+   "minCoins": {
+    "mean": -1599.5,
+    "min": -1932,
+    "max": -1267
+   },
+   "negativeWeeks": {
+    "mean": 4,
+    "min": 1,
+    "max": 7
+   },
+   "totalIncome": {
+    "mean": 97585,
+    "min": 89598,
+    "max": 105572
+   },
+   "totalExpense": {
+    "mean": 99545,
+    "min": 90686,
+    "max": 108404
+   },
+   "equipmentSpend": {
+    "mean": 17505,
+    "min": 11844,
+    "max": 23166
+   },
+   "purchases": {
+    "mean": 16,
+    "min": 14,
+    "max": 18
+   },
+   "coinsPerEffectivePoint": {
+    "mean": 815,
+    "min": 623,
+    "max": 1007
+   },
+   "trainingShareOfExpense": {
+    "mean": 34.8,
+    "min": 30.9,
+    "max": 38.6
+   },
+   "equipmentShareOfExpense": {
+    "mean": 17.3,
+    "min": 13.1,
+    "max": 21.4
+   },
+   "sponsorsSigned": {
+    "mean": 4,
+    "min": 4,
+    "max": 4
+   },
+   "sponsorMonthlyEnd": {
+    "mean": 1396.5,
+    "min": 1344,
+    "max": 1449
+   },
+   "sponsorRenewals": {
+    "mean": 18,
+    "min": 18,
+    "max": 18
+   },
+   "coachHires": {
+    "mean": 4,
+    "min": 3,
+    "max": 5
+   },
+   "staffHires": {
+    "mean": 3,
+    "min": 3,
+    "max": 3
+   },
+   "investedAmount": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "errors": 0,
+   "violations": 0,
+   "unattributed": 0,
+   "saveLoadAllIdentical": true,
+   "advanceFailures": 0,
+   "income": {
+    "torneio": 37031,
+    "sponsor_monthly": 34028,
+    "conquista": 18250,
+    "patrocinio_renovacao": 6081,
+    "patrocinio_luvas": 1396,
+    "partida": 800
+   },
+   "expense": {
+    "folha_mensal": 35565,
+    "treino": 34285,
+    "equipamento": 17505,
+    "inscricao": 6293,
+    "treinador_luvas": 4250,
+    "parceria": 1361,
+    "staff_rescisao": 288
+   }
+  }
+ ],
+ "careers": [
+  {
+   "profile": "competitivo",
+   "seed": 1,
+   "days": 30,
+   "resultHash": "7bb9dcd07ff051f6",
+   "seconds": 51,
+   "saveMB": 3.95,
+   "sport": {
+    "ovrBaseStart": 21.8,
+    "ovrBaseEnd": 23.6,
+    "ovrBaseGain": 1.8,
+    "ovrEffectiveEnd": 23.9,
+    "equipApplied": 3,
+    "rankEnd": 1001,
+    "rankBest": 1001,
+    "careerLevel": 4,
+    "fans": 59,
+    "matches": 1,
+    "wins": 0,
+    "winRate": 0,
+    "tournaments": 1,
+    "titles": 0,
+    "tournamentsByTier": {
+     "Bronze": 1
+    },
+    "registrations": 5,
+    "forfeits": 0,
+    "trainingSessions": 27,
+    "trainingByIntensity": {
+     "intenso": 5,
+     "moderado": 22
+    },
+    "taperDays": 5,
+    "trainingSkippedForCash": 2,
+    "injuredWeeks": 2
+   },
+   "finance": {
+    "startCoins": 900,
+    "finalCoins": 827,
+    "invested": 0,
+    "netWorth": 827,
+    "minCoins": 29,
+    "negativeWeeks": 0,
+    "totalIncome": 1254,
+    "totalExpense": 1327,
+    "income": {
+     "conquista": 1200,
+     "partida": 10,
+     "torneio": 44
+    },
+    "expense": {
+     "equipamento": 677,
+     "inscricao": 70,
+     "treino": 580
+    },
+    "transfer": {},
+    "purchases": 2,
+    "equipmentSpend": 677,
+    "purchasesByRarity": {
+     "comum": 2
+    },
+    "equipmentGainPerPurchase": 1.5,
+    "coinsPerEffectivePoint": 226,
+    "sponsorsSigned": 0,
+    "sponsorTiers": {},
+    "sponsorRenewals": 0,
+    "sponsorMonthlyEnd": 0,
+    "coachHires": 0,
+    "coachSalaryEnd": 0,
+    "staffHires": 0,
+    "staffMonthlyEnd": 0,
+    "partnerChanges": 1,
+    "partnerRenewals": 0,
+    "partnerSalaryEnd": 80,
+    "investments": 0,
+    "investedAmount": 0,
+    "dismissals": 0,
+    "trainingShareOfExpense": 43.7,
+    "equipmentShareOfExpense": 51
+   },
+   "integrity": {
+    "errors": 0,
+    "errorSamples": [],
+    "violations": 0,
+    "violationSamples": [],
+    "checks": 6,
+    "unattributed": 0,
+    "saveLoadIdentical": true,
+    "saveLoadMismatches": [],
+    "advanceFailures": 0,
+    "legacyContracts": {
+     "sponsor-002": {
+      "name": "Sul Energia",
+      "monthly_salary": null,
+      "monthly_value": 300,
+      "end": "2026-06-30",
+      "lastSeenDay": 30
+     }
+    }
+   }
+  },
+  {
+   "profile": "competitivo",
+   "seed": 2,
+   "days": 30,
+   "resultHash": "188e900baa722297",
+   "seconds": 32,
+   "saveMB": 3.94,
+   "sport": {
+    "ovrBaseStart": 21.8,
+    "ovrBaseEnd": 23.5,
+    "ovrBaseGain": 1.7,
+    "ovrEffectiveEnd": 23.8,
+    "equipApplied": 3,
+    "rankEnd": 1001,
+    "rankBest": 1001,
+    "careerLevel": 4,
+    "fans": 59,
+    "matches": 0,
+    "wins": 0,
+    "winRate": null,
+    "tournaments": 0,
+    "titles": 0,
+    "tournamentsByTier": {},
+    "registrations": 5,
+    "forfeits": 1,
+    "trainingSessions": 25,
+    "trainingByIntensity": {
+     "intenso": 3,
+     "moderado": 22
+    },
+    "taperDays": 1,
+    "trainingSkippedForCash": 12,
+    "injuredWeeks": 2
+   },
+   "finance": {
+    "startCoins": 900,
+    "finalCoins": 529,
+    "invested": 0,
+    "netWorth": 529,
+    "minCoins": 29,
+    "negativeWeeks": 0,
+    "totalIncome": 900,
+    "totalExpense": 1271,
+    "income": {
+     "conquista": 900
+    },
+    "expense": {
+     "equipamento": 677,
+     "inscricao": 70,
+     "treino": 524
+    },
+    "transfer": {},
+    "purchases": 2,
+    "equipmentSpend": 677,
+    "purchasesByRarity": {
+     "comum": 2
+    },
+    "equipmentGainPerPurchase": 1.5,
+    "coinsPerEffectivePoint": 226,
+    "sponsorsSigned": 0,
+    "sponsorTiers": {},
+    "sponsorRenewals": 0,
+    "sponsorMonthlyEnd": 0,
+    "coachHires": 0,
+    "coachSalaryEnd": 0,
+    "staffHires": 0,
+    "staffMonthlyEnd": 0,
+    "partnerChanges": 1,
+    "partnerRenewals": 0,
+    "partnerSalaryEnd": 80,
+    "investments": 0,
+    "investedAmount": 0,
+    "dismissals": 0,
+    "trainingShareOfExpense": 41.2,
+    "equipmentShareOfExpense": 53.3
+   },
+   "integrity": {
+    "errors": 0,
+    "errorSamples": [],
+    "violations": 0,
+    "violationSamples": [],
+    "checks": 6,
+    "unattributed": 0,
+    "saveLoadIdentical": true,
+    "saveLoadMismatches": [],
+    "advanceFailures": 0,
+    "legacyContracts": {
+     "sponsor-002": {
+      "name": "Sul Energia",
+      "monthly_salary": null,
+      "monthly_value": 300,
+      "end": "2026-06-30",
+      "lastSeenDay": 30
+     }
+    }
+   }
+  },
+  {
+   "profile": "competitivo",
+   "seed": 3,
+   "days": 30,
+   "resultHash": "ebe19b107e0f02f4",
+   "seconds": 30,
+   "saveMB": 3.95,
+   "sport": {
+    "ovrBaseStart": 21.8,
+    "ovrBaseEnd": 23.8,
+    "ovrBaseGain": 2,
+    "ovrEffectiveEnd": 24.1,
+    "equipApplied": 3,
+    "rankEnd": 1001,
+    "rankBest": 1001,
+    "careerLevel": 4,
+    "fans": 59,
+    "matches": 1,
+    "wins": 0,
+    "winRate": 0,
+    "tournaments": 1,
+    "titles": 0,
+    "tournamentsByTier": {
+     "Bronze": 1
+    },
+    "registrations": 5,
+    "forfeits": 0,
+    "trainingSessions": 27,
+    "trainingByIntensity": {
+     "intenso": 5,
+     "moderado": 22
+    },
+    "taperDays": 5,
+    "trainingSkippedForCash": 12,
+    "injuredWeeks": 0
+   },
+   "finance": {
+    "startCoins": 900,
+    "finalCoins": 827,
+    "invested": 0,
+    "netWorth": 827,
+    "minCoins": 29,
+    "negativeWeeks": 0,
+    "totalIncome": 1254,
+    "totalExpense": 1327,
+    "income": {
+     "conquista": 1200,
+     "partida": 10,
+     "torneio": 44
+    },
+    "expense": {
+     "equipamento": 677,
+     "inscricao": 70,
+     "treino": 580
+    },
+    "transfer": {},
+    "purchases": 2,
+    "equipmentSpend": 677,
+    "purchasesByRarity": {
+     "comum": 2
+    },
+    "equipmentGainPerPurchase": 1.5,
+    "coinsPerEffectivePoint": 226,
+    "sponsorsSigned": 0,
+    "sponsorTiers": {},
+    "sponsorRenewals": 0,
+    "sponsorMonthlyEnd": 0,
+    "coachHires": 0,
+    "coachSalaryEnd": 0,
+    "staffHires": 0,
+    "staffMonthlyEnd": 0,
+    "partnerChanges": 1,
+    "partnerRenewals": 0,
+    "partnerSalaryEnd": 80,
+    "investments": 0,
+    "investedAmount": 0,
+    "dismissals": 0,
+    "trainingShareOfExpense": 43.7,
+    "equipmentShareOfExpense": 51
+   },
+   "integrity": {
+    "errors": 0,
+    "errorSamples": [],
+    "violations": 0,
+    "violationSamples": [],
+    "checks": 6,
+    "unattributed": 0,
+    "saveLoadIdentical": true,
+    "saveLoadMismatches": [],
+    "advanceFailures": 0,
+    "legacyContracts": {
+     "sponsor-002": {
+      "name": "Sul Energia",
+      "monthly_salary": null,
+      "monthly_value": 300,
+      "end": "2026-06-30",
+      "lastSeenDay": 30
+     }
+    }
+   }
+  },
+  {
+   "profile": "competitivo",
+   "seed": 1,
+   "days": 365,
+   "resultHash": "a8ebc9d31f796446",
+   "seconds": 371,
+   "saveMB": 13.33,
+   "sport": {
+    "ovrBaseStart": 21.8,
+    "ovrBaseEnd": 39.9,
+    "ovrBaseGain": 18.1,
+    "ovrEffectiveEnd": 41.7,
+    "equipApplied": 18,
+    "rankEnd": 234,
+    "rankBest": 234,
+    "careerLevel": 17,
+    "fans": 100,
+    "matches": 36,
+    "wins": 3,
+    "winRate": 8.3,
+    "tournaments": 33,
+    "titles": 0,
+    "tournamentsByTier": {
+     "Bronze": 5,
+     "Silver": 4,
+     "Gold": 11,
+     "Platinum": 10,
+     "Masters": 3
+    },
+    "registrations": 33,
+    "forfeits": 0,
+    "trainingSessions": 314,
+    "trainingByIntensity": {
+     "intenso": 72,
+     "moderado": 242
+    },
+    "taperDays": 167,
+    "trainingSkippedForCash": 37,
+    "injuredWeeks": 3
+   },
+   "finance": {
+    "startCoins": 900,
+    "finalCoins": 5208,
+    "invested": 0,
+    "netWorth": 5208,
+    "minCoins": -1267,
+    "negativeWeeks": 5,
+    "totalIncome": 45757,
+    "totalExpense": 41449,
+    "income": {
+     "conquista": 13000,
+     "partida": 420,
+     "torneio": 10965,
+     "patrocinio_luvas": 1468,
+     "sponsor_monthly": 17130,
+     "patrocinio_renovacao": 2774
+    },
+    "expense": {
+     "equipamento": 10540,
+     "inscricao": 2065,
+     "treino": 12112,
+     "parceria": 682,
+     "treinador_luvas": 3300,
+     "folha_mensal": 12175,
+     "staff_rescisao": 575
+    },
+    "transfer": {},
+    "purchases": 13,
+    "equipmentSpend": 10540,
+    "purchasesByRarity": {
+     "comum": 7,
+     "incomum": 1,
+     "raro": 5
+    },
+    "equipmentGainPerPurchase": 1.4,
+    "coinsPerEffectivePoint": 586,
+    "sponsorsSigned": 4,
+    "sponsorTiers": {
+     "Bronze": 4
+    },
+    "sponsorRenewals": 8,
+    "sponsorMonthlyEnd": 1475,
+    "coachHires": 2,
+    "coachSalaryEnd": 0,
+    "staffHires": 1,
+    "staffMonthlyEnd": 0,
+    "partnerChanges": 4,
+    "partnerRenewals": 6,
+    "partnerSalaryEnd": 0,
+    "investments": 0,
+    "investedAmount": 0,
+    "dismissals": 2,
+    "trainingShareOfExpense": 29.2,
+    "equipmentShareOfExpense": 25.4
+   },
+   "integrity": {
+    "errors": 0,
+    "errorSamples": [],
+    "violations": 0,
+    "violationSamples": [],
+    "checks": 54,
+    "unattributed": 0,
+    "saveLoadIdentical": true,
+    "saveLoadMismatches": [],
+    "advanceFailures": 0,
+    "legacyContracts": {
+     "sponsor-002": {
+      "name": "Sul Energia",
+      "monthly_salary": null,
+      "monthly_value": 300,
+      "end": "2026-06-30",
+      "lastSeenDay": 175
+     }
+    }
+   }
+  },
+  {
+   "profile": "competitivo",
+   "seed": 2,
+   "days": 365,
+   "resultHash": "fb51c2f902cc9df7",
+   "seconds": 313,
+   "saveMB": 13.34,
+   "sport": {
+    "ovrBaseStart": 21.8,
+    "ovrBaseEnd": 42.3,
+    "ovrBaseGain": 20.5,
+    "ovrEffectiveEnd": 44.3,
+    "equipApplied": 20,
+    "rankEnd": 239,
+    "rankBest": 239,
+    "careerLevel": 17,
+    "fans": 100,
+    "matches": 34,
+    "wins": 3,
+    "winRate": 8.8,
+    "tournaments": 31,
+    "titles": 0,
+    "tournamentsByTier": {
+     "Silver": 4,
+     "Bronze": 4,
+     "Gold": 11,
+     "Platinum": 10,
+     "Masters": 2
+    },
+    "registrations": 33,
+    "forfeits": 2,
+    "trainingSessions": 343,
+    "trainingByIntensity": {
+     "intenso": 76,
+     "moderado": 267
+    },
+    "taperDays": 158,
+    "trainingSkippedForCash": 25,
+    "injuredWeeks": 3
+   },
+   "finance": {
+    "startCoins": 900,
+    "finalCoins": 4670,
+    "invested": 0,
+    "netWorth": 4670,
+    "minCoins": 29,
+    "negativeWeeks": 0,
+    "totalIncome": 43111,
+    "totalExpense": 39341,
+    "income": {
+     "conquista": 13000,
+     "partida": 400,
+     "torneio": 9732,
+     "patrocinio_luvas": 1323,
+     "sponsor_monthly": 16174,
+     "patrocinio_renovacao": 2482
+    },
+    "expense": {
+     "equipamento": 13879,
+     "inscricao": 2065,
+     "treino": 13616,
+     "parceria": 940,
+     "treinador_luvas": 550,
+     "folha_mensal": 8291
+    },
+    "transfer": {},
+    "purchases": 15,
+    "equipmentSpend": 13879,
+    "purchasesByRarity": {
+     "comum": 7,
+     "incomum": 1,
+     "raro": 7
+    },
+    "equipmentGainPerPurchase": 1.3,
+    "coinsPerEffectivePoint": 694,
+    "sponsorsSigned": 4,
+    "sponsorTiers": {
+     "Bronze": 4
+    },
+    "sponsorRenewals": 7,
+    "sponsorMonthlyEnd": 1498,
+    "coachHires": 2,
+    "coachSalaryEnd": 500,
+    "staffHires": 1,
+    "staffMonthlyEnd": 850,
+    "partnerChanges": 3,
+    "partnerRenewals": 3,
+    "partnerSalaryEnd": 100,
+    "investments": 0,
+    "investedAmount": 0,
+    "dismissals": 0,
+    "trainingShareOfExpense": 34.6,
+    "equipmentShareOfExpense": 35.3
+   },
+   "integrity": {
+    "errors": 0,
+    "errorSamples": [],
+    "violations": 0,
+    "violationSamples": [],
+    "checks": 54,
+    "unattributed": 0,
+    "saveLoadIdentical": true,
+    "saveLoadMismatches": [],
+    "advanceFailures": 0,
+    "legacyContracts": {
+     "sponsor-002": {
+      "name": "Sul Energia",
+      "monthly_salary": null,
+      "monthly_value": 300,
+      "end": "2026-06-30",
+      "lastSeenDay": 175
+     }
+    }
+   }
+  },
+  {
+   "profile": "competitivo",
+   "seed": 3,
+   "days": 365,
+   "resultHash": "b119edabb85d1275",
+   "seconds": 407,
+   "saveMB": 13.38,
+   "sport": {
+    "ovrBaseStart": 21.8,
+    "ovrBaseEnd": 41.3,
+    "ovrBaseGain": 19.5,
+    "ovrEffectiveEnd": 43.4,
+    "equipApplied": 21,
+    "rankEnd": 272,
+    "rankBest": 272,
+    "careerLevel": 17,
+    "fans": 100,
+    "matches": 40,
+    "wins": 9,
+    "winRate": 22.5,
+    "tournaments": 32,
+    "titles": 1,
+    "tournamentsByTier": {
+     "Bronze": 5,
+     "Silver": 5,
+     "Gold": 12,
+     "Platinum": 9,
+     "Masters": 1
+    },
+    "registrations": 33,
+    "forfeits": 1,
+    "trainingSessions": 324,
+    "trainingByIntensity": {
+     "intenso": 74,
+     "moderado": 250
+    },
+    "taperDays": 179,
+    "trainingSkippedForCash": 39,
+    "injuredWeeks": 1
+   },
+   "finance": {
+    "startCoins": 900,
+    "finalCoins": 4121,
+    "invested": 0,
+    "netWorth": 4121,
+    "minCoins": 29,
+    "negativeWeeks": 0,
+    "totalIncome": 42535,
+    "totalExpense": 39314,
+    "income": {
+     "conquista": 13000,
+     "partida": 580,
+     "torneio": 9189,
+     "patrocinio_luvas": 1306,
+     "sponsor_monthly": 15890,
+     "patrocinio_renovacao": 2570
+    },
+    "expense": {
+     "equipamento": 15718,
+     "inscricao": 1725,
+     "treino": 12547,
+     "parceria": 980,
+     "treinador_luvas": 550,
+     "folha_mensal": 7794
+    },
+    "transfer": {},
+    "purchases": 16,
+    "equipmentSpend": 15718,
+    "purchasesByRarity": {
+     "comum": 7,
+     "incomum": 1,
+     "raro": 8
+    },
+    "equipmentGainPerPurchase": 1.3,
+    "coinsPerEffectivePoint": 748,
+    "sponsorsSigned": 4,
+    "sponsorTiers": {
+     "Bronze": 4
+    },
+    "sponsorRenewals": 8,
+    "sponsorMonthlyEnd": 1437,
+    "coachHires": 2,
+    "coachSalaryEnd": 500,
+    "staffHires": 1,
+    "staffMonthlyEnd": 900,
+    "partnerChanges": 3,
+    "partnerRenewals": 4,
+    "partnerSalaryEnd": 100,
+    "investments": 0,
+    "investedAmount": 0,
+    "dismissals": 0,
+    "trainingShareOfExpense": 31.9,
+    "equipmentShareOfExpense": 40
+   },
+   "integrity": {
+    "errors": 0,
+    "errorSamples": [],
+    "violations": 0,
+    "violationSamples": [],
+    "checks": 54,
+    "unattributed": 0,
+    "saveLoadIdentical": true,
+    "saveLoadMismatches": [],
+    "advanceFailures": 0,
+    "legacyContracts": {
+     "sponsor-002": {
+      "name": "Sul Energia",
+      "monthly_salary": null,
+      "monthly_value": 300,
+      "end": "2026-06-30",
+      "lastSeenDay": 175
+     }
+    }
+   }
+  },
+  {
+   "profile": "competitivo",
+   "seed": 1,
+   "days": 730,
+   "resultHash": "b025385469037451",
+   "seconds": 1142,
+   "saveMB": 19.54,
+   "sport": {
+    "ovrBaseStart": 21.8,
+    "ovrBaseEnd": 48.3,
+    "ovrBaseGain": 26.5,
+    "ovrEffectiveEnd": 50.2,
+    "equipApplied": 19,
+    "rankEnd": 120,
+    "rankBest": 120,
+    "careerLevel": 25,
+    "fans": 100,
+    "matches": 53,
+    "wins": 3,
+    "winRate": 5.7,
+    "tournaments": 50,
+    "titles": 0,
+    "tournamentsByTier": {
+     "Bronze": 5,
+     "Silver": 4,
+     "Gold": 12,
+     "Platinum": 18,
+     "Masters": 8,
+     "Elite": 2,
+     "Crown": 1
+    },
+    "registrations": 51,
+    "forfeits": 1,
+    "trainingSessions": 715,
+    "trainingByIntensity": {
+     "intenso": 143,
+     "moderado": 572
+    },
+    "taperDays": 253,
+    "trainingSkippedForCash": 110,
+    "injuredWeeks": 5
+   },
+   "finance": {
+    "startCoins": 900,
+    "finalCoins": -188,
+    "invested": 0,
+    "netWorth": -188,
+    "minCoins": -1267,
+    "negativeWeeks": 7,
+    "totalIncome": 89598,
+    "totalExpense": 90686,
+    "income": {
+     "conquista": 17500,
+     "partida": 590,
+     "torneio": 28898,
+     "patrocinio_luvas": 1468,
+     "sponsor_monthly": 34840,
+     "patrocinio_renovacao": 6302
+    },
+    "expense": {
+     "equipamento": 11844,
+     "inscricao": 5050,
+     "treino": 35043,
+     "parceria": 682,
+     "treinador_luvas": 5550,
+     "folha_mensal": 31942,
+     "staff_rescisao": 575
+    },
+    "transfer": {},
+    "purchases": 14,
+    "equipmentSpend": 11844,
+    "purchasesByRarity": {
+     "comum": 7,
+     "incomum": 1,
+     "raro": 6
+    },
+    "equipmentGainPerPurchase": 1.4,
+    "coinsPerEffectivePoint": 623,
+    "sponsorsSigned": 4,
+    "sponsorTiers": {
+     "Bronze": 4
+    },
+    "sponsorRenewals": 18,
+    "sponsorMonthlyEnd": 1449,
+    "coachHires": 5,
+    "coachSalaryEnd": 550,
+    "staffHires": 3,
+    "staffMonthlyEnd": 1850,
+    "partnerChanges": 12,
+    "partnerRenewals": 22,
+    "partnerSalaryEnd": 100,
+    "investments": 0,
+    "investedAmount": 0,
+    "dismissals": 3,
+    "trainingShareOfExpense": 38.6,
+    "equipmentShareOfExpense": 13.1
+   },
+   "integrity": {
+    "errors": 0,
+    "errorSamples": [],
+    "violations": 0,
+    "violationSamples": [],
+    "checks": 106,
+    "unattributed": 0,
+    "saveLoadIdentical": true,
+    "saveLoadMismatches": [],
+    "advanceFailures": 0,
+    "legacyContracts": {
+     "sponsor-002": {
+      "name": "Sul Energia",
+      "monthly_salary": null,
+      "monthly_value": 300,
+      "end": "2026-06-30",
+      "lastSeenDay": 175
+     }
+    }
+   }
+  },
+  {
+   "profile": "competitivo",
+   "seed": 2,
+   "days": 730,
+   "resultHash": "7b21309b36d0bb6a",
+   "seconds": 1103,
+   "saveMB": 19.7,
+   "sport": {
+    "ovrBaseStart": 21.8,
+    "ovrBaseEnd": 51.5,
+    "ovrBaseGain": 29.7,
+    "ovrEffectiveEnd": 53.8,
+    "equipApplied": 23,
+    "rankEnd": 83,
+    "rankBest": 83,
+    "careerLevel": 26,
+    "fans": 100,
+    "matches": 79,
+    "wins": 11,
+    "winRate": 13.9,
+    "tournaments": 68,
+    "titles": 0,
+    "tournamentsByTier": {
+     "Silver": 4,
+     "Bronze": 4,
+     "Gold": 16,
+     "Platinum": 26,
+     "Masters": 13,
+     "Elite": 4,
+     "Crown": 1
+    },
+    "registrations": 71,
+    "forfeits": 3,
+    "trainingSessions": 673,
+    "trainingByIntensity": {
+     "intenso": 172,
+     "moderado": 501
+    },
+    "taperDays": 361,
+    "trainingSkippedForCash": 42,
+    "injuredWeeks": 3
+   },
+   "finance": {
+    "startCoins": 900,
+    "finalCoins": -1932,
+    "invested": 0,
+    "netWorth": -1932,
+    "minCoins": -1932,
+    "negativeWeeks": 1,
+    "totalIncome": 105572,
+    "totalExpense": 108404,
+    "income": {
+     "conquista": 19000,
+     "partida": 1010,
+     "torneio": 45164,
+     "patrocinio_luvas": 1323,
+     "sponsor_monthly": 33215,
+     "patrocinio_renovacao": 5860
+    },
+    "expense": {
+     "equipamento": 23166,
+     "inscricao": 7535,
+     "treino": 33526,
+     "parceria": 2040,
+     "treinador_luvas": 2950,
+     "folha_mensal": 39187
+    },
+    "transfer": {},
+    "purchases": 18,
+    "equipmentSpend": 23166,
+    "purchasesByRarity": {
+     "comum": 7,
+     "incomum": 1,
+     "raro": 9,
+     "epico": 1
+    },
+    "equipmentGainPerPurchase": 1.3,
+    "coinsPerEffectivePoint": 1007,
+    "sponsorsSigned": 4,
+    "sponsorTiers": {
+     "Bronze": 4
+    },
+    "sponsorRenewals": 18,
+    "sponsorMonthlyEnd": 1344,
+    "coachHires": 3,
+    "coachSalaryEnd": 1550,
+    "staffHires": 3,
+    "staffMonthlyEnd": 2200,
+    "partnerChanges": 3,
+    "partnerRenewals": 5,
+    "partnerSalaryEnd": 100,
+    "investments": 0,
+    "investedAmount": 0,
+    "dismissals": 0,
+    "trainingShareOfExpense": 30.9,
+    "equipmentShareOfExpense": 21.4
+   },
+   "integrity": {
+    "errors": 0,
+    "errorSamples": [],
+    "violations": 0,
+    "violationSamples": [],
+    "checks": 106,
+    "unattributed": 0,
+    "saveLoadIdentical": true,
+    "saveLoadMismatches": [],
+    "advanceFailures": 0,
+    "legacyContracts": {
+     "sponsor-002": {
+      "name": "Sul Energia",
+      "monthly_salary": null,
+      "monthly_value": 300,
+      "end": "2026-06-30",
+      "lastSeenDay": 175
+     }
+    }
+   }
+  },
+  {
+   "profile": "economico",
+   "seed": 1,
+   "days": 30,
+   "resultHash": "9e3985140ab3378f",
+   "seconds": 55,
+   "saveMB": 3.95,
+   "sport": {
+    "ovrBaseStart": 21.8,
+    "ovrBaseEnd": 23.3,
+    "ovrBaseGain": 1.5,
+    "ovrEffectiveEnd": 23.6,
+    "equipApplied": 3,
+    "rankEnd": 995,
+    "rankBest": 995,
+    "careerLevel": 4,
+    "fans": 59,
+    "matches": 2,
+    "wins": 1,
+    "winRate": 50,
+    "tournaments": 1,
+    "titles": 0,
+    "tournamentsByTier": {
+     "Bronze": 1
+    },
+    "registrations": 5,
+    "forfeits": 0,
+    "trainingSessions": 25,
+    "trainingByIntensity": {
+     "leve": 25
+    },
+    "taperDays": 6,
+    "trainingSkippedForCash": 0,
+    "injuredWeeks": 0
+   },
+   "finance": {
+    "startCoins": 900,
+    "finalCoins": 1734,
+    "invested": 0,
+    "netWorth": 1734,
+    "minCoins": 707,
+    "negativeWeeks": 0,
+    "totalIncome": 1427,
+    "totalExpense": 593,
+    "income": {
+     "conquista": 1300,
+     "partida": 40,
+     "torneio": 87
+    },
+    "expense": {
+     "equipamento": 173,
+     "inscricao": 70,
+     "treino": 350
+    },
+    "transfer": {},
+    "purchases": 3,
+    "equipmentSpend": 173,
+    "purchasesByRarity": {
+     "comum": 3
+    },
+    "equipmentGainPerPurchase": 1,
+    "coinsPerEffectivePoint": 58,
+    "sponsorsSigned": 0,
+    "sponsorTiers": {},
+    "sponsorRenewals": 0,
+    "sponsorMonthlyEnd": 0,
+    "coachHires": 0,
+    "coachSalaryEnd": 0,
+    "staffHires": 0,
+    "staffMonthlyEnd": 0,
+    "partnerChanges": 1,
+    "partnerRenewals": 0,
+    "partnerSalaryEnd": 80,
+    "investments": 0,
+    "investedAmount": 0,
+    "dismissals": 0,
+    "trainingShareOfExpense": 59,
+    "equipmentShareOfExpense": 29.2
+   },
+   "integrity": {
+    "errors": 0,
+    "errorSamples": [],
+    "violations": 0,
+    "violationSamples": [],
+    "checks": 6,
+    "unattributed": 0,
+    "saveLoadIdentical": true,
+    "saveLoadMismatches": [],
+    "advanceFailures": 0,
+    "legacyContracts": {
+     "sponsor-002": {
+      "name": "Sul Energia",
+      "monthly_salary": null,
+      "monthly_value": 300,
+      "end": "2026-06-30",
+      "lastSeenDay": 30
+     }
+    }
+   }
+  },
+  {
+   "profile": "economico",
+   "seed": 2,
+   "days": 30,
+   "resultHash": "8c73ba7fa961ae76",
+   "seconds": 32,
+   "saveMB": 3.94,
+   "sport": {
+    "ovrBaseStart": 21.8,
+    "ovrBaseEnd": 23.3,
+    "ovrBaseGain": 1.5,
+    "ovrEffectiveEnd": 23.6,
+    "equipApplied": 3,
+    "rankEnd": 1001,
+    "rankBest": 1001,
+    "careerLevel": 4,
+    "fans": 59,
+    "matches": 0,
+    "wins": 0,
+    "winRate": null,
+    "tournaments": 0,
+    "titles": 0,
+    "tournamentsByTier": {},
+    "registrations": 5,
+    "forfeits": 1,
+    "trainingSessions": 25,
+    "trainingByIntensity": {
+     "leve": 25
+    },
+    "taperDays": 0,
+    "trainingSkippedForCash": 0,
+    "injuredWeeks": 2
+   },
+   "finance": {
+    "startCoins": 900,
+    "finalCoins": 1207,
+    "invested": 0,
+    "netWorth": 1207,
+    "minCoins": 707,
+    "negativeWeeks": 0,
+    "totalIncome": 900,
+    "totalExpense": 593,
+    "income": {
+     "conquista": 900
+    },
+    "expense": {
+     "equipamento": 173,
+     "inscricao": 70,
+     "treino": 350
+    },
+    "transfer": {},
+    "purchases": 3,
+    "equipmentSpend": 173,
+    "purchasesByRarity": {
+     "comum": 3
+    },
+    "equipmentGainPerPurchase": 1,
+    "coinsPerEffectivePoint": 58,
+    "sponsorsSigned": 0,
+    "sponsorTiers": {},
+    "sponsorRenewals": 0,
+    "sponsorMonthlyEnd": 0,
+    "coachHires": 0,
+    "coachSalaryEnd": 0,
+    "staffHires": 0,
+    "staffMonthlyEnd": 0,
+    "partnerChanges": 1,
+    "partnerRenewals": 0,
+    "partnerSalaryEnd": 80,
+    "investments": 0,
+    "investedAmount": 0,
+    "dismissals": 0,
+    "trainingShareOfExpense": 59,
+    "equipmentShareOfExpense": 29.2
+   },
+   "integrity": {
+    "errors": 0,
+    "errorSamples": [],
+    "violations": 0,
+    "violationSamples": [],
+    "checks": 6,
+    "unattributed": 0,
+    "saveLoadIdentical": true,
+    "saveLoadMismatches": [],
+    "advanceFailures": 0,
+    "legacyContracts": {
+     "sponsor-002": {
+      "name": "Sul Energia",
+      "monthly_salary": null,
+      "monthly_value": 300,
+      "end": "2026-06-30",
+      "lastSeenDay": 30
+     }
+    }
+   }
+  },
+  {
+   "profile": "economico",
+   "seed": 3,
+   "days": 30,
+   "resultHash": "608a62743c8d370c",
+   "seconds": 30,
+   "saveMB": 3.95,
+   "sport": {
+    "ovrBaseStart": 21.8,
+    "ovrBaseEnd": 23.4,
+    "ovrBaseGain": 1.6,
+    "ovrEffectiveEnd": 23.7,
+    "equipApplied": 3,
+    "rankEnd": 995,
+    "rankBest": 995,
+    "careerLevel": 4,
+    "fans": 59,
+    "matches": 2,
+    "wins": 1,
+    "winRate": 50,
+    "tournaments": 1,
+    "titles": 0,
+    "tournamentsByTier": {
+     "Bronze": 1
+    },
+    "registrations": 5,
+    "forfeits": 0,
+    "trainingSessions": 25,
+    "trainingByIntensity": {
+     "leve": 25
+    },
+    "taperDays": 6,
+    "trainingSkippedForCash": 0,
+    "injuredWeeks": 0
+   },
+   "finance": {
+    "startCoins": 900,
+    "finalCoins": 1734,
+    "invested": 0,
+    "netWorth": 1734,
+    "minCoins": 707,
+    "negativeWeeks": 0,
+    "totalIncome": 1427,
+    "totalExpense": 593,
+    "income": {
+     "conquista": 1300,
+     "partida": 40,
+     "torneio": 87
+    },
+    "expense": {
+     "equipamento": 173,
+     "inscricao": 70,
+     "treino": 350
+    },
+    "transfer": {},
+    "purchases": 3,
+    "equipmentSpend": 173,
+    "purchasesByRarity": {
+     "comum": 3
+    },
+    "equipmentGainPerPurchase": 1,
+    "coinsPerEffectivePoint": 58,
+    "sponsorsSigned": 0,
+    "sponsorTiers": {},
+    "sponsorRenewals": 0,
+    "sponsorMonthlyEnd": 0,
+    "coachHires": 0,
+    "coachSalaryEnd": 0,
+    "staffHires": 0,
+    "staffMonthlyEnd": 0,
+    "partnerChanges": 1,
+    "partnerRenewals": 0,
+    "partnerSalaryEnd": 80,
+    "investments": 0,
+    "investedAmount": 0,
+    "dismissals": 0,
+    "trainingShareOfExpense": 59,
+    "equipmentShareOfExpense": 29.2
+   },
+   "integrity": {
+    "errors": 0,
+    "errorSamples": [],
+    "violations": 0,
+    "violationSamples": [],
+    "checks": 6,
+    "unattributed": 0,
+    "saveLoadIdentical": true,
+    "saveLoadMismatches": [],
+    "advanceFailures": 0,
+    "legacyContracts": {
+     "sponsor-002": {
+      "name": "Sul Energia",
+      "monthly_salary": null,
+      "monthly_value": 300,
+      "end": "2026-06-30",
+      "lastSeenDay": 30
+     }
+    }
+   }
+  },
+  {
+   "profile": "economico",
+   "seed": 1,
+   "days": 365,
+   "resultHash": "aa18a46ca48c4557",
+   "seconds": 376,
+   "saveMB": 12.96,
+   "sport": {
+    "ovrBaseStart": 21.8,
+    "ovrBaseEnd": 34.8,
+    "ovrBaseGain": 13,
+    "ovrEffectiveEnd": 35.1,
+    "equipApplied": 3,
+    "rankEnd": 378,
+    "rankBest": 378,
+    "careerLevel": 17,
+    "fans": 100,
+    "matches": 49,
+    "wins": 11,
+    "winRate": 22.4,
+    "tournaments": 38,
+    "titles": 0,
+    "tournamentsByTier": {
+     "Bronze": 20,
+     "Silver": 12,
+     "Gold": 6
+    },
+    "registrations": 38,
+    "forfeits": 0,
+    "trainingSessions": 202,
+    "trainingByIntensity": {
+     "leve": 202
+    },
+    "taperDays": 174,
+    "trainingSkippedForCash": 0,
+    "injuredWeeks": 0
+   },
+   "finance": {
+    "startCoins": 900,
+    "finalCoins": 8687,
+    "invested": 28712,
+    "netWorth": 37399,
+    "minCoins": 707,
+    "negativeWeeks": 0,
+    "totalIncome": 44952,
+    "totalExpense": 8453,
+    "income": {
+     "conquista": 17800,
+     "partida": 710,
+     "torneio": 4244,
+     "patrocinio_luvas": 1468,
+     "sponsor_monthly": 17130,
+     "investment_income": 826,
+     "patrocinio_renovacao": 2774
+    },
+    "expense": {
+     "equipamento": 173,
+     "inscricao": 710,
+     "treino": 4643,
+     "parceria": 1026,
+     "treinador_luvas": 200,
+     "folha_mensal": 1701
+    },
+    "transfer": {
+     "investimento": -28712
+    },
+    "purchases": 3,
+    "equipmentSpend": 173,
+    "purchasesByRarity": {
+     "comum": 3
+    },
+    "equipmentGainPerPurchase": 1,
+    "coinsPerEffectivePoint": 58,
+    "sponsorsSigned": 4,
+    "sponsorTiers": {
+     "Bronze": 4
+    },
+    "sponsorRenewals": 8,
+    "sponsorMonthlyEnd": 1475,
+    "coachHires": 1,
+    "coachSalaryEnd": 250,
+    "staffHires": 0,
+    "staffMonthlyEnd": 0,
+    "partnerChanges": 1,
+    "partnerRenewals": 2,
+    "partnerSalaryEnd": 86,
+    "investments": 19,
+    "investedAmount": 28712,
+    "dismissals": 0,
+    "trainingShareOfExpense": 54.9,
+    "equipmentShareOfExpense": 2
+   },
+   "integrity": {
+    "errors": 0,
+    "errorSamples": [],
+    "violations": 0,
+    "violationSamples": [],
+    "checks": 54,
+    "unattributed": 0,
+    "saveLoadIdentical": true,
+    "saveLoadMismatches": [],
+    "advanceFailures": 0,
+    "legacyContracts": {
+     "sponsor-002": {
+      "name": "Sul Energia",
+      "monthly_salary": null,
+      "monthly_value": 300,
+      "end": "2026-06-30",
+      "lastSeenDay": 175
+     }
+    }
+   }
+  },
+  {
+   "profile": "economico",
+   "seed": 2,
+   "days": 365,
+   "resultHash": "3f2f8b6a699a68df",
+   "seconds": 306,
+   "saveMB": 12.94,
+   "sport": {
+    "ovrBaseStart": 21.8,
+    "ovrBaseEnd": 32.7,
+    "ovrBaseGain": 10.9,
+    "ovrEffectiveEnd": 33,
+    "equipApplied": 3,
+    "rankEnd": 371,
+    "rankBest": 371,
+    "careerLevel": 17,
+    "fans": 100,
+    "matches": 45,
+    "wins": 7,
+    "winRate": 15.6,
+    "tournaments": 38,
+    "titles": 0,
+    "tournamentsByTier": {
+     "Silver": 12,
+     "Bronze": 17,
+     "Gold": 9
+    },
+    "registrations": 41,
+    "forfeits": 3,
+    "trainingSessions": 185,
+    "trainingByIntensity": {
+     "leve": 185
+    },
+    "taperDays": 164,
+    "trainingSkippedForCash": 0,
+    "injuredWeeks": 3
+   },
+   "finance": {
+    "startCoins": 900,
+    "finalCoins": 8686,
+    "invested": 27054,
+    "netWorth": 35740,
+    "minCoins": 707,
+    "negativeWeeks": 0,
+    "totalIncome": 43252,
+    "totalExpense": 8412,
+    "income": {
+     "conquista": 17800,
+     "partida": 590,
+     "torneio": 4440,
+     "patrocinio_luvas": 1323,
+     "sponsor_monthly": 15904,
+     "investment_income": 802,
+     "patrocinio_renovacao": 2393
+    },
+    "expense": {
+     "equipamento": 173,
+     "inscricao": 855,
+     "treino": 4280,
+     "parceria": 960,
+     "treinador_luvas": 200,
+     "folha_mensal": 1944
+    },
+    "transfer": {
+     "investimento": -27054
+    },
+    "purchases": 3,
+    "equipmentSpend": 173,
+    "purchasesByRarity": {
+     "comum": 3
+    },
+    "equipmentGainPerPurchase": 1,
+    "coinsPerEffectivePoint": 58,
+    "sponsorsSigned": 4,
+    "sponsorTiers": {
+     "Bronze": 4
+    },
+    "sponsorRenewals": 7,
+    "sponsorMonthlyEnd": 1462,
+    "coachHires": 1,
+    "coachSalaryEnd": 250,
+    "staffHires": 0,
+    "staffMonthlyEnd": 0,
+    "partnerChanges": 1,
+    "partnerRenewals": 2,
+    "partnerSalaryEnd": 80,
+    "investments": 18,
+    "investedAmount": 27054,
+    "dismissals": 0,
+    "trainingShareOfExpense": 50.9,
+    "equipmentShareOfExpense": 2.1
+   },
+   "integrity": {
+    "errors": 0,
+    "errorSamples": [],
+    "violations": 0,
+    "violationSamples": [],
+    "checks": 54,
+    "unattributed": 0,
+    "saveLoadIdentical": true,
+    "saveLoadMismatches": [],
+    "advanceFailures": 0,
+    "legacyContracts": {
+     "sponsor-002": {
+      "name": "Sul Energia",
+      "monthly_salary": null,
+      "monthly_value": 300,
+      "end": "2026-06-30",
+      "lastSeenDay": 175
+     }
+    }
+   }
+  },
+  {
+   "profile": "economico",
+   "seed": 3,
+   "days": 365,
+   "resultHash": "9f7f30f6e0b17f9a",
+   "seconds": 404,
+   "saveMB": 12.95,
+   "sport": {
+    "ovrBaseStart": 21.8,
+    "ovrBaseEnd": 34.4,
+    "ovrBaseGain": 12.6,
+    "ovrEffectiveEnd": 34.7,
+    "equipApplied": 3,
+    "rankEnd": 370,
+    "rankBest": 370,
+    "careerLevel": 18,
+    "fans": 100,
+    "matches": 53,
+    "wins": 18,
+    "winRate": 34,
+    "tournaments": 36,
+    "titles": 1,
+    "tournamentsByTier": {
+     "Bronze": 19,
+     "Silver": 12,
+     "Gold": 5
+    },
+    "registrations": 37,
+    "forfeits": 1,
+    "trainingSessions": 197,
+    "trainingByIntensity": {
+     "leve": 197
+    },
+    "taperDays": 182,
+    "trainingSkippedForCash": 0,
+    "injuredWeeks": 1
+   },
+   "finance": {
+    "startCoins": 900,
+    "finalCoins": 9297,
+    "invested": 28169,
+    "netWorth": 37466,
+    "minCoins": 707,
+    "negativeWeeks": 0,
+    "totalIncome": 45138,
+    "totalExpense": 8572,
+    "income": {
+     "conquista": 19300,
+     "partida": 890,
+     "torneio": 4611,
+     "patrocinio_luvas": 1306,
+     "sponsor_monthly": 15710,
+     "investment_income": 803,
+     "patrocinio_renovacao": 2518
+    },
+    "expense": {
+     "equipamento": 173,
+     "inscricao": 700,
+     "treino": 4618,
+     "parceria": 1180,
+     "treinador_luvas": 200,
+     "folha_mensal": 1701
+    },
+    "transfer": {
+     "investimento": -28169
+    },
+    "purchases": 3,
+    "equipmentSpend": 173,
+    "purchasesByRarity": {
+     "comum": 3
+    },
+    "equipmentGainPerPurchase": 1,
+    "coinsPerEffectivePoint": 58,
+    "sponsorsSigned": 4,
+    "sponsorTiers": {
+     "Bronze": 4
+    },
+    "sponsorRenewals": 8,
+    "sponsorMonthlyEnd": 1403,
+    "coachHires": 1,
+    "coachSalaryEnd": 250,
+    "staffHires": 0,
+    "staffMonthlyEnd": 0,
+    "partnerChanges": 2,
+    "partnerRenewals": 3,
+    "partnerSalaryEnd": 110,
+    "investments": 18,
+    "investedAmount": 28169,
+    "dismissals": 0,
+    "trainingShareOfExpense": 53.9,
+    "equipmentShareOfExpense": 2
+   },
+   "integrity": {
+    "errors": 0,
+    "errorSamples": [],
+    "violations": 0,
+    "violationSamples": [],
+    "checks": 54,
+    "unattributed": 0,
+    "saveLoadIdentical": true,
+    "saveLoadMismatches": [],
+    "advanceFailures": 0,
+    "legacyContracts": {
+     "sponsor-002": {
+      "name": "Sul Energia",
+      "monthly_salary": null,
+      "monthly_value": 300,
+      "end": "2026-06-30",
+      "lastSeenDay": 175
+     }
+    }
+   }
+  },
+  {
+   "profile": "economico",
+   "seed": 1,
+   "days": 730,
+   "resultHash": "ae3cd6e354b64bec",
+   "seconds": 1139,
+   "saveMB": 19.06,
+   "sport": {
+    "ovrBaseStart": 21.8,
+    "ovrBaseEnd": 42.9,
+    "ovrBaseGain": 21.1,
+    "ovrEffectiveEnd": 43.2,
+    "equipApplied": 3,
+    "rankEnd": 312,
+    "rankBest": 309,
+    "careerLevel": 25,
+    "fans": 100,
+    "matches": 88,
+    "wins": 13,
+    "winRate": 14.8,
+    "tournaments": 75,
+    "titles": 0,
+    "tournamentsByTier": {
+     "Bronze": 20,
+     "Silver": 12,
+     "Gold": 39,
+     "Platinum": 4
+    },
+    "registrations": 76,
+    "forfeits": 1,
+    "trainingSessions": 410,
+    "trainingByIntensity": {
+     "leve": 410
+    },
+    "taperDays": 326,
+    "trainingSkippedForCash": 0,
+    "injuredWeeks": 1
+   },
+   "finance": {
+    "startCoins": 900,
+    "finalCoins": 4632,
+    "invested": 66394,
+    "netWorth": 71026,
+    "minCoins": 707,
+    "negativeWeeks": 0,
+    "totalIncome": 90865,
+    "totalExpense": 20739,
+    "income": {
+     "conquista": 30300,
+     "partida": 1140,
+     "torneio": 13437,
+     "patrocinio_luvas": 1468,
+     "sponsor_monthly": 34771,
+     "investment_income": 3481,
+     "patrocinio_renovacao": 6268
+    },
+    "expense": {
+     "equipamento": 173,
+     "inscricao": 2600,
+     "treino": 11091,
+     "parceria": 2058,
+     "treinador_luvas": 200,
+     "folha_mensal": 4617
+    },
+    "transfer": {
+     "investimento": -66394
+    },
+    "purchases": 3,
+    "equipmentSpend": 173,
+    "purchasesByRarity": {
+     "comum": 3
+    },
+    "equipmentGainPerPurchase": 1,
+    "coinsPerEffectivePoint": 58,
+    "sponsorsSigned": 4,
+    "sponsorTiers": {
+     "Bronze": 4
+    },
+    "sponsorRenewals": 18,
+    "sponsorMonthlyEnd": 1416,
+    "coachHires": 1,
+    "coachSalaryEnd": 250,
+    "staffHires": 0,
+    "staffMonthlyEnd": 0,
+    "partnerChanges": 1,
+    "partnerRenewals": 5,
+    "partnerSalaryEnd": 86,
+    "investments": 39,
+    "investedAmount": 66394,
+    "dismissals": 0,
+    "trainingShareOfExpense": 53.5,
+    "equipmentShareOfExpense": 0.8
+   },
+   "integrity": {
+    "errors": 0,
+    "errorSamples": [],
+    "violations": 0,
+    "violationSamples": [],
+    "checks": 106,
+    "unattributed": 0,
+    "saveLoadIdentical": true,
+    "saveLoadMismatches": [],
+    "advanceFailures": 0,
+    "legacyContracts": {
+     "sponsor-002": {
+      "name": "Sul Energia",
+      "monthly_salary": null,
+      "monthly_value": 300,
+      "end": "2026-06-30",
+      "lastSeenDay": 175
+     }
+    }
+   }
+  },
+  {
+   "profile": "economico",
+   "seed": 2,
+   "days": 730,
+   "resultHash": "429b9fe2cc50641f",
+   "seconds": 1020,
+   "saveMB": 19.05,
+   "sport": {
+    "ovrBaseStart": 21.8,
+    "ovrBaseEnd": 39.7,
+    "ovrBaseGain": 17.9,
+    "ovrEffectiveEnd": 40,
+    "equipApplied": 3,
+    "rankEnd": 299,
+    "rankBest": 299,
+    "careerLevel": 25,
+    "fans": 100,
+    "matches": 84,
+    "wins": 8,
+    "winRate": 9.5,
+    "tournaments": 76,
+    "titles": 0,
+    "tournamentsByTier": {
+     "Silver": 12,
+     "Bronze": 17,
+     "Gold": 32,
+     "Platinum": 15
+    },
+    "registrations": 79,
+    "forfeits": 3,
+    "trainingSessions": 397,
+    "trainingByIntensity": {
+     "leve": 397
+    },
+    "taperDays": 318,
+    "trainingSkippedForCash": 0,
+    "injuredWeeks": 3
+   },
+   "finance": {
+    "startCoins": 900,
+    "finalCoins": 4883,
+    "invested": 65514,
+    "netWorth": 70397,
+    "minCoins": 707,
+    "negativeWeeks": 0,
+    "totalIncome": 90742,
+    "totalExpense": 21245,
+    "income": {
+     "conquista": 30300,
+     "partida": 1000,
+     "torneio": 16250,
+     "patrocinio_luvas": 1323,
+     "sponsor_monthly": 32622,
+     "investment_income": 3517,
+     "patrocinio_renovacao": 5730
+    },
+    "expense": {
+     "equipamento": 173,
+     "inscricao": 3240,
+     "treino": 10852,
+     "parceria": 1920,
+     "treinador_luvas": 200,
+     "folha_mensal": 4860
+    },
+    "transfer": {
+     "investimento": -65514
+    },
+    "purchases": 3,
+    "equipmentSpend": 173,
+    "purchasesByRarity": {
+     "comum": 3
+    },
+    "equipmentGainPerPurchase": 1,
+    "coinsPerEffectivePoint": 58,
+    "sponsorsSigned": 4,
+    "sponsorTiers": {
+     "Bronze": 4
+    },
+    "sponsorRenewals": 18,
+    "sponsorMonthlyEnd": 1344,
+    "coachHires": 1,
+    "coachSalaryEnd": 250,
+    "staffHires": 0,
+    "staffMonthlyEnd": 0,
+    "partnerChanges": 1,
+    "partnerRenewals": 5,
+    "partnerSalaryEnd": 80,
+    "investments": 41,
+    "investedAmount": 65514,
+    "dismissals": 0,
+    "trainingShareOfExpense": 51.1,
+    "equipmentShareOfExpense": 0.8
+   },
+   "integrity": {
+    "errors": 0,
+    "errorSamples": [],
+    "violations": 0,
+    "violationSamples": [],
+    "checks": 106,
+    "unattributed": 0,
+    "saveLoadIdentical": true,
+    "saveLoadMismatches": [],
+    "advanceFailures": 0,
+    "legacyContracts": {
+     "sponsor-002": {
+      "name": "Sul Energia",
+      "monthly_salary": null,
+      "monthly_value": 300,
+      "end": "2026-06-30",
+      "lastSeenDay": 175
+     }
+    }
+   }
+  },
+  {
+   "profile": "equilibrado",
+   "seed": 1,
+   "days": 30,
+   "resultHash": "001cd9c7efbce0ea",
+   "seconds": 53,
+   "saveMB": 3.96,
+   "sport": {
+    "ovrBaseStart": 21.8,
+    "ovrBaseEnd": 24.3,
+    "ovrBaseGain": 2.5,
+    "ovrEffectiveEnd": 24.6,
+    "equipApplied": 3,
+    "rankEnd": 1001,
+    "rankBest": 1001,
+    "careerLevel": 4,
+    "fans": 59,
+    "matches": 1,
+    "wins": 0,
+    "winRate": 0,
+    "tournaments": 1,
+    "titles": 0,
+    "tournamentsByTier": {
+     "Bronze": 1
+    },
+    "registrations": 5,
+    "forfeits": 0,
+    "trainingSessions": 33,
+    "trainingByIntensity": {
+     "moderado": 33
+    },
+    "taperDays": 4,
+    "trainingSkippedForCash": 0,
+    "injuredWeeks": 2
+   },
+   "finance": {
+    "startCoins": 900,
+    "finalCoins": 1251,
+    "invested": 0,
+    "netWorth": 1251,
+    "minCoins": 437,
+    "negativeWeeks": 0,
+    "totalIncome": 1254,
+    "totalExpense": 903,
+    "income": {
+     "conquista": 1200,
+     "partida": 10,
+     "torneio": 44
+    },
+    "expense": {
+     "equipamento": 173,
+     "inscricao": 70,
+     "treino": 660
+    },
+    "transfer": {},
+    "purchases": 3,
+    "equipmentSpend": 173,
+    "purchasesByRarity": {
+     "comum": 3
+    },
+    "equipmentGainPerPurchase": 1,
+    "coinsPerEffectivePoint": 58,
+    "sponsorsSigned": 0,
+    "sponsorTiers": {},
+    "sponsorRenewals": 0,
+    "sponsorMonthlyEnd": 0,
+    "coachHires": 0,
+    "coachSalaryEnd": 0,
+    "staffHires": 0,
+    "staffMonthlyEnd": 0,
+    "partnerChanges": 1,
+    "partnerRenewals": 0,
+    "partnerSalaryEnd": 80,
+    "investments": 0,
+    "investedAmount": 0,
+    "dismissals": 0,
+    "trainingShareOfExpense": 73.1,
+    "equipmentShareOfExpense": 19.2
+   },
+   "integrity": {
+    "errors": 0,
+    "errorSamples": [],
+    "violations": 0,
+    "violationSamples": [],
+    "checks": 6,
+    "unattributed": 0,
+    "saveLoadIdentical": true,
+    "saveLoadMismatches": [],
+    "advanceFailures": 0,
+    "legacyContracts": {
+     "sponsor-002": {
+      "name": "Sul Energia",
+      "monthly_salary": null,
+      "monthly_value": 300,
+      "end": "2026-06-30",
+      "lastSeenDay": 30
+     }
+    }
+   }
+  },
+  {
+   "profile": "equilibrado",
+   "seed": 2,
+   "days": 30,
+   "resultHash": "1593f02194bb3286",
+   "seconds": 32,
+   "saveMB": 3.97,
+   "sport": {
+    "ovrBaseStart": 21.8,
+    "ovrBaseEnd": 25.3,
+    "ovrBaseGain": 3.5,
+    "ovrEffectiveEnd": 25.6,
+    "equipApplied": 3,
+    "rankEnd": 1001,
+    "rankBest": 1001,
+    "careerLevel": 5,
+    "fans": 59,
+    "matches": 0,
+    "wins": 0,
+    "winRate": null,
+    "tournaments": 0,
+    "titles": 0,
+    "tournamentsByTier": {},
+    "registrations": 5,
+    "forfeits": 1,
+    "trainingSessions": 46,
+    "trainingByIntensity": {
+     "moderado": 45,
+     "leve": 1
+    },
+    "taperDays": 0,
+    "trainingSkippedForCash": 2,
+    "injuredWeeks": 2
+   },
+   "finance": {
+    "startCoins": 900,
+    "finalCoins": 603,
+    "invested": 0,
+    "netWorth": 603,
+    "minCoins": 103,
+    "negativeWeeks": 0,
+    "totalIncome": 900,
+    "totalExpense": 1197,
+    "income": {
+     "conquista": 900
+    },
+    "expense": {
+     "equipamento": 173,
+     "inscricao": 70,
+     "treino": 954
+    },
+    "transfer": {},
+    "purchases": 3,
+    "equipmentSpend": 173,
+    "purchasesByRarity": {
+     "comum": 3
+    },
+    "equipmentGainPerPurchase": 1,
+    "coinsPerEffectivePoint": 58,
+    "sponsorsSigned": 0,
+    "sponsorTiers": {},
+    "sponsorRenewals": 0,
+    "sponsorMonthlyEnd": 0,
+    "coachHires": 0,
+    "coachSalaryEnd": 0,
+    "staffHires": 0,
+    "staffMonthlyEnd": 0,
+    "partnerChanges": 1,
+    "partnerRenewals": 0,
+    "partnerSalaryEnd": 80,
+    "investments": 0,
+    "investedAmount": 0,
+    "dismissals": 0,
+    "trainingShareOfExpense": 79.7,
+    "equipmentShareOfExpense": 14.5
+   },
+   "integrity": {
+    "errors": 0,
+    "errorSamples": [],
+    "violations": 0,
+    "violationSamples": [],
+    "checks": 6,
+    "unattributed": 0,
+    "saveLoadIdentical": true,
+    "saveLoadMismatches": [],
+    "advanceFailures": 0,
+    "legacyContracts": {
+     "sponsor-002": {
+      "name": "Sul Energia",
+      "monthly_salary": null,
+      "monthly_value": 300,
+      "end": "2026-06-30",
+      "lastSeenDay": 30
+     }
+    }
+   }
+  },
+  {
+   "profile": "equilibrado",
+   "seed": 3,
+   "days": 30,
+   "resultHash": "a9c8884b527d139b",
+   "seconds": 32,
+   "saveMB": 3.98,
+   "sport": {
+    "ovrBaseStart": 21.8,
+    "ovrBaseEnd": 25.5,
+    "ovrBaseGain": 3.7,
+    "ovrEffectiveEnd": 25.8,
+    "equipApplied": 3,
+    "rankEnd": 1001,
+    "rankBest": 1001,
+    "careerLevel": 5,
+    "fans": 59,
+    "matches": 1,
+    "wins": 0,
+    "winRate": 0,
+    "tournaments": 1,
+    "titles": 0,
+    "tournamentsByTier": {
+     "Bronze": 1
+    },
+    "registrations": 5,
+    "forfeits": 0,
+    "trainingSessions": 48,
+    "trainingByIntensity": {
+     "moderado": 47,
+     "leve": 1
+    },
+    "taperDays": 4,
+    "trainingSkippedForCash": 2,
+    "injuredWeeks": 0
+   },
+   "finance": {
+    "startCoins": 900,
+    "finalCoins": 897,
+    "invested": 0,
+    "netWorth": 897,
+    "minCoins": 103,
+    "negativeWeeks": 0,
+    "totalIncome": 1254,
+    "totalExpense": 1257,
+    "income": {
+     "conquista": 1200,
+     "partida": 10,
+     "torneio": 44
+    },
+    "expense": {
+     "equipamento": 173,
+     "inscricao": 70,
+     "treino": 1014
+    },
+    "transfer": {},
+    "purchases": 3,
+    "equipmentSpend": 173,
+    "purchasesByRarity": {
+     "comum": 3
+    },
+    "equipmentGainPerPurchase": 1,
+    "coinsPerEffectivePoint": 58,
+    "sponsorsSigned": 0,
+    "sponsorTiers": {},
+    "sponsorRenewals": 0,
+    "sponsorMonthlyEnd": 0,
+    "coachHires": 0,
+    "coachSalaryEnd": 0,
+    "staffHires": 0,
+    "staffMonthlyEnd": 0,
+    "partnerChanges": 1,
+    "partnerRenewals": 0,
+    "partnerSalaryEnd": 80,
+    "investments": 0,
+    "investedAmount": 0,
+    "dismissals": 0,
+    "trainingShareOfExpense": 80.7,
+    "equipmentShareOfExpense": 13.8
+   },
+   "integrity": {
+    "errors": 0,
+    "errorSamples": [],
+    "violations": 0,
+    "violationSamples": [],
+    "checks": 6,
+    "unattributed": 0,
+    "saveLoadIdentical": true,
+    "saveLoadMismatches": [],
+    "advanceFailures": 0,
+    "legacyContracts": {
+     "sponsor-002": {
+      "name": "Sul Energia",
+      "monthly_salary": null,
+      "monthly_value": 300,
+      "end": "2026-06-30",
+      "lastSeenDay": 30
+     }
+    }
+   }
+  },
+  {
+   "profile": "equilibrado",
+   "seed": 1,
+   "days": 365,
+   "resultHash": "588e1262860fbdfa",
+   "seconds": 399,
+   "saveMB": 13.37,
+   "sport": {
+    "ovrBaseStart": 21.8,
+    "ovrBaseEnd": 42,
+    "ovrBaseGain": 20.2,
+    "ovrEffectiveEnd": 42.7,
+    "equipApplied": 7,
+    "rankEnd": 276,
+    "rankBest": 276,
+    "careerLevel": 19,
+    "fans": 100,
+    "matches": 45,
+    "wins": 11,
+    "winRate": 24.4,
+    "tournaments": 35,
+    "titles": 1,
+    "tournamentsByTier": {
+     "Bronze": 13,
+     "Silver": 5,
+     "Gold": 11,
+     "Elite": 1,
+     "Platinum": 5
+    },
+    "registrations": 36,
+    "forfeits": 1,
+    "trainingSessions": 396,
+    "trainingByIntensity": {
+     "moderado": 378,
+     "leve": 18
+    },
+    "taperDays": 162,
+    "trainingSkippedForCash": 0,
+    "injuredWeeks": 3
+   },
+   "finance": {
+    "startCoins": 900,
+    "finalCoins": 14316,
+    "invested": 6921,
+    "netWorth": 21237,
+    "minCoins": 437,
+    "negativeWeeks": 0,
+    "totalIncome": 44700,
+    "totalExpense": 24363,
+    "income": {
+     "conquista": 13700,
+     "partida": 670,
+     "torneio": 8760,
+     "patrocinio_luvas": 1468,
+     "sponsor_monthly": 17119,
+     "patrocinio_renovacao": 2780,
+     "investment_income": 203
+    },
+    "expense": {
+     "equipamento": 1320,
+     "inscricao": 1515,
+     "treino": 14293,
+     "parceria": 1026,
+     "treinador_luvas": 200,
+     "folha_mensal": 6009
+    },
+    "transfer": {
+     "investimento": -6921
+    },
+    "purchases": 6,
+    "equipmentSpend": 1320,
+    "purchasesByRarity": {
+     "comum": 6
+    },
+    "equipmentGainPerPurchase": 1.2,
+    "coinsPerEffectivePoint": 189,
+    "sponsorsSigned": 4,
+    "sponsorTiers": {
+     "Bronze": 4
+    },
+    "sponsorRenewals": 8,
+    "sponsorMonthlyEnd": 1510,
+    "coachHires": 1,
+    "coachSalaryEnd": 250,
+    "staffHires": 1,
+    "staffMonthlyEnd": 900,
+    "partnerChanges": 1,
+    "partnerRenewals": 3,
+    "partnerSalaryEnd": 86,
+    "investments": 3,
+    "investedAmount": 6921,
+    "dismissals": 0,
+    "trainingShareOfExpense": 58.7,
+    "equipmentShareOfExpense": 5.4
+   },
+   "integrity": {
+    "errors": 0,
+    "errorSamples": [],
+    "violations": 0,
+    "violationSamples": [],
+    "checks": 54,
+    "unattributed": 0,
+    "saveLoadIdentical": true,
+    "saveLoadMismatches": [],
+    "advanceFailures": 0,
+    "legacyContracts": {
+     "sponsor-002": {
+      "name": "Sul Energia",
+      "monthly_salary": null,
+      "monthly_value": 300,
+      "end": "2026-06-30",
+      "lastSeenDay": 175
+     }
+    }
+   }
+  },
+  {
+   "profile": "equilibrado",
+   "seed": 2,
+   "days": 365,
+   "resultHash": "5a9f607f330ed47a",
+   "seconds": 343,
+   "saveMB": 13.26,
+   "sport": {
+    "ovrBaseStart": 21.8,
+    "ovrBaseEnd": 42.5,
+    "ovrBaseGain": 20.7,
+    "ovrEffectiveEnd": 43.2,
+    "equipApplied": 7,
+    "rankEnd": 292,
+    "rankBest": 292,
+    "careerLevel": 18,
+    "fans": 100,
+    "matches": 46,
+    "wins": 11,
+    "winRate": 23.9,
+    "tournaments": 35,
+    "titles": 0,
+    "tournamentsByTier": {
+     "Silver": 7,
+     "Bronze": 8,
+     "Gold": 13,
+     "Platinum": 7
+    },
+    "registrations": 39,
+    "forfeits": 4,
+    "trainingSessions": 368,
+    "trainingByIntensity": {
+     "moderado": 357,
+     "leve": 11
+    },
+    "taperDays": 159,
+    "trainingSkippedForCash": 2,
+    "injuredWeeks": 4
+   },
+   "finance": {
+    "startCoins": 900,
+    "finalCoins": 11108,
+    "invested": 12661,
+    "netWorth": 23769,
+    "minCoins": 103,
+    "negativeWeeks": 0,
+    "totalIncome": 42190,
+    "totalExpense": 19321,
+    "income": {
+     "conquista": 13800,
+     "partida": 680,
+     "torneio": 7799,
+     "patrocinio_luvas": 1323,
+     "sponsor_monthly": 15904,
+     "patrocinio_renovacao": 2393,
+     "investment_income": 291
+    },
+    "expense": {
+     "equipamento": 1320,
+     "inscricao": 1575,
+     "treino": 13079,
+     "parceria": 960,
+     "treinador_luvas": 200,
+     "folha_mensal": 2187
+    },
+    "transfer": {
+     "investimento": -12661
+    },
+    "purchases": 6,
+    "equipmentSpend": 1320,
+    "purchasesByRarity": {
+     "comum": 6
+    },
+    "equipmentGainPerPurchase": 1.2,
+    "coinsPerEffectivePoint": 189,
+    "sponsorsSigned": 4,
+    "sponsorTiers": {
+     "Bronze": 4
+    },
+    "sponsorRenewals": 7,
+    "sponsorMonthlyEnd": 1462,
+    "coachHires": 1,
+    "coachSalaryEnd": 250,
+    "staffHires": 0,
+    "staffMonthlyEnd": 0,
+    "partnerChanges": 1,
+    "partnerRenewals": 3,
+    "partnerSalaryEnd": 80,
+    "investments": 6,
+    "investedAmount": 12661,
+    "dismissals": 0,
+    "trainingShareOfExpense": 67.7,
+    "equipmentShareOfExpense": 6.8
+   },
+   "integrity": {
+    "errors": 0,
+    "errorSamples": [],
+    "violations": 0,
+    "violationSamples": [],
+    "checks": 54,
+    "unattributed": 0,
+    "saveLoadIdentical": true,
+    "saveLoadMismatches": [],
+    "advanceFailures": 0,
+    "legacyContracts": {
+     "sponsor-002": {
+      "name": "Sul Energia",
+      "monthly_salary": null,
+      "monthly_value": 300,
+      "end": "2026-06-30",
+      "lastSeenDay": 175
+     }
+    }
+   }
+  },
+  {
+   "profile": "equilibrado",
+   "seed": 3,
+   "days": 365,
+   "resultHash": "e91d437267b3b6e5",
+   "seconds": 413,
+   "saveMB": 13.36,
+   "sport": {
+    "ovrBaseStart": 21.8,
+    "ovrBaseEnd": 44.1,
+    "ovrBaseGain": 22.3,
+    "ovrEffectiveEnd": 44.8,
+    "equipApplied": 7,
+    "rankEnd": 163,
+    "rankBest": 162,
+    "careerLevel": 20,
+    "fans": 100,
+    "matches": 51,
+    "wins": 20,
+    "winRate": 39.2,
+    "tournaments": 32,
+    "titles": 1,
+    "tournamentsByTier": {
+     "Bronze": 15,
+     "Silver": 11,
+     "Gold": 3,
+     "Platinum": 2,
+     "Legacy Finals": 1
+    },
+    "registrations": 33,
+    "forfeits": 1,
+    "trainingSessions": 418,
+    "trainingByIntensity": {
+     "moderado": 385,
+     "leve": 33
+    },
+    "taperDays": 169,
+    "trainingSkippedForCash": 2,
+    "injuredWeeks": 1
+   },
+   "finance": {
+    "startCoins": 900,
+    "finalCoins": 18415,
+    "invested": 13090,
+    "netWorth": 31505,
+    "minCoins": 103,
+    "negativeWeeks": 0,
+    "totalIncome": 49468,
+    "totalExpense": 18863,
+    "income": {
+     "conquista": 16700,
+     "partida": 910,
+     "torneio": 12112,
+     "patrocinio_luvas": 1306,
+     "sponsor_monthly": 15732,
+     "patrocinio_renovacao": 2536,
+     "investment_income": 172
+    },
+    "expense": {
+     "equipamento": 1320,
+     "inscricao": 730,
+     "treino": 13166,
+     "parceria": 780,
+     "treinador_luvas": 200,
+     "folha_mensal": 2667
+    },
+    "transfer": {
+     "investimento": -13090
+    },
+    "purchases": 6,
+    "equipmentSpend": 1320,
+    "purchasesByRarity": {
+     "comum": 6
+    },
+    "equipmentGainPerPurchase": 1.2,
+    "coinsPerEffectivePoint": 189,
+    "sponsorsSigned": 4,
+    "sponsorTiers": {
+     "Bronze": 4
+    },
+    "sponsorRenewals": 8,
+    "sponsorMonthlyEnd": 1425,
+    "coachHires": 1,
+    "coachSalaryEnd": 250,
+    "staffHires": 1,
+    "staffMonthlyEnd": 800,
+    "partnerChanges": 4,
+    "partnerRenewals": 7,
+    "partnerSalaryEnd": 100,
+    "investments": 6,
+    "investedAmount": 13090,
+    "dismissals": 0,
+    "trainingShareOfExpense": 69.8,
+    "equipmentShareOfExpense": 7
+   },
+   "integrity": {
+    "errors": 0,
+    "errorSamples": [],
+    "violations": 0,
+    "violationSamples": [],
+    "checks": 54,
+    "unattributed": 0,
+    "saveLoadIdentical": true,
+    "saveLoadMismatches": [],
+    "advanceFailures": 0,
+    "legacyContracts": {
+     "sponsor-002": {
+      "name": "Sul Energia",
+      "monthly_salary": null,
+      "monthly_value": 300,
+      "end": "2026-06-30",
+      "lastSeenDay": 175
+     }
+    }
+   }
+  },
+  {
+   "profile": "equilibrado",
+   "seed": 1,
+   "days": 730,
+   "resultHash": "66a0790f35f1a53c",
+   "seconds": 1224,
+   "saveMB": 19.76,
+   "sport": {
+    "ovrBaseStart": 21.8,
+    "ovrBaseEnd": 48.6,
+    "ovrBaseGain": 26.8,
+    "ovrEffectiveEnd": 49.3,
+    "equipApplied": 7,
+    "rankEnd": 89,
+    "rankBest": 89,
+    "careerLevel": 31,
+    "fans": 100,
+    "matches": 77,
+    "wins": 12,
+    "winRate": 15.6,
+    "tournaments": 66,
+    "titles": 1,
+    "tournamentsByTier": {
+     "Bronze": 13,
+     "Silver": 5,
+     "Gold": 14,
+     "Elite": 5,
+     "Platinum": 18,
+     "Masters": 11
+    },
+    "registrations": 69,
+    "forfeits": 3,
+    "trainingSessions": 844,
+    "trainingByIntensity": {
+     "moderado": 818,
+     "leve": 26
+    },
+    "taperDays": 290,
+    "trainingSkippedForCash": 0,
+    "injuredWeeks": 5
+   },
+   "finance": {
+    "startCoins": 900,
+    "finalCoins": 16398,
+    "invested": 32501,
+    "netWorth": 48899,
+    "minCoins": 437,
+    "negativeWeeks": 0,
+    "totalIncome": 115685,
+    "totalExpense": 67686,
+    "income": {
+     "conquista": 34200,
+     "partida": 1010,
+     "torneio": 36318,
+     "patrocinio_luvas": 1468,
+     "sponsor_monthly": 35109,
+     "patrocinio_renovacao": 6322,
+     "investment_income": 1258
+    },
+    "expense": {
+     "equipamento": 1320,
+     "inscricao": 6580,
+     "treino": 38056,
+     "parceria": 2012,
+     "treinador_luvas": 200,
+     "folha_mensal": 19518
+    },
+    "transfer": {
+     "investimento": -32501
+    },
+    "purchases": 6,
+    "equipmentSpend": 1320,
+    "purchasesByRarity": {
+     "comum": 6
+    },
+    "equipmentGainPerPurchase": 1.2,
+    "coinsPerEffectivePoint": 189,
+    "sponsorsSigned": 4,
+    "sponsorTiers": {
+     "Bronze": 4
+    },
+    "sponsorRenewals": 18,
+    "sponsorMonthlyEnd": 1416,
+    "coachHires": 1,
+    "coachSalaryEnd": 250,
+    "staffHires": 2,
+    "staffMonthlyEnd": 1200,
+    "partnerChanges": 4,
+    "partnerRenewals": 9,
+    "partnerSalaryEnd": 0,
+    "investments": 13,
+    "investedAmount": 32501,
+    "dismissals": 0,
+    "trainingShareOfExpense": 56.2,
+    "equipmentShareOfExpense": 2
+   },
+   "integrity": {
+    "errors": 0,
+    "errorSamples": [],
+    "violations": 0,
+    "violationSamples": [],
+    "checks": 106,
+    "unattributed": 0,
+    "saveLoadIdentical": true,
+    "saveLoadMismatches": [],
+    "advanceFailures": 0,
+    "legacyContracts": {
+     "sponsor-002": {
+      "name": "Sul Energia",
+      "monthly_salary": null,
+      "monthly_value": 300,
+      "end": "2026-06-30",
+      "lastSeenDay": 175
+     }
+    }
+   }
+  },
+  {
+   "profile": "equilibrado",
+   "seed": 2,
+   "days": 730,
+   "resultHash": "67706fbb04c431b8",
+   "seconds": 1152,
+   "saveMB": 19.71,
+   "sport": {
+    "ovrBaseStart": 21.8,
+    "ovrBaseEnd": 51.4,
+    "ovrBaseGain": 29.6,
+    "ovrEffectiveEnd": 52.1,
+    "equipApplied": 7,
+    "rankEnd": 129,
+    "rankBest": 129,
+    "careerLevel": 30,
+    "fans": 100,
+    "matches": 84,
+    "wins": 13,
+    "winRate": 15.5,
+    "tournaments": 71,
+    "titles": 0,
+    "tournamentsByTier": {
+     "Silver": 7,
+     "Bronze": 8,
+     "Gold": 18,
+     "Platinum": 29,
+     "Masters": 6,
+     "Elite": 3
+    },
+    "registrations": 75,
+    "forfeits": 4,
+    "trainingSessions": 790,
+    "trainingByIntensity": {
+     "moderado": 771,
+     "leve": 19
+    },
+    "taperDays": 307,
+    "trainingSkippedForCash": 2,
+    "injuredWeeks": 5
+   },
+   "finance": {
+    "startCoins": 900,
+    "finalCoins": 12864,
+    "invested": 36887,
+    "netWorth": 49751,
+    "minCoins": 103,
+    "negativeWeeks": 0,
+    "totalIncome": 106533,
+    "totalExpense": 57682,
+    "income": {
+     "conquista": 32300,
+     "partida": 1100,
+     "torneio": 31633,
+     "patrocinio_luvas": 1323,
+     "sponsor_monthly": 32808,
+     "patrocinio_renovacao": 5785,
+     "investment_income": 1584
+    },
+    "expense": {
+     "equipamento": 1320,
+     "inscricao": 5820,
+     "treino": 34057,
+     "parceria": 5040,
+     "treinador_luvas": 200,
+     "folha_mensal": 11245
+    },
+    "transfer": {
+     "investimento": -36887
+    },
+    "purchases": 6,
+    "equipmentSpend": 1320,
+    "purchasesByRarity": {
+     "comum": 6
+    },
+    "equipmentGainPerPurchase": 1.2,
+    "coinsPerEffectivePoint": 189,
+    "sponsorsSigned": 4,
+    "sponsorTiers": {
+     "Bronze": 4
+    },
+    "sponsorRenewals": 18,
+    "sponsorMonthlyEnd": 1376,
+    "coachHires": 1,
+    "coachSalaryEnd": 250,
+    "staffHires": 1,
+    "staffMonthlyEnd": 850,
+    "partnerChanges": 2,
+    "partnerRenewals": 6,
+    "partnerSalaryEnd": 400,
+    "investments": 15,
+    "investedAmount": 36887,
+    "dismissals": 0,
+    "trainingShareOfExpense": 59,
+    "equipmentShareOfExpense": 2.3
+   },
+   "integrity": {
+    "errors": 0,
+    "errorSamples": [],
+    "violations": 0,
+    "violationSamples": [],
+    "checks": 106,
+    "unattributed": 0,
+    "saveLoadIdentical": true,
+    "saveLoadMismatches": [],
+    "advanceFailures": 0,
+    "legacyContracts": {
+     "sponsor-002": {
+      "name": "Sul Energia",
+      "monthly_salary": null,
+      "monthly_value": 300,
+      "end": "2026-06-30",
+      "lastSeenDay": 175
+     }
+    }
+   }
+  }
+ ]
+}
