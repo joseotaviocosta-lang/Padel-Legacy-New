@@ -1,0 +1,931 @@
+{
+ "generatedBy": "LOCAL-9E.1-H1 economic comparison",
+ "command": "TZ=UTC node --max-old-space-size=3072 scripts/sim-local-9e1-decisions.mjs --profile=<p> --seeds=1-3 --days=<30|365> --out=<dir>",
+ "probe9e1": {
+  "before": {
+   "careerId": "4a604392-6659-48a5-be83-2cc257e54b54",
+   "sponsor": "paddleague",
+   "signBonus": 372,
+   "renewalBonusesSameDay": [
+    398,
+    398,
+    398
+   ],
+   "activeAfter": 1
+  },
+  "after": {
+   "careerId": "2b80bd33-943b-43b9-ab92-eb35be8b5aa0",
+   "sponsor": "paddleague",
+   "signBonus": 372,
+   "renewalBonusesSameDay": [
+    0,
+    0,
+    0
+   ],
+   "renewalOutcomes": [
+    "recusado:too-early",
+    "recusado:too-early",
+    "recusado:too-early"
+   ],
+   "activeAfter": 1
+  }
+ },
+ "hash30d": {
+  "note": "Nenhuma renovação ocorre antes do dia 126: 30 dias idênticos provam que a correção não altera nada fora da renovação.",
+  "careers": [
+   {
+    "profile": "competitivo",
+    "seed": 1,
+    "baseline": "7bb9dcd07ff051f6",
+    "fixed": "7bb9dcd07ff051f6",
+    "identical": true
+   },
+   {
+    "profile": "competitivo",
+    "seed": 2,
+    "baseline": "188e900baa722297",
+    "fixed": "188e900baa722297",
+    "identical": true
+   },
+   {
+    "profile": "competitivo",
+    "seed": 3,
+    "baseline": "ebe19b107e0f02f4",
+    "fixed": "ebe19b107e0f02f4",
+    "identical": true
+   },
+   {
+    "profile": "economico",
+    "seed": 1,
+    "baseline": "9e3985140ab3378f",
+    "fixed": "9e3985140ab3378f",
+    "identical": true
+   },
+   {
+    "profile": "economico",
+    "seed": 2,
+    "baseline": "8c73ba7fa961ae76",
+    "fixed": "8c73ba7fa961ae76",
+    "identical": true
+   },
+   {
+    "profile": "economico",
+    "seed": 3,
+    "baseline": "608a62743c8d370c",
+    "fixed": "608a62743c8d370c",
+    "identical": true
+   },
+   {
+    "profile": "equilibrado",
+    "seed": 1,
+    "baseline": "001cd9c7efbce0ea",
+    "fixed": "001cd9c7efbce0ea",
+    "identical": true
+   },
+   {
+    "profile": "equilibrado",
+    "seed": 2,
+    "baseline": "1593f02194bb3286",
+    "fixed": "1593f02194bb3286",
+    "identical": true
+   },
+   {
+    "profile": "equilibrado",
+    "seed": 3,
+    "baseline": "a9c8884b527d139b",
+    "fixed": "a9c8884b527d139b",
+    "identical": true
+   }
+  ]
+ },
+ "renewalAudit365d": {
+  "renewals": 67,
+  "refusedByGame": 0,
+  "daysLeftRange": [
+   24,
+   30
+  ],
+  "paidOnce": true
+ },
+ "rngNote": "O create antigo gerava id aleatório (makeId consome Math.random, que no simulador é o fluxo determinístico da carreira). O id determinístico não consome: a partir da primeira renovação a sequência aleatória se desloca e partidas/eventos seguintes divergem. Por isso os hashes de 365 dias mudam mesmo com renovações idênticas.",
+ "careers365d": [
+  {
+   "k": "competitivo s1",
+   "sameHash": false,
+   "b": {
+    "hash": "a8ebc9d31f796446",
+    "final": 5208,
+    "net": 5208,
+    "luvas": 1468,
+    "renov": 2774,
+    "renovN": 8,
+    "signed": 4,
+    "monthly": 17130,
+    "rank": 234,
+    "ovr": 41.7,
+    "inc": 45757,
+    "exp": 41449
+   },
+   "a": {
+    "hash": "5d2aeb6bbc23e5eb",
+    "final": 5108,
+    "net": 5108,
+    "luvas": 1468,
+    "renov": 2774,
+    "renovN": 8,
+    "signed": 4,
+    "monthly": 17130,
+    "rank": 230,
+    "ovr": 41.8,
+    "inc": 45757,
+    "exp": 41549
+   }
+  },
+  {
+   "k": "competitivo s2",
+   "sameHash": false,
+   "b": {
+    "hash": "fb51c2f902cc9df7",
+    "final": 4670,
+    "net": 4670,
+    "luvas": 1323,
+    "renov": 2482,
+    "renovN": 7,
+    "signed": 4,
+    "monthly": 16174,
+    "rank": 239,
+    "ovr": 44.3,
+    "inc": 43111,
+    "exp": 39341
+   },
+   "a": {
+    "hash": "fb0914ea898ce8ac",
+    "final": 4775,
+    "net": 4775,
+    "luvas": 1323,
+    "renov": 2482,
+    "renovN": 7,
+    "signed": 4,
+    "monthly": 16174,
+    "rank": 238,
+    "ovr": 44.2,
+    "inc": 43141,
+    "exp": 39266
+   }
+  },
+  {
+   "k": "competitivo s3",
+   "sameHash": false,
+   "b": {
+    "hash": "b119edabb85d1275",
+    "final": 4121,
+    "net": 4121,
+    "luvas": 1306,
+    "renov": 2570,
+    "renovN": 8,
+    "signed": 4,
+    "monthly": 15890,
+    "rank": 272,
+    "ovr": 43.4,
+    "inc": 42535,
+    "exp": 39314
+   },
+   "a": {
+    "hash": "3114e7e30dc7ac5f",
+    "final": 4231,
+    "net": 4231,
+    "luvas": 1306,
+    "renov": 2570,
+    "renovN": 8,
+    "signed": 4,
+    "monthly": 15890,
+    "rank": 269,
+    "ovr": 43.5,
+    "inc": 42535,
+    "exp": 39204
+   }
+  },
+  {
+   "k": "economico s1",
+   "sameHash": false,
+   "b": {
+    "hash": "aa18a46ca48c4557",
+    "final": 8687,
+    "net": 37399,
+    "luvas": 1468,
+    "renov": 2774,
+    "renovN": 8,
+    "signed": 4,
+    "monthly": 17130,
+    "rank": 378,
+    "ovr": 35.1,
+    "inc": 44952,
+    "exp": 8453
+   },
+   "a": {
+    "hash": "c2c6d64eb1c7e43d",
+    "final": 9059,
+    "net": 37093,
+    "luvas": 1468,
+    "renov": 2774,
+    "renovN": 8,
+    "signed": 4,
+    "monthly": 17130,
+    "rank": 381,
+    "ovr": 35.2,
+    "inc": 44708,
+    "exp": 8515
+   }
+  },
+  {
+   "k": "economico s2",
+   "sameHash": false,
+   "b": {
+    "hash": "3f2f8b6a699a68df",
+    "final": 8686,
+    "net": 35740,
+    "luvas": 1323,
+    "renov": 2393,
+    "renovN": 7,
+    "signed": 4,
+    "monthly": 15904,
+    "rank": 371,
+    "ovr": 33,
+    "inc": 43252,
+    "exp": 8412
+   },
+   "a": {
+    "hash": "a924b02faee787d6",
+    "final": 9242,
+    "net": 38058,
+    "luvas": 1666,
+    "renov": 2561,
+    "renovN": 6,
+    "signed": 4,
+    "monthly": 18552,
+    "rank": 392,
+    "ovr": 33.8,
+    "inc": 45761,
+    "exp": 8603
+   }
+  },
+  {
+   "k": "economico s3",
+   "sameHash": false,
+   "b": {
+    "hash": "9f7f30f6e0b17f9a",
+    "final": 9297,
+    "net": 37466,
+    "luvas": 1306,
+    "renov": 2518,
+    "renovN": 8,
+    "signed": 4,
+    "monthly": 15710,
+    "rank": 370,
+    "ovr": 34.7,
+    "inc": 45138,
+    "exp": 8572
+   },
+   "a": {
+    "hash": "bf89b70196a31451",
+    "final": 9035,
+    "net": 37639,
+    "luvas": 1306,
+    "renov": 2518,
+    "renovN": 8,
+    "signed": 4,
+    "monthly": 15710,
+    "rank": 365,
+    "ovr": 35,
+    "inc": 45290,
+    "exp": 8551
+   }
+  },
+  {
+   "k": "equilibrado s1",
+   "sameHash": false,
+   "b": {
+    "hash": "588e1262860fbdfa",
+    "final": 14316,
+    "net": 21237,
+    "luvas": 1468,
+    "renov": 2780,
+    "renovN": 8,
+    "signed": 4,
+    "monthly": 17119,
+    "rank": 276,
+    "ovr": 42.7,
+    "inc": 44700,
+    "exp": 24363
+   },
+   "a": {
+    "hash": "0965f4f5d516f01a",
+    "final": 11209,
+    "net": 24395,
+    "luvas": 1468,
+    "renov": 2774,
+    "renovN": 8,
+    "signed": 4,
+    "monthly": 17130,
+    "rank": 304,
+    "ovr": 42.6,
+    "inc": 42703,
+    "exp": 19208
+   }
+  },
+  {
+   "k": "equilibrado s2",
+   "sameHash": false,
+   "b": {
+    "hash": "5a9f607f330ed47a",
+    "final": 11108,
+    "net": 23769,
+    "luvas": 1323,
+    "renov": 2393,
+    "renovN": 7,
+    "signed": 4,
+    "monthly": 15904,
+    "rank": 292,
+    "ovr": 43.2,
+    "inc": 42190,
+    "exp": 19321
+   },
+   "a": {
+    "hash": "1daf64066c7b0425",
+    "final": 13524,
+    "net": 20122,
+    "luvas": 1679,
+    "renov": 2325,
+    "renovN": 6,
+    "signed": 4,
+    "monthly": 17285,
+    "rank": 332,
+    "ovr": 43.2,
+    "inc": 39899,
+    "exp": 20677
+   }
+  },
+  {
+   "k": "equilibrado s3",
+   "sameHash": false,
+   "b": {
+    "hash": "e91d437267b3b6e5",
+    "final": 18415,
+    "net": 31505,
+    "luvas": 1306,
+    "renov": 2536,
+    "renovN": 8,
+    "signed": 4,
+    "monthly": 15732,
+    "rank": 163,
+    "ovr": 44.8,
+    "inc": 49468,
+    "exp": 18863
+   },
+   "a": {
+    "hash": "97526db2579513d6",
+    "final": 13325,
+    "net": 24808,
+    "luvas": 1306,
+    "renov": 2536,
+    "renovN": 8,
+    "signed": 4,
+    "monthly": 15732,
+    "rank": 312,
+    "ovr": 44.5,
+    "inc": 42368,
+    "exp": 18460
+   }
+  }
+ ],
+ "groups365dAfter": [
+  {
+   "days": 365,
+   "profile": "economico",
+   "seeds": [
+    1,
+    2,
+    3
+   ],
+   "ovrBaseEnd": {
+    "mean": 34.4,
+    "min": 33.5,
+    "max": 34.9
+   },
+   "ovrBaseGain": {
+    "mean": 12.6,
+    "min": 11.7,
+    "max": 13.1
+   },
+   "ovrEffectiveEnd": {
+    "mean": 34.7,
+    "min": 33.8,
+    "max": 35.2
+   },
+   "equipApplied": {
+    "mean": 3,
+    "min": 3,
+    "max": 3
+   },
+   "rankEnd": {
+    "mean": 379.3,
+    "min": 365,
+    "max": 392
+   },
+   "rankBest": {
+    "mean": 379.3,
+    "min": 365,
+    "max": 392
+   },
+   "matches": {
+    "mean": 48.7,
+    "min": 45,
+    "max": 54
+   },
+   "winRate": {
+    "mean": 23.3,
+    "min": 15.6,
+    "max": 35.2
+   },
+   "titles": {
+    "mean": 0.3,
+    "min": 0,
+    "max": 1
+   },
+   "tournaments": {
+    "mean": 37.3,
+    "min": 36,
+    "max": 38
+   },
+   "trainingSessions": {
+    "mean": 202,
+    "min": 196,
+    "max": 206
+   },
+   "forfeits": {
+    "mean": 0.3,
+    "min": 0,
+    "max": 1
+   },
+   "finalCoins": {
+    "mean": 9112,
+    "min": 9035,
+    "max": 9242
+   },
+   "netWorth": {
+    "mean": 37596.7,
+    "min": 37093,
+    "max": 38058
+   },
+   "minCoins": {
+    "mean": 707,
+    "min": 707,
+    "max": 707
+   },
+   "negativeWeeks": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "totalIncome": {
+    "mean": 45253,
+    "min": 44708,
+    "max": 45761
+   },
+   "totalExpense": {
+    "mean": 8556.3,
+    "min": 8515,
+    "max": 8603
+   },
+   "equipmentSpend": {
+    "mean": 173,
+    "min": 173,
+    "max": 173
+   },
+   "purchases": {
+    "mean": 3,
+    "min": 3,
+    "max": 3
+   },
+   "coinsPerEffectivePoint": {
+    "mean": 58,
+    "min": 58,
+    "max": 58
+   },
+   "trainingShareOfExpense": {
+    "mean": 54,
+    "min": 53,
+    "max": 55.3
+   },
+   "equipmentShareOfExpense": {
+    "mean": 2,
+    "min": 2,
+    "max": 2
+   },
+   "sponsorsSigned": {
+    "mean": 4,
+    "min": 4,
+    "max": 4
+   },
+   "sponsorMonthlyEnd": {
+    "mean": 1494.7,
+    "min": 1403,
+    "max": 1606
+   },
+   "sponsorRenewals": {
+    "mean": 7.3,
+    "min": 6,
+    "max": 8
+   },
+   "coachHires": {
+    "mean": 1,
+    "min": 1,
+    "max": 1
+   },
+   "staffHires": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "investedAmount": {
+    "mean": 28484.7,
+    "min": 28034,
+    "max": 28816
+   },
+   "errors": 0,
+   "violations": 0,
+   "unattributed": 0,
+   "saveLoadAllIdentical": true,
+   "advanceFailures": 0,
+   "income": {
+    "conquista": 18300,
+    "sponsor_monthly": 17131,
+    "torneio": 4176,
+    "patrocinio_renovacao": 2618,
+    "patrocinio_luvas": 1480,
+    "investment_income": 829,
+    "partida": 720
+   },
+   "expense": {
+    "treino": 4621,
+    "folha_mensal": 1782,
+    "parceria": 1077,
+    "inscricao": 703,
+    "treinador_luvas": 200,
+    "equipamento": 173
+   }
+  },
+  {
+   "days": 365,
+   "profile": "equilibrado",
+   "seeds": [
+    1,
+    2,
+    3
+   ],
+   "ovrBaseEnd": {
+    "mean": 42.7,
+    "min": 41.9,
+    "max": 43.8
+   },
+   "ovrBaseGain": {
+    "mean": 20.9,
+    "min": 20.1,
+    "max": 22
+   },
+   "ovrEffectiveEnd": {
+    "mean": 43.4,
+    "min": 42.6,
+    "max": 44.5
+   },
+   "equipApplied": {
+    "mean": 7,
+    "min": 7,
+    "max": 7
+   },
+   "rankEnd": {
+    "mean": 316,
+    "min": 304,
+    "max": 332
+   },
+   "rankBest": {
+    "mean": 316,
+    "min": 304,
+    "max": 332
+   },
+   "matches": {
+    "mean": 46.3,
+    "min": 44,
+    "max": 49
+   },
+   "winRate": {
+    "mean": 28,
+    "min": 18.2,
+    "max": 41.3
+   },
+   "titles": {
+    "mean": 0.7,
+    "min": 0,
+    "max": 2
+   },
+   "tournaments": {
+    "mean": 34,
+    "min": 29,
+    "max": 37
+   },
+   "trainingSessions": {
+    "mean": 395.7,
+    "min": 389,
+    "max": 407
+   },
+   "forfeits": {
+    "mean": 1.3,
+    "min": 0,
+    "max": 2
+   },
+   "finalCoins": {
+    "mean": 12686,
+    "min": 11209,
+    "max": 13524
+   },
+   "netWorth": {
+    "mean": 23108.3,
+    "min": 20122,
+    "max": 24808
+   },
+   "minCoins": {
+    "mean": 214.3,
+    "min": 103,
+    "max": 437
+   },
+   "negativeWeeks": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "totalIncome": {
+    "mean": 41656.7,
+    "min": 39899,
+    "max": 42703
+   },
+   "totalExpense": {
+    "mean": 19448.3,
+    "min": 18460,
+    "max": 20677
+   },
+   "equipmentSpend": {
+    "mean": 1320,
+    "min": 1320,
+    "max": 1320
+   },
+   "purchases": {
+    "mean": 6,
+    "min": 6,
+    "max": 6
+   },
+   "coinsPerEffectivePoint": {
+    "mean": 189,
+    "min": 189,
+    "max": 189
+   },
+   "trainingShareOfExpense": {
+    "mean": 67.6,
+    "min": 62.9,
+    "max": 70.5
+   },
+   "equipmentShareOfExpense": {
+    "mean": 6.8,
+    "min": 6.4,
+    "max": 7.2
+   },
+   "sponsorsSigned": {
+    "mean": 4,
+    "min": 4,
+    "max": 4
+   },
+   "sponsorMonthlyEnd": {
+    "mean": 1505,
+    "min": 1425,
+    "max": 1615
+   },
+   "sponsorRenewals": {
+    "mean": 7.3,
+    "min": 6,
+    "max": 8
+   },
+   "coachHires": {
+    "mean": 1,
+    "min": 1,
+    "max": 1
+   },
+   "staffHires": {
+    "mean": 0.7,
+    "min": 0,
+    "max": 1
+   },
+   "investedAmount": {
+    "mean": 10422.3,
+    "min": 6598,
+    "max": 13186
+   },
+   "errors": 0,
+   "violations": 0,
+   "unattributed": 0,
+   "saveLoadAllIdentical": true,
+   "advanceFailures": 0,
+   "income": {
+    "sponsor_monthly": 16716,
+    "conquista": 14133,
+    "torneio": 5865,
+    "patrocinio_renovacao": 2545,
+    "patrocinio_luvas": 1484,
+    "partida": 723,
+    "investment_income": 190
+   },
+   "expense": {
+    "treino": 13122,
+    "folha_mensal": 2908,
+    "equipamento": 1320,
+    "inscricao": 977,
+    "parceria": 922,
+    "treinador_luvas": 200
+   }
+  },
+  {
+   "days": 365,
+   "profile": "competitivo",
+   "seeds": [
+    1,
+    2,
+    3
+   ],
+   "ovrBaseEnd": {
+    "mean": 41.2,
+    "min": 40,
+    "max": 42.2
+   },
+   "ovrBaseGain": {
+    "mean": 19.4,
+    "min": 18.2,
+    "max": 20.4
+   },
+   "ovrEffectiveEnd": {
+    "mean": 43.2,
+    "min": 41.8,
+    "max": 44.2
+   },
+   "equipApplied": {
+    "mean": 19.7,
+    "min": 18,
+    "max": 21
+   },
+   "rankEnd": {
+    "mean": 245.7,
+    "min": 230,
+    "max": 269
+   },
+   "rankBest": {
+    "mean": 245.7,
+    "min": 230,
+    "max": 269
+   },
+   "matches": {
+    "mean": 37,
+    "min": 35,
+    "max": 40
+   },
+   "winRate": {
+    "mean": 14.1,
+    "min": 8.3,
+    "max": 22.5
+   },
+   "titles": {
+    "mean": 0.3,
+    "min": 0,
+    "max": 1
+   },
+   "tournaments": {
+    "mean": 32,
+    "min": 31,
+    "max": 33
+   },
+   "trainingSessions": {
+    "mean": 329.3,
+    "min": 314,
+    "max": 348
+   },
+   "forfeits": {
+    "mean": 1,
+    "min": 0,
+    "max": 2
+   },
+   "finalCoins": {
+    "mean": 4704.7,
+    "min": 4231,
+    "max": 5108
+   },
+   "netWorth": {
+    "mean": 4704.7,
+    "min": 4231,
+    "max": 5108
+   },
+   "minCoins": {
+    "mean": -403,
+    "min": -1267,
+    "max": 29
+   },
+   "negativeWeeks": {
+    "mean": 1.7,
+    "min": 0,
+    "max": 5
+   },
+   "totalIncome": {
+    "mean": 43811,
+    "min": 42535,
+    "max": 45757
+   },
+   "totalExpense": {
+    "mean": 40006.3,
+    "min": 39204,
+    "max": 41549
+   },
+   "equipmentSpend": {
+    "mean": 13379,
+    "min": 10540,
+    "max": 15718
+   },
+   "purchases": {
+    "mean": 14.7,
+    "min": 13,
+    "max": 16
+   },
+   "coinsPerEffectivePoint": {
+    "mean": 676,
+    "min": 586,
+    "max": 748
+   },
+   "trainingShareOfExpense": {
+    "mean": 32.2,
+    "min": 29.2,
+    "max": 35.2
+   },
+   "equipmentShareOfExpense": {
+    "mean": 33.6,
+    "min": 25.4,
+    "max": 40.1
+   },
+   "sponsorsSigned": {
+    "mean": 4,
+    "min": 4,
+    "max": 4
+   },
+   "sponsorMonthlyEnd": {
+    "mean": 1470,
+    "min": 1437,
+    "max": 1498
+   },
+   "sponsorRenewals": {
+    "mean": 7.7,
+    "min": 7,
+    "max": 8
+   },
+   "coachHires": {
+    "mean": 2,
+    "min": 2,
+    "max": 2
+   },
+   "staffHires": {
+    "mean": 1,
+    "min": 1,
+    "max": 1
+   },
+   "investedAmount": {
+    "mean": 0,
+    "min": 0,
+    "max": 0
+   },
+   "errors": 0,
+   "violations": 0,
+   "unattributed": 0,
+   "saveLoadAllIdentical": true,
+   "advanceFailures": 0,
+   "income": {
+    "sponsor_monthly": 16398,
+    "conquista": 13000,
+    "torneio": 9962,
+    "patrocinio_renovacao": 2609,
+    "patrocinio_luvas": 1366,
+    "partida": 477
+   },
+   "expense": {
+    "equipamento": 13379,
+    "treino": 12863,
+    "folha_mensal": 9420,
+    "inscricao": 1952,
+    "treinador_luvas": 1467,
+    "parceria": 734,
+    "staff_rescisao": 192
+   }
+  }
+ ]
+}

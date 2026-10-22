@@ -1,0 +1,545 @@
+{
+  "generatedBy": "LOCAL-9E.1-H1-R1 sponsorship signing integrity",
+  "checks": [
+    {
+      "name": "T1: três renovações imediatas não pagam nem criam contratos",
+      "ok": true,
+      "detail": {
+        "deltas": [
+          0,
+          0,
+          0
+        ],
+        "contracts": 1
+      }
+    },
+    {
+      "name": "T2: rescisão voluntária grava data da carreira e motivo",
+      "ok": true,
+      "detail": {
+        "terminate": "ok",
+        "stored": {
+          "reason": "Rescisão voluntária",
+          "on": "2026-01-01"
+        },
+        "resign": "resign-cooldown",
+        "before": {
+          "coins": 1272,
+          "contracts": 1,
+          "active": 0,
+          "signings": 1
+        },
+        "after": {
+          "coins": 1272,
+          "contracts": 1,
+          "active": 0,
+          "signings": 1
+        }
+      }
+    },
+    {
+      "name": "T2: reassinar no mesmo dia é recusado, sem pagamento e sem contrato novo",
+      "ok": true,
+      "detail": {
+        "terminate": "ok",
+        "stored": {
+          "reason": "Rescisão voluntária",
+          "on": "2026-01-01"
+        },
+        "resign": "resign-cooldown",
+        "before": {
+          "coins": 1272,
+          "contracts": 1,
+          "active": 0,
+          "signings": 1
+        },
+        "after": {
+          "coins": 1272,
+          "contracts": 1,
+          "active": 0,
+          "signings": 1
+        }
+      }
+    },
+    {
+      "name": "T3: 89 dias após a rescisão — bloqueado, nada muda",
+      "ok": true,
+      "detail": {
+        "terminatedOn": "2026-01-01",
+        "day89": "resign-cooldown",
+        "day90": "ok",
+        "delta90": 372,
+        "newSignBonus": 372,
+        "ids": [
+          "playercontract-1791117360020-nxqvgp",
+          "playercontract-1791117401020-2jrs7i"
+        ],
+        "pure": [
+          true,
+          true,
+          false,
+          false
+        ]
+      }
+    },
+    {
+      "name": "T3: 90 dias após a rescisão — liberado, paga as luvas uma vez",
+      "ok": true,
+      "detail": {
+        "terminatedOn": "2026-01-01",
+        "day89": "resign-cooldown",
+        "day90": "ok",
+        "delta90": 372,
+        "newSignBonus": 372,
+        "ids": [
+          "playercontract-1791117360020-nxqvgp",
+          "playercontract-1791117401020-2jrs7i"
+        ],
+        "pure": [
+          true,
+          true,
+          false,
+          false
+        ]
+      }
+    },
+    {
+      "name": "T3: regra pura — bloqueia até 89, libera a partir de 90",
+      "ok": true,
+      "detail": [
+        true,
+        true,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "T4: rescindir A não bloqueia B (mesmo dia); A continua bloqueado",
+      "ok": true,
+      "detail": {
+        "a": "paddleague",
+        "b": "localfit",
+        "signB": "ok",
+        "resignA": "resign-cooldown",
+        "deltaB": 273,
+        "bonusB": 273
+      }
+    },
+    {
+      "name": "T5: save/load no dia 0, 45 e 89 da carência — todas recusadas, nada muda",
+      "ok": true,
+      "detail": {
+        "afterReload": [
+          "resign-cooldown",
+          "resign-cooldown",
+          "resign-cooldown"
+        ],
+        "before": {
+          "coins": 1272,
+          "contracts": 1,
+          "active": 0,
+          "signings": 1
+        },
+        "after": {
+          "coins": 1272,
+          "contracts": 1,
+          "active": 0,
+          "signings": 1
+        }
+      }
+    },
+    {
+      "name": "T6: rescindir o contrato renovado (id derivado) também bloqueia o patrocinador",
+      "ok": true,
+      "detail": {
+        "renewed": "ok",
+        "ids": [
+          "playercontract-1791117347589-52r2f1",
+          "playercontract-1791117347589-52r2f1-renewal-1",
+          "playercontract-1791117403589-mzzf0d"
+        ],
+        "afterRenewedTerminated": "resign-cooldown",
+        "afterCooldown": "ok",
+        "afterSecondTermination": "resign-cooldown"
+      }
+    },
+    {
+      "name": "T6: nova assinatura (id novo) rescindida reabre a carência pela nova data",
+      "ok": true,
+      "detail": {
+        "renewed": "ok",
+        "ids": [
+          "playercontract-1791117347589-52r2f1",
+          "playercontract-1791117347589-52r2f1-renewal-1",
+          "playercontract-1791117403589-mzzf0d"
+        ],
+        "afterRenewedTerminated": "resign-cooldown",
+        "afterCooldown": "ok",
+        "afterSecondTermination": "resign-cooldown"
+      }
+    },
+    {
+      "name": "T7: assinatura repetida (perfil antigo e atual) é recusada, sem contrato ou pagamento novo",
+      "ok": true,
+      "detail": {
+        "results": [
+          "ok",
+          "already-active",
+          "already-active"
+        ],
+        "delta": 372,
+        "bonus": 372,
+        "after": {
+          "coins": 1272,
+          "contracts": 1,
+          "active": 1,
+          "signings": 1
+        }
+      }
+    },
+    {
+      "name": "T8: 5 assinaturas simultâneas — 1 contrato, 1 pagamento, 1 linha de extrato",
+      "ok": true,
+      "detail": {
+        "results": [
+          "ok",
+          "duplicate",
+          "duplicate",
+          "duplicate",
+          "duplicate"
+        ],
+        "delta": 372,
+        "bonus": 372,
+        "after": {
+          "coins": 1272,
+          "contracts": 1,
+          "active": 1,
+          "signings": 1
+        }
+      }
+    },
+    {
+      "name": "T9: 2 assinaturas + 1 renovação simultâneas (perfil antigo) — saldo = soma de todos os créditos",
+      "ok": true,
+      "detail": {
+        "sponsors": [
+          "babolat",
+          "asics",
+          "decathlon"
+        ],
+        "results": [
+          "ok",
+          "ok",
+          "ok"
+        ],
+        "delta": 1102,
+        "expected": 1102,
+        "ledgerRows": 4
+      }
+    },
+    {
+      "name": "T9: extrato com as 3 operações novas (+1 da assinatura da fixture)",
+      "ok": true,
+      "detail": {
+        "sponsors": [
+          "babolat",
+          "asics",
+          "decathlon"
+        ],
+        "results": [
+          "ok",
+          "ok",
+          "ok"
+        ],
+        "delta": 1102,
+        "expected": 1102,
+        "ledgerRows": 4
+      }
+    },
+    {
+      "name": "T10: contrato encerrado pelo patrocinador (metas) não gera carência",
+      "ok": true,
+      "detail": {
+        "sponsorTerminated": {
+          "reason": "Metas comerciais e desempenho insuficientes",
+          "voluntaryOn": null,
+          "resign": "ok"
+        },
+        "expired": {
+          "reason": "Contrato expirado",
+          "voluntaryOn": null,
+          "resign": "ok"
+        }
+      }
+    },
+    {
+      "name": "T10: contrato vencido no fechamento mensal não gera carência",
+      "ok": true,
+      "detail": {
+        "sponsorTerminated": {
+          "reason": "Metas comerciais e desempenho insuficientes",
+          "voluntaryOn": null,
+          "resign": "ok"
+        },
+        "expired": {
+          "reason": "Contrato expirado",
+          "voluntaryOn": null,
+          "resign": "ok"
+        }
+      }
+    },
+    {
+      "name": "T11: save com contratos no formato antigo carrega sem apagar contratos nem dinheiro",
+      "ok": true,
+      "detail": {
+        "contracts": [
+          4,
+          4
+        ],
+        "coins": [
+          900,
+          900
+        ],
+        "legacyRowsKept": true,
+        "renewLegacyActive": "ok",
+        "signAfterLegacyVoluntary": "ok"
+      }
+    },
+    {
+      "name": "T11: contrato antigo ativo renova pela regra nova (janela); rescisão antiga sem data não bloqueia",
+      "ok": true,
+      "detail": {
+        "contracts": [
+          4,
+          4
+        ],
+        "coins": [
+          900,
+          900
+        ],
+        "legacyRowsKept": true,
+        "renewLegacyActive": "ok",
+        "signAfterLegacyVoluntary": "ok"
+      }
+    },
+    {
+      "name": "T12: mesmas ações, datas e estado → mesmo saldo, contratos e extrato",
+      "ok": true,
+      "detail": {
+        "log": [
+          [
+            "sign",
+            1272
+          ],
+          [
+            "resign0",
+            "resign-cooldown",
+            1272
+          ],
+          [
+            "renew",
+            "ok",
+            1834
+          ],
+          [
+            "resign90",
+            "ok",
+            2206
+          ]
+        ],
+        "sameLog": true,
+        "sameContracts": true,
+        "sameLedger": true
+      }
+    }
+  ],
+  "cases": {
+    "T1": {
+      "deltas": [
+        0,
+        0,
+        0
+      ],
+      "contracts": 1
+    },
+    "T2": {
+      "terminate": "ok",
+      "stored": {
+        "reason": "Rescisão voluntária",
+        "on": "2026-01-01"
+      },
+      "resign": "resign-cooldown",
+      "before": {
+        "coins": 1272,
+        "contracts": 1,
+        "active": 0,
+        "signings": 1
+      },
+      "after": {
+        "coins": 1272,
+        "contracts": 1,
+        "active": 0,
+        "signings": 1
+      }
+    },
+    "T3": {
+      "terminatedOn": "2026-01-01",
+      "day89": "resign-cooldown",
+      "day90": "ok",
+      "delta90": 372,
+      "newSignBonus": 372,
+      "ids": [
+        "playercontract-1791117360020-nxqvgp",
+        "playercontract-1791117401020-2jrs7i"
+      ],
+      "pure": [
+        true,
+        true,
+        false,
+        false
+      ]
+    },
+    "T4": {
+      "a": "paddleague",
+      "b": "localfit",
+      "signB": "ok",
+      "resignA": "resign-cooldown",
+      "deltaB": 273,
+      "bonusB": 273
+    },
+    "T5": {
+      "afterReload": [
+        "resign-cooldown",
+        "resign-cooldown",
+        "resign-cooldown"
+      ],
+      "before": {
+        "coins": 1272,
+        "contracts": 1,
+        "active": 0,
+        "signings": 1
+      },
+      "after": {
+        "coins": 1272,
+        "contracts": 1,
+        "active": 0,
+        "signings": 1
+      }
+    },
+    "T6": {
+      "renewed": "ok",
+      "ids": [
+        "playercontract-1791117347589-52r2f1",
+        "playercontract-1791117347589-52r2f1-renewal-1",
+        "playercontract-1791117403589-mzzf0d"
+      ],
+      "afterRenewedTerminated": "resign-cooldown",
+      "afterCooldown": "ok",
+      "afterSecondTermination": "resign-cooldown"
+    },
+    "T7": {
+      "results": [
+        "ok",
+        "already-active",
+        "already-active"
+      ],
+      "delta": 372,
+      "bonus": 372,
+      "after": {
+        "coins": 1272,
+        "contracts": 1,
+        "active": 1,
+        "signings": 1
+      }
+    },
+    "T8": {
+      "results": [
+        "ok",
+        "duplicate",
+        "duplicate",
+        "duplicate",
+        "duplicate"
+      ],
+      "delta": 372,
+      "bonus": 372,
+      "after": {
+        "coins": 1272,
+        "contracts": 1,
+        "active": 1,
+        "signings": 1
+      }
+    },
+    "T9": {
+      "sponsors": [
+        "babolat",
+        "asics",
+        "decathlon"
+      ],
+      "results": [
+        "ok",
+        "ok",
+        "ok"
+      ],
+      "delta": 1102,
+      "expected": 1102,
+      "ledgerRows": 4
+    },
+    "T10": {
+      "sponsorTerminated": {
+        "reason": "Metas comerciais e desempenho insuficientes",
+        "voluntaryOn": null,
+        "resign": "ok"
+      },
+      "expired": {
+        "reason": "Contrato expirado",
+        "voluntaryOn": null,
+        "resign": "ok"
+      }
+    },
+    "T11": {
+      "contracts": [
+        4,
+        4
+      ],
+      "coins": [
+        900,
+        900
+      ],
+      "legacyRowsKept": true,
+      "renewLegacyActive": "ok",
+      "signAfterLegacyVoluntary": "ok"
+    },
+    "T12": {
+      "log": [
+        [
+          "sign",
+          1272
+        ],
+        [
+          "resign0",
+          "resign-cooldown",
+          1272
+        ],
+        [
+          "renew",
+          "ok",
+          1834
+        ],
+        [
+          "resign90",
+          "ok",
+          2206
+        ]
+      ],
+      "sameLog": true,
+      "sameContracts": true,
+      "sameLedger": true
+    }
+  },
+  "cooldownApi": true,
+  "summary": {
+    "total": 19,
+    "passed": 19,
+    "failed": 0
+  }
+}

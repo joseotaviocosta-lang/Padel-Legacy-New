@@ -30,6 +30,8 @@ export default function Economy() {
   const [searchParams] = useSearchParams();
   const [profile, setProfile] = useState(null);
   const [contracts, setContracts] = useState([]);
+  // LOCAL-9E.1-H1-R1: contratos encerrados (carência após rescisão voluntária).
+  const [contractHistory, setContractHistory] = useState([]);
   const [staff, setStaff] = useState([]);
   const [properties, setProperties] = useState([]);
   const [investments, setInvestments] = useState([]);
@@ -60,14 +62,16 @@ export default function Economy() {
       const p = await ensureMyProfile(user);
       setProfile(p);
       if (p) {
-        const [c, s, props, invs, txs] = await Promise.all([
+        const [c, s, props, invs, txs, history] = await Promise.all([
           localGame.entities.PlayerContract.filter({ profile_id: p.id, is_active: true }),
           localGame.entities.PlayerStaffHire.filter({ profile_id: p.id }),
           localGame.entities.PlayerProperty.filter({ profile_id: p.id }),
           localGame.entities.PlayerInvestment.filter({ profile_id: p.id }),
           localGame.entities.FinancialTransaction.filter({ profile_id: p.id }),
+          localGame.entities.PlayerContract.filter({ profile_id: p.id }),
         ]);
         setContracts(c || []);
+        setContractHistory(history || []);
         setStaff(s || []);
         setProperties(props || []);
         setInvestments(invs || []);
@@ -78,14 +82,16 @@ export default function Economy() {
   }
 
   async function refresh(profileId) {
-    const [c, s, props, invs, txs] = await Promise.all([
+    const [c, s, props, invs, txs, history] = await Promise.all([
       localGame.entities.PlayerContract.filter({ profile_id: profileId, is_active: true }),
       localGame.entities.PlayerStaffHire.filter({ profile_id: profileId }),
       localGame.entities.PlayerProperty.filter({ profile_id: profileId }),
       localGame.entities.PlayerInvestment.filter({ profile_id: profileId }),
       localGame.entities.FinancialTransaction.filter({ profile_id: profileId }),
+      localGame.entities.PlayerContract.filter({ profile_id: profileId }),
     ]);
     setContracts(c || []);
+    setContractHistory(history || []);
     setStaff(s || []);
     setProperties(props || []);
     setInvestments(invs || []);
@@ -223,6 +229,7 @@ export default function Economy() {
           <ModuleErrorBoundary moduleName="Patrocinadores"><SponsorPanel
           profile={profile}
           contracts={contracts}
+          contractHistory={contractHistory}
           onSign={(s) => handle('sign', () => signSponsorContract(profile, s), `Contrato assinado com ${s.name}!`)}
           onRenew={(c, s) => handle('renew', () => renewContract(c, s, profile), `Contrato renovado com ${s.name}!`)}
           onTerminate={(c) => handle('terminate', () => terminateSponsorContract(c), 'Contrato rescindido')}

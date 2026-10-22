@@ -126,15 +126,18 @@ const eq = await rt.load('/src/lib/equipmentModifiers.js');
     await sponsors.signSponsorContract(p, sponsor);
     p = await E.PlayerProfile.get(p.id);
     probe.signBonus = (Number(p.coins) || 0) - c0;
-    const renewals = [];
+    const renewals = []; const outcomes = [];
     for (let i = 0; i < 3; i += 1) {
       const [contract] = await E.PlayerContract.filter({ profile_id: p.id, sponsor_id: sponsor.id, is_active: true });
       const before = Number(p.coins) || 0;
-      await sponsors.renewContract(contract, sponsor, p);
+      // LOCAL-9E.1-H1: a renovação fora da janela agora é recusada (lança com o motivo).
+      try { await sponsors.renewContract(contract, sponsor, p); outcomes.push('renovado'); }
+      catch (e) { outcomes.push(`recusado:${e.code || e.message}`); }
       p = await E.PlayerProfile.get(p.id);
       renewals.push((Number(p.coins) || 0) - before);
     }
     probe.renewalBonusesSameDay = renewals;
+    probe.renewalOutcomes = outcomes;
     probe.activeAfter = (await E.PlayerContract.filter({ profile_id: p.id, sponsor_id: sponsor.id, is_active: true })).length;
   }
   // Registro, não asserção de correção: a regra é do jogo e fica para a 9D.

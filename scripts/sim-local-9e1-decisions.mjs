@@ -223,10 +223,15 @@ async function simulateCareer(seed) {
         const slot = A.sponsors.getSponsorCategory(sponsor);
         const tierRank = { Bronze: 1, Prata: 2, Ouro: 3 };
         const betterTierInSlot = ranked.some((r) => A.sponsors.getSponsorCategory(r.sponsor) === slot && (tierRank[r.sponsor.tier] || 0) > (tierRank[sponsor.tier] || 0));
+        // LOCAL-9E.1-H1: a elegibilidade é a do jogo (domínio); a política só decide dentro dela.
+        const eligibility = A.sponsors.getSponsorRenewalEligibility ? A.sponsors.getSponsorRenewalEligibility(c, profile.career_date, { profileId: profile.id }) : { ok: true };
+        if (!eligibility.ok) continue;
         const decision = P.shouldRenewSponsor({ contract: c, daysLeft, betterTierInSlot }, policy);
         if (!decision.renew) { if (decision.reason === 'tier-melhor-disponivel') out.sponsorRenewals.push({ day, sponsor: sponsor.id, renew: false, reason: decision.reason }); continue; }
-        const { delta } = await action('income', 'patrocinio_renovacao', () => A.sponsors.renewContract(c, sponsor, profile));
-        out.sponsorRenewals.push({ day, sponsor: sponsor.id, tier: sponsor.tier, renew: true, bonus: delta, daysLeft });
+        let renewed;
+        try { renewed = await action('income', 'patrocinio_renovacao', () => A.sponsors.renewContract(c, sponsor, profile)); }
+        catch (e) { out.sponsorRenewals.push({ day, sponsor: sponsor.id, renew: false, reason: `recusada:${e.code || e.message}`.slice(0, 80), daysLeft }); continue; }
+        out.sponsorRenewals.push({ day, sponsor: sponsor.id, tier: sponsor.tier, renew: true, bonus: renewed.delta, daysLeft });
       }
       // A vitrine pode ter mudado com a renovação: reavalia as assináveis.
       const fresh = P.rankSponsorOffers((await act.sponsorOptions(rt, A, profile)).signable, policy);

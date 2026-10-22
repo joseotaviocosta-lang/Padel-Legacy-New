@@ -1,0 +1,117 @@
+{
+ "generatedBy": "LOCAL-9E.1-H1-R1 simulator check",
+ "test9e1": {
+  "total": 48,
+  "failed": 0,
+  "probe": {
+   "careerId": "d31df8cb-d194-4736-95ae-2cebb9ff46d9",
+   "sponsor": "paddleague",
+   "signBonus": 372,
+   "renewalBonusesSameDay": [
+    0,
+    0,
+    0
+   ],
+   "renewalOutcomes": [
+    "recusado:too-early",
+    "recusado:too-early",
+    "recusado:too-early"
+   ],
+   "activeAfter": 1
+  }
+ },
+ "hash30d": {
+  "careers": [
+   {
+    "profile": "competitivo",
+    "seed": 1,
+    "baseline": "7bb9dcd07ff051f6",
+    "r1": "07d21fa6ff4b58a9",
+    "identical": false,
+    "signed": 0,
+    "errors": 0
+   },
+   {
+    "profile": "competitivo",
+    "seed": 2,
+    "baseline": "188e900baa722297",
+    "r1": "15a68cc55ae025e8",
+    "identical": false,
+    "signed": 0,
+    "errors": 0
+   },
+   {
+    "profile": "competitivo",
+    "seed": 3,
+    "baseline": "ebe19b107e0f02f4",
+    "r1": "669fc4a96a0da24b",
+    "identical": false,
+    "signed": 0,
+    "errors": 0
+   },
+   {
+    "profile": "economico",
+    "seed": 1,
+    "baseline": "9e3985140ab3378f",
+    "r1": "c02ebb54f488b979",
+    "identical": false,
+    "signed": 0,
+    "errors": 0
+   },
+   {
+    "profile": "economico",
+    "seed": 2,
+    "baseline": "8c73ba7fa961ae76",
+    "r1": "c0b334c50fc31b6e",
+    "identical": false,
+    "signed": 0,
+    "errors": 0
+   },
+   {
+    "profile": "economico",
+    "seed": 3,
+    "baseline": "608a62743c8d370c",
+    "r1": "143d62ebb6598635",
+    "identical": false,
+    "signed": 0,
+    "errors": 0
+   },
+   {
+    "profile": "equilibrado",
+    "seed": 1,
+    "baseline": "001cd9c7efbce0ea",
+    "r1": "8e1d5b57637100f5",
+    "identical": false,
+    "signed": 0,
+    "errors": 0
+   },
+   {
+    "profile": "equilibrado",
+    "seed": 2,
+    "baseline": "1593f02194bb3286",
+    "r1": "e21186114dc8d839",
+    "identical": false,
+    "signed": 0,
+    "errors": 0
+   },
+   {
+    "profile": "equilibrado",
+    "seed": 3,
+    "baseline": "a9c8884b527d139b",
+    "r1": "81e2ef4ce0e48b93",
+    "identical": false,
+    "signed": 0,
+    "errors": 0
+   }
+  ],
+  "identical": 0,
+  "sponsorsSignedIn30d": 0
+ },
+ "experiment": {
+  "change": "recolocar em src/lib/sponsors.js o import (sem uso) de @/lib/financialLedger.js, removido na R1",
+  "career": "economico seed 1, 30 dias",
+  "hashWithImport": "9e3985140ab3378f",
+  "baseline9e1": "9e3985140ab3378f"
+ },
+ "explanation": "O simulador não define PL527D_ISOLATE_VITE_RNG: o module runner do Vite consome Math.random (fluxo determinístico da carreira) a cada módulo carregado. Remover um import muda a ordem de carregamento e desloca o fluxo desde o boot (ids da loja já diferem). Nenhuma carreira assina patrocínio nos 30 dias; com o import recolocado o hash volta a ser idêntico ao da 9E.1. Não é mudança de regra do jogo."
+}

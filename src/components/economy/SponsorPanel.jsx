@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Star, Check, Lock, Coins, RefreshCw, AlertTriangle, Handshake, Search, SlidersHorizontal } from 'lucide-react';
 import { GlassCard, EmptyStateCard } from '@/components/padel/ui';
-import { SPONSOR_CATALOG, getSponsorTierStyle, canSign, calculateProfileMatch, negotiateOffer, getSponsorCategory, validateSponsorSlot, SPONSOR_SLOT_LIMITS, normalizeSponsorshipContract } from '@/lib/sponsors';
+import { SPONSOR_CATALOG, getSponsorTierStyle, canSign, calculateProfileMatch, negotiateOffer, getSponsorCategory, validateSponsorSlot, SPONSOR_SLOT_LIMITS, normalizeSponsorshipContract, getSponsorRenewalEligibility, getSponsorResignCooldown } from '@/lib/sponsors';
 import SponsorNegotiationModal from './SponsorNegotiationModal';
 import { formatDate } from '@/lib/padel';
 import { getMonthlySponsorMarket } from '@/lib/sportsEconomyV26';
@@ -11,7 +11,7 @@ const formatNumber = (value, fallback = 0) => {
   return Number.isFinite(number) ? number.toLocaleString('pt-BR') : fallback.toLocaleString('pt-BR');
 };
 
-export default function SponsorPanel({ profile, contracts, onSign, onTerminate, onRenew, busy }) {
+export default function SponsorPanel({ profile, contracts, contractHistory = [], onSign, onTerminate, onRenew, busy }) {
   const [negotiating, setNegotiating] = useState(null);
   const [search, setSearch] = useState('');
   const [tierFilter, setTierFilter] = useState('all');
@@ -31,7 +31,13 @@ export default function SponsorPanel({ profile, contracts, onSign, onTerminate, 
   const filteredSponsors = useMemo(() => {
     let result = validSponsors.map(sponsor => ({
       sponsor,
-      check: (() => { const eligibility = canSign(sponsor, profile); return eligibility.ok ? validateSponsorSlot(sponsor, activeContracts) : eligibility; })(),
+      check: (() => {
+        const eligibility = canSign(sponsor, profile);
+        if (!eligibility.ok) return eligibility;
+        // LOCAL-9E.1-H1-R1: mesma carência do domínio (signSponsorContract).
+        const cooldown = getSponsorResignCooldown(sponsor.id, contractHistory, profile?.career_date);
+        return cooldown.blocked ? { ok: false, reason: cooldown.reason } : validateSponsorSlot(sponsor, activeContracts);
+      })(),
       match: calculateProfileMatch(sponsor, profile),
       offer: negotiateOffer(sponsor, profile),
       isActive: activeSponsorIds.includes(sponsor.id),
@@ -49,7 +55,7 @@ export default function SponsorPanel({ profile, contracts, onSign, onTerminate, 
     if (sort === 'tier_desc') { const rank = { Ouro: 3, Prata: 2, Bronze: 1 }; result.sort((a, b) => rank[b.sponsor.tier] - rank[a.sponsor.tier]); }
     if (sort === 'name_asc') result.sort((a, b) => a.sponsor.name.localeCompare(b.sponsor.name, 'pt-BR'));
     return result;
-  }, [profile, activeContracts, validSponsors, search, tierFilter, industryFilter, availabilityFilter, sort]);
+  }, [profile, activeContracts, contractHistory, validSponsors, search, tierFilter, industryFilter, availabilityFilter, sort]);
 
   return (
     <div className="space-y-4">
@@ -85,6 +91,12 @@ export default function SponsorPanel({ profile, contracts, onSign, onTerminate, 
               const category = c.sponsor_category || (sponsor ? getSponsorCategory(sponsor) : 'legado');
               const satColor = satisfaction >= 70 ? 'text-green-400' : satisfaction >= 40 ? 'text-amber-400' : 'text-destructive';
               const canRenew = c.is_renewable && sponsor;
+              // LOCAL-9E.1-H1: mesma regra do domínio (renewSponsorContract).
+              const renewal = canRenew ? getSponsorRenewalEligibility(c, profile?.career_date, { profileId: profile?.id }) : null;
+              const renewalNote = !renewal ? null
+                : renewal.ok ? `Janela de renovação aberta · ${renewal.daysLeft === 0 ? 'vence hoje' : `vence em ${renewal.daysLeft} dia(s)`}`
+                : renewal.code === 'too-early' ? `Renovação a partir de ${formatDate(renewal.opensOn)}`
+                : renewal.reason;
               return (
                 <div key={c.id || i} className="rounded-xl bg-secondary/30 p-3">
                   <div className="flex items-center gap-3 mb-2">
@@ -130,12 +142,14 @@ export default function SponsorPanel({ profile, contracts, onSign, onTerminate, 
                     {canRenew && (
                       <button
                         onClick={() => onRenew(c, sponsor)}
-                        disabled={busy === 'renew'}
-                        className="text-[10px] text-primary hover:text-primary/80 font-semibold px-2 py-1 rounded-lg hover:bg-primary/10 transition-colors flex items-center gap-1"
+                        disabled={busy === 'renew' || !renewal?.ok}
+                        title={renewal?.ok ? undefined : renewalNote || undefined}
+                        className="text-[10px] text-primary hover:text-primary/80 font-semibold px-2 py-1 rounded-lg hover:bg-primary/10 transition-colors flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed"
                       >
                         <RefreshCw className="h-3 w-3" /> Renovar
                       </button>
                     )}
+                    {renewalNote && <span className={`text-[9px] ${renewal?.ok ? 'text-green-400' : 'text-muted-foreground'}`}>{renewalNote}</span>}
                     <button
                       onClick={() => onTerminate(c)}
                       disabled={busy === 'terminate'}

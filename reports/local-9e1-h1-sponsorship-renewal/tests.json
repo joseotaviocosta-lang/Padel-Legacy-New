@@ -1,0 +1,716 @@
+{
+  "generatedBy": "LOCAL-9E.1-H1 sponsorship renewal integrity",
+  "checks": [
+    {
+      "name": "P: sonda 9E.1 — 3 renovações no dia da assinatura não pagam luvas",
+      "ok": true,
+      "detail": {
+        "sponsor": "paddleague",
+        "signBonus": 372,
+        "renewalBonusesSameDay": [
+          0,
+          0,
+          0
+        ],
+        "outcomes": [
+          "recusado:too-early",
+          "recusado:too-early",
+          "recusado:too-early"
+        ],
+        "activeAfter": 1,
+        "contractsAfter": 1
+      }
+    },
+    {
+      "name": "P: sonda 9E.1 — continua 1 contrato ativo e nenhum contrato novo",
+      "ok": true,
+      "detail": {
+        "sponsor": "paddleague",
+        "signBonus": 372,
+        "renewalBonusesSameDay": [
+          0,
+          0,
+          0
+        ],
+        "outcomes": [
+          "recusado:too-early",
+          "recusado:too-early",
+          "recusado:too-early"
+        ],
+        "activeAfter": 1,
+        "contractsAfter": 1
+      }
+    },
+    {
+      "name": "B: renovação antes da janela é recusada",
+      "ok": true,
+      "detail": {
+        "endDate": "2026-07-01",
+        "attempts": [
+          "too-early",
+          "too-early"
+        ]
+      }
+    },
+    {
+      "name": "B: recusa sem pagamento, sem mudança contratual, sem extrato e sem notícia",
+      "ok": true,
+      "detail": {
+        "snapB0": {
+          "coins": 1272,
+          "contracts": "[{\"profile_id\":\"playerprofile-1791115437215-ytb5y1\",\"sponsor_id\":\"paddleague\",\"sponsor_name\":\"Padel League\",\"sponsor_tier\":\"Bronze\",\"sponsor_category\":\"comercial\",\"monthly_salary\":312,\"sign_bonus\":372,\"started_date\":\"2026-01-01\",\"end_date\":\"2026-07-01\",\"is_active\":true,\"duration_months\":6,\"marketing_requirements\":[\"events\",\"social_posts\"],\"commercial_goals\":[{\"type\":\"join_tournament\",\"target\":1,\"period\":\"monthly\",\"reward\":160,\"penalty\":-40}],\"performance_clauses\":{\"min_win_rate\":20,\"tournament_participation\":1,\"termination_threshold\":18},\"goals_progress\":{},\"satisfaction_score\":50,\"is_renewable\":true,\"signing_bonus_paid\":true,\"signing_bonus_paid_at\":\"2026-10-04T12:36:17.215Z\",\"last_payment_month\":null,\"id\":\"playercontract-1791117379215-9tk174\",\"created_date\":\"2026-10-04T12:36:18.215Z\"}]",
+          "ledger": 0,
+          "events": 0
+        },
+        "snapB1": {
+          "coins": 1272,
+          "contracts": "[{\"profile_id\":\"playerprofile-1791115437215-ytb5y1\",\"sponsor_id\":\"paddleague\",\"sponsor_name\":\"Padel League\",\"sponsor_tier\":\"Bronze\",\"sponsor_category\":\"comercial\",\"monthly_salary\":312,\"sign_bonus\":372,\"started_date\":\"2026-01-01\",\"end_date\":\"2026-07-01\",\"is_active\":true,\"duration_months\":6,\"marketing_requirements\":[\"events\",\"social_posts\"],\"commercial_goals\":[{\"type\":\"join_tournament\",\"target\":1,\"period\":\"monthly\",\"reward\":160,\"penalty\":-40}],\"performance_clauses\":{\"min_win_rate\":20,\"tournament_participation\":1,\"termination_threshold\":18},\"goals_progress\":{},\"satisfaction_score\":50,\"is_renewable\":true,\"signing_bonus_paid\":true,\"signing_bonus_paid_at\":\"2026-10-04T12:36:17.215Z\",\"last_payment_month\":null,\"id\":\"playercontract-1791117379215-9tk174\",\"created_date\":\"2026-10-04T12:36:18.215Z\"}]",
+          "ledger": 0,
+          "events": 0
+        }
+      }
+    },
+    {
+      "name": "A: renovação dentro da janela é aceita e paga as luvas de renovação uma vez",
+      "ok": true,
+      "detail": {
+        "legit": "renovado",
+        "legitBonus": 398,
+        "expectedBonus": 398,
+        "repeats": [
+          "already-renewed",
+          "already-renewed",
+          "too-early",
+          "too-early"
+        ],
+        "renewedContract": {
+          "id": "playercontract-1791117379215-9tk174-renewal-1",
+          "started": "2026-06-01",
+          "end": "2026-12-01",
+          "from": "playercontract-1791117379215-9tk174"
+        }
+      }
+    },
+    {
+      "name": "A: repetir (objeto antigo, objeto forjado, contrato novo ×2) não produz nenhum efeito",
+      "ok": true,
+      "detail": {
+        "repeats": [
+          "already-renewed",
+          "already-renewed",
+          "too-early",
+          "too-early"
+        ],
+        "snapA1": {
+          "coins": 1670,
+          "contracts": "[{\"profile_id\":\"playerprofile-1791115437215-ytb5y1\",\"sponsor_id\":\"paddleague\",\"sponsor_name\":\"Padel League\",\"sponsor_tier\":\"Bronze\",\"sponsor_category\":\"comercial\",\"monthly_salary\":312,\"sign_bonus\":372,\"started_date\":\"2026-01-01\",\"end_date\":\"2026-07-01\",\"is_active\":false,\"duration_months\":6,\"marketing_requirements\":[\"events\",\"social_posts\"],\"commercial_goals\":[{\"type\":\"join_tournament\",\"target\":1,\"period\":\"monthly\",\"reward\":160,\"penalty\":-40}],\"performance_clauses\":{\"min_win_rate\":20,\"tournament_participation\":1,\"termination_threshold\":18},\"goals_progress\":{},\"satisfaction_score\":50,\"is_renewable\":true,\"signing_bonus_paid\":true,\"signing_bonus_paid_at\":\"2026-10-04T12:36:17.215Z\",\"last_payment_month\":null,\"id\":\"playercontract-1791117379215-9tk174\",\"created_date\":\"2026-10-04T12:36:18.215Z\",\"termination_reason\":\"Renovado\",\"renewed_to_contract_id\":\"playercontract-1791117379215-9tk174-renewal-1\"},{\"profile_id\":\"playerprofile-1791115437215-ytb5y1\",\"sponsor_id\":\"paddleague\",\"sponsor_name\":\"Padel League\",\"sponsor_tier\":\"Bronze\",\"sponsor_category\":\"comercial\",\"monthly_salary\":312,\"sign_bonus\":398,\"started_date\":\"2026-06-01\",\"end_date\":\"2026-12-01\",\"is_active\":true,\"duration_months\":6,\"marketing_requirements\":[\"events\",\"social_posts\"],\"commercial_goals\":[{\"type\":\"join_tournament\",\"target\":1,\"period\":\"monthly\",\"reward\":160,\"penalty\":-40}],\"performance_clauses\":{\"min_win_rate\":20,\"tournament_participation\":1,\"termination_threshold\":18},\"goals_progress\":{},\"satisfaction_score\":50,\"is_renewable\":true,\"renewed_from_contract_id\":\"playercontract-1791117379215-9tk174\",\"renewal_root_id\":\"playercontract-1791117379215-9tk174\",\"renewal_sequence\":1,\"id\":\"playercontract-1791117379215-9tk174-renewal-1\",\"created_date\":\"2026-10-04T12:36:49.215Z\"}]",
+          "ledger": 1,
+          "events": 1
+        },
+        "snapA2": {
+          "coins": 1670,
+          "contracts": "[{\"profile_id\":\"playerprofile-1791115437215-ytb5y1\",\"sponsor_id\":\"paddleague\",\"sponsor_name\":\"Padel League\",\"sponsor_tier\":\"Bronze\",\"sponsor_category\":\"comercial\",\"monthly_salary\":312,\"sign_bonus\":372,\"started_date\":\"2026-01-01\",\"end_date\":\"2026-07-01\",\"is_active\":false,\"duration_months\":6,\"marketing_requirements\":[\"events\",\"social_posts\"],\"commercial_goals\":[{\"type\":\"join_tournament\",\"target\":1,\"period\":\"monthly\",\"reward\":160,\"penalty\":-40}],\"performance_clauses\":{\"min_win_rate\":20,\"tournament_participation\":1,\"termination_threshold\":18},\"goals_progress\":{},\"satisfaction_score\":50,\"is_renewable\":true,\"signing_bonus_paid\":true,\"signing_bonus_paid_at\":\"2026-10-04T12:36:17.215Z\",\"last_payment_month\":null,\"id\":\"playercontract-1791117379215-9tk174\",\"created_date\":\"2026-10-04T12:36:18.215Z\",\"termination_reason\":\"Renovado\",\"renewed_to_contract_id\":\"playercontract-1791117379215-9tk174-renewal-1\"},{\"profile_id\":\"playerprofile-1791115437215-ytb5y1\",\"sponsor_id\":\"paddleague\",\"sponsor_name\":\"Padel League\",\"sponsor_tier\":\"Bronze\",\"sponsor_category\":\"comercial\",\"monthly_salary\":312,\"sign_bonus\":398,\"started_date\":\"2026-06-01\",\"end_date\":\"2026-12-01\",\"is_active\":true,\"duration_months\":6,\"marketing_requirements\":[\"events\",\"social_posts\"],\"commercial_goals\":[{\"type\":\"join_tournament\",\"target\":1,\"period\":\"monthly\",\"reward\":160,\"penalty\":-40}],\"performance_clauses\":{\"min_win_rate\":20,\"tournament_participation\":1,\"termination_threshold\":18},\"goals_progress\":{},\"satisfaction_score\":50,\"is_renewable\":true,\"renewed_from_contract_id\":\"playercontract-1791117379215-9tk174\",\"renewal_root_id\":\"playercontract-1791117379215-9tk174\",\"renewal_sequence\":1,\"id\":\"playercontract-1791117379215-9tk174-renewal-1\",\"created_date\":\"2026-10-04T12:36:49.215Z\"}]",
+          "ledger": 1,
+          "events": 1
+        }
+      }
+    },
+    {
+      "name": "A: 1 linha de extrato e 1 notícia de renovação; 2 contratos (1 ativo)",
+      "ok": true,
+      "detail": {
+        "coins": 1670,
+        "contracts": "[{\"profile_id\":\"playerprofile-1791115437215-ytb5y1\",\"sponsor_id\":\"paddleague\",\"sponsor_name\":\"Padel League\",\"sponsor_tier\":\"Bronze\",\"sponsor_category\":\"comercial\",\"monthly_salary\":312,\"sign_bonus\":372,\"started_date\":\"2026-01-01\",\"end_date\":\"2026-07-01\",\"is_active\":false,\"duration_months\":6,\"marketing_requirements\":[\"events\",\"social_posts\"],\"commercial_goals\":[{\"type\":\"join_tournament\",\"target\":1,\"period\":\"monthly\",\"reward\":160,\"penalty\":-40}],\"performance_clauses\":{\"min_win_rate\":20,\"tournament_participation\":1,\"termination_threshold\":18},\"goals_progress\":{},\"satisfaction_score\":50,\"is_renewable\":true,\"signing_bonus_paid\":true,\"signing_bonus_paid_at\":\"2026-10-04T12:36:17.215Z\",\"last_payment_month\":null,\"id\":\"playercontract-1791117379215-9tk174\",\"created_date\":\"2026-10-04T12:36:18.215Z\",\"termination_reason\":\"Renovado\",\"renewed_to_contract_id\":\"playercontract-1791117379215-9tk174-renewal-1\"},{\"profile_id\":\"playerprofile-1791115437215-ytb5y1\",\"sponsor_id\":\"paddleague\",\"sponsor_name\":\"Padel League\",\"sponsor_tier\":\"Bronze\",\"sponsor_category\":\"comercial\",\"monthly_salary\":312,\"sign_bonus\":398,\"started_date\":\"2026-06-01\",\"end_date\":\"2026-12-01\",\"is_active\":true,\"duration_months\":6,\"marketing_requirements\":[\"events\",\"social_posts\"],\"commercial_goals\":[{\"type\":\"join_tournament\",\"target\":1,\"period\":\"monthly\",\"reward\":160,\"penalty\":-40}],\"performance_clauses\":{\"min_win_rate\":20,\"tournament_participation\":1,\"termination_threshold\":18},\"goals_progress\":{},\"satisfaction_score\":50,\"is_renewable\":true,\"renewed_from_contract_id\":\"playercontract-1791117379215-9tk174\",\"renewal_root_id\":\"playercontract-1791117379215-9tk174\",\"renewal_sequence\":1,\"id\":\"playercontract-1791117379215-9tk174-renewal-1\",\"created_date\":\"2026-10-04T12:36:49.215Z\"}]",
+        "ledger": 1,
+        "events": 1
+      }
+    },
+    {
+      "name": "A: contrato anterior fica inativo, \"Renovado\", ligado ao novo",
+      "ok": true,
+      "detail": {
+        "is_active": false,
+        "reason": "Renovado",
+        "to": "playercontract-1791117379215-9tk174-renewal-1"
+      }
+    },
+    {
+      "name": "A: linha do extrato = luvas pagas (valor, data, categoria)",
+      "ok": true,
+      "detail": {
+        "profile_id": "playerprofile-1791115437215-ytb5y1",
+        "date": "2026-06-01",
+        "type": "income",
+        "category": "patrocinio",
+        "description": "Renovação de patrocínio — Padel League",
+        "amount": 398,
+        "id": "sponsor-renewal-playercontract-1791117379215-9tk174-2026-06-01",
+        "created_date": "2026-10-04T12:36:49.215Z",
+        "updated_date": "2026-10-04T12:36:49.215Z"
+      }
+    },
+    {
+      "name": "C: renovação legítima persiste após save/load (saldo, contratos, extrato)",
+      "ok": true,
+      "detail": {
+        "snap1": {
+          "coins": 1670,
+          "contracts": "[{\"profile_id\":\"playerprofile-1791115421533-r1hham\",\"sponsor_id\":\"paddleague\",\"sponsor_name\":\"Padel League\",\"sponsor_tier\":\"Bronze\",\"sponsor_category\":\"comercial\",\"monthly_salary\":312,\"sign_bonus\":372,\"started_date\":\"2026-01-01\",\"end_date\":\"2026-07-01\",\"is_active\":false,\"duration_months\":6,\"marketing_requirements\":[\"events\",\"social_posts\"],\"commercial_goals\":[{\"type\":\"join_tournament\",\"target\":1,\"period\":\"monthly\",\"reward\":160,\"penalty\":-40}],\"performance_clauses\":{\"min_win_rate\":20,\"tournament_participation\":1,\"termination_threshold\":18},\"goals_progress\":{},\"satisfaction_score\":50,\"is_renewable\":true,\"signing_bonus_paid\":true,\"signing_bonus_paid_at\":\"2026-10-04T12:36:01.533Z\",\"last_payment_month\":null,\"id\":\"playercontract-1791117363533-ainzhr\",\"created_date\":\"2026-10-04T12:36:02.533Z\",\"termination_reason\":\"Renovado\",\"renewed_to_contract_id\":\"playercontract-1791117363533-ainzhr-renewal-1\"},{\"profile_id\":\"playerprofile-1791115421533-r1hham\",\"sponsor_id\":\"paddleague\",\"sponsor_name\":\"Padel League\",\"sponsor_tier\":\"Bronze\",\"sponsor_category\":\"comercial\",\"monthly_salary\":312,\"sign_bonus\":398,\"started_date\":\"2026-06-21\",\"end_date\":\"2026-12-21\",\"is_active\":true,\"duration_months\":6,\"marketing_requirements\":[\"events\",\"social_posts\"],\"commercial_goals\":[{\"type\":\"join_tournament\",\"target\":1,\"period\":\"monthly\",\"reward\":160,\"penalty\":-40}],\"performance_clauses\":{\"min_win_rate\":20,\"tournament_participation\":1,\"termination_threshold\":18},\"goals_progress\":{},\"satisfaction_score\":50,\"is_renewable\":true,\"renewed_from_contract_id\":\"playercontract-1791117363533-ainzhr\",\"renewal_root_id\":\"playercontract-1791117363533-ainzhr\",\"renewal_sequence\":1,\"id\":\"playercontract-1791117363533-ainzhr-renewal-1\",\"created_date\":\"2026-10-04T12:36:27.533Z\"}]",
+          "ledger": 1,
+          "events": 1
+        },
+        "snapReload": {
+          "coins": 1670,
+          "contracts": "[{\"profile_id\":\"playerprofile-1791115421533-r1hham\",\"sponsor_id\":\"paddleague\",\"sponsor_name\":\"Padel League\",\"sponsor_tier\":\"Bronze\",\"sponsor_category\":\"comercial\",\"monthly_salary\":312,\"sign_bonus\":372,\"started_date\":\"2026-01-01\",\"end_date\":\"2026-07-01\",\"is_active\":false,\"duration_months\":6,\"marketing_requirements\":[\"events\",\"social_posts\"],\"commercial_goals\":[{\"type\":\"join_tournament\",\"target\":1,\"period\":\"monthly\",\"reward\":160,\"penalty\":-40}],\"performance_clauses\":{\"min_win_rate\":20,\"tournament_participation\":1,\"termination_threshold\":18},\"goals_progress\":{},\"satisfaction_score\":50,\"is_renewable\":true,\"signing_bonus_paid\":true,\"signing_bonus_paid_at\":\"2026-10-04T12:36:01.533Z\",\"last_payment_month\":null,\"id\":\"playercontract-1791117363533-ainzhr\",\"created_date\":\"2026-10-04T12:36:02.533Z\",\"termination_reason\":\"Renovado\",\"renewed_to_contract_id\":\"playercontract-1791117363533-ainzhr-renewal-1\"},{\"profile_id\":\"playerprofile-1791115421533-r1hham\",\"sponsor_id\":\"paddleague\",\"sponsor_name\":\"Padel League\",\"sponsor_tier\":\"Bronze\",\"sponsor_category\":\"comercial\",\"monthly_salary\":312,\"sign_bonus\":398,\"started_date\":\"2026-06-21\",\"end_date\":\"2026-12-21\",\"is_active\":true,\"duration_months\":6,\"marketing_requirements\":[\"events\",\"social_posts\"],\"commercial_goals\":[{\"type\":\"join_tournament\",\"target\":1,\"period\":\"monthly\",\"reward\":160,\"penalty\":-40}],\"performance_clauses\":{\"min_win_rate\":20,\"tournament_participation\":1,\"termination_threshold\":18},\"goals_progress\":{},\"satisfaction_score\":50,\"is_renewable\":true,\"renewed_from_contract_id\":\"playercontract-1791117363533-ainzhr\",\"renewal_root_id\":\"playercontract-1791117363533-ainzhr\",\"renewal_sequence\":1,\"id\":\"playercontract-1791117363533-ainzhr-renewal-1\",\"created_date\":\"2026-10-04T12:36:27.533Z\"}]",
+          "ledger": 1,
+          "events": 1
+        }
+      }
+    },
+    {
+      "name": "C: repetir após load é recusado e nada muda após novo load",
+      "ok": true,
+      "detail": {
+        "first": true,
+        "afterReload": [
+          "already-renewed",
+          "too-early"
+        ],
+        "coins": [
+          1670,
+          1670,
+          1670
+        ],
+        "ledger": 1
+      }
+    },
+    {
+      "name": "D: os dois contratos estão na janela no mesmo dia",
+      "ok": true,
+      "detail": {
+        "sponsors": [
+          "paddleague",
+          "localfit"
+        ],
+        "ends": [
+          "2026-07-01",
+          "2026-07-01"
+        ],
+        "date": "2026-06-26",
+        "bothInWindow": true,
+        "results": [
+          "renovado",
+          "already-renewed",
+          "renovado"
+        ],
+        "deltas": [
+          398,
+          289
+        ]
+      }
+    },
+    {
+      "name": "D: renovar um não bloqueia o outro; repetição do primeiro recusada",
+      "ok": true,
+      "detail": {
+        "sponsors": [
+          "paddleague",
+          "localfit"
+        ],
+        "ends": [
+          "2026-07-01",
+          "2026-07-01"
+        ],
+        "date": "2026-06-26",
+        "bothInWindow": true,
+        "results": [
+          "renovado",
+          "already-renewed",
+          "renovado"
+        ],
+        "deltas": [
+          398,
+          289
+        ]
+      }
+    },
+    {
+      "name": "D: cada contrato paga só as próprias luvas",
+      "ok": true,
+      "detail": {
+        "sponsors": [
+          "paddleague",
+          "localfit"
+        ],
+        "ends": [
+          "2026-07-01",
+          "2026-07-01"
+        ],
+        "date": "2026-06-26",
+        "bothInWindow": true,
+        "results": [
+          "renovado",
+          "already-renewed",
+          "renovado"
+        ],
+        "deltas": [
+          398,
+          289
+        ]
+      }
+    },
+    {
+      "name": "D: 2 linhas de extrato, uma por contrato",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "E: segundo ciclo — fora da janela recusado, dentro aceito",
+      "ok": true,
+      "detail": {
+        "first": true,
+        "earlySecond": "too-early",
+        "second": true,
+        "repeatSecond": "already-renewed",
+        "ids": [
+          "playercontract-1791117397819-89ay18",
+          "playercontract-1791117397819-89ay18-renewal-1",
+          "playercontract-1791117397819-89ay18-renewal-2"
+        ],
+        "delta": 398,
+        "ledger": 2
+      }
+    },
+    {
+      "name": "E: segundo ciclo paga uma vez; repetição recusada; 3 contratos com ids distintos",
+      "ok": true,
+      "detail": {
+        "first": true,
+        "earlySecond": "too-early",
+        "second": true,
+        "repeatSecond": "already-renewed",
+        "ids": [
+          "playercontract-1791117397819-89ay18",
+          "playercontract-1791117397819-89ay18-renewal-1",
+          "playercontract-1791117397819-89ay18-renewal-2"
+        ],
+        "delta": 398,
+        "ledger": 2
+      }
+    },
+    {
+      "name": "E: cadeia de renovação rastreável (origem, raiz, sequência)",
+      "ok": true,
+      "detail": {
+        "c2": {
+          "id": "playercontract-1791117397819-89ay18-renewal-1",
+          "root": "playercontract-1791117397819-89ay18",
+          "seq": 1
+        },
+        "c3": {
+          "id": "playercontract-1791117397819-89ay18-renewal-2",
+          "from": "playercontract-1791117397819-89ay18-renewal-1",
+          "root": "playercontract-1791117397819-89ay18",
+          "seq": 2
+        }
+      }
+    },
+    {
+      "name": "F: contrato vencido (ainda ativo) não renova e não paga",
+      "ok": true,
+      "detail": {
+        "expired": "expired",
+        "terminated": "inactive",
+        "closedByMonthly": {
+          "reason": "Contrato expirado",
+          "result": "inactive"
+        },
+        "ledger": 0
+      }
+    },
+    {
+      "name": "F: contrato rescindido não renova",
+      "ok": true,
+      "detail": {
+        "expired": "expired",
+        "terminated": "inactive",
+        "closedByMonthly": {
+          "reason": "Contrato expirado",
+          "result": "inactive"
+        },
+        "ledger": 0
+      }
+    },
+    {
+      "name": "F: contrato encerrado pelo fechamento mensal não renova",
+      "ok": true,
+      "detail": {
+        "expired": "expired",
+        "terminated": "inactive",
+        "closedByMonthly": {
+          "reason": "Contrato expirado",
+          "result": "inactive"
+        },
+        "ledger": 0
+      }
+    },
+    {
+      "name": "F: nenhuma linha de renovação no extrato",
+      "ok": true,
+      "detail": {
+        "expired": "expired",
+        "terminated": "inactive",
+        "closedByMonthly": {
+          "reason": "Contrato expirado",
+          "result": "inactive"
+        },
+        "ledger": 0
+      }
+    },
+    {
+      "name": "G: falha dentro do lote não deixa efeito parcial (saldo, contratos, extrato, notícia)",
+      "ok": true,
+      "detail": {
+        "snap0": {
+          "coins": 1272,
+          "contracts": "[{\"profile_id\":\"playerprofile-1791115411057-2koeje\",\"sponsor_id\":\"paddleague\",\"sponsor_name\":\"Padel League\",\"sponsor_tier\":\"Bronze\",\"sponsor_category\":\"comercial\",\"monthly_salary\":312,\"sign_bonus\":372,\"started_date\":\"2026-01-01\",\"end_date\":\"2026-07-01\",\"is_active\":true,\"duration_months\":6,\"marketing_requirements\":[\"events\",\"social_posts\"],\"commercial_goals\":[{\"type\":\"join_tournament\",\"target\":1,\"period\":\"monthly\",\"reward\":160,\"penalty\":-40}],\"performance_clauses\":{\"min_win_rate\":20,\"tournament_participation\":1,\"termination_threshold\":18},\"goals_progress\":{},\"satisfaction_score\":50,\"is_renewable\":true,\"signing_bonus_paid\":true,\"signing_bonus_paid_at\":\"2026-10-04T12:35:51.057Z\",\"last_payment_month\":null,\"id\":\"playercontract-1791117353057-c9nn4i\",\"created_date\":\"2026-10-04T12:35:52.057Z\"}]",
+          "ledger": 0,
+          "events": 0
+        },
+        "snap1": {
+          "coins": 1272,
+          "contracts": "[{\"profile_id\":\"playerprofile-1791115411057-2koeje\",\"sponsor_id\":\"paddleague\",\"sponsor_name\":\"Padel League\",\"sponsor_tier\":\"Bronze\",\"sponsor_category\":\"comercial\",\"monthly_salary\":312,\"sign_bonus\":372,\"started_date\":\"2026-01-01\",\"end_date\":\"2026-07-01\",\"is_active\":true,\"duration_months\":6,\"marketing_requirements\":[\"events\",\"social_posts\"],\"commercial_goals\":[{\"type\":\"join_tournament\",\"target\":1,\"period\":\"monthly\",\"reward\":160,\"penalty\":-40}],\"performance_clauses\":{\"min_win_rate\":20,\"tournament_participation\":1,\"termination_threshold\":18},\"goals_progress\":{},\"satisfaction_score\":50,\"is_renewable\":true,\"signing_bonus_paid\":true,\"signing_bonus_paid_at\":\"2026-10-04T12:35:51.057Z\",\"last_payment_month\":null,\"id\":\"playercontract-1791117353057-c9nn4i\",\"created_date\":\"2026-10-04T12:35:52.057Z\"}]",
+          "ledger": 0,
+          "events": 0
+        }
+      }
+    },
+    {
+      "name": "G: falha antes do lote não deixa efeito",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "G: nova tentativa após a falha renova uma vez; a seguinte é recusada",
+      "ok": true,
+      "detail": {
+        "failedInside": "PlayerContract não encontrado para atualização: __falha_injetada__",
+        "failedBefore": "falha de gravação injetada",
+        "retry": true,
+        "retry2": "already-renewed",
+        "coins": [
+          1272,
+          1272,
+          1272,
+          1272,
+          1670,
+          1670
+        ]
+      }
+    },
+    {
+      "name": "H: domínio devolve resultado explícito (sem exceção) para recusa",
+      "ok": true,
+      "detail": {
+        "early": {
+          "ok": false,
+          "status": "refused",
+          "code": "too-early"
+        },
+        "missing": {
+          "status": "refused",
+          "code": "missing-contract"
+        },
+        "wrongProfile": {
+          "status": "refused",
+          "code": "wrong-profile"
+        },
+        "eligibility": {
+          "tooEarly": "too-early",
+          "windowOpen": "ok",
+          "lastDay": "ok",
+          "dayAfter": "expired",
+          "otherProfile": "wrong-profile",
+          "notRenewable": "not-renewable",
+          "noEnd": "no-end-date",
+          "renewed": "already-renewed",
+          "unknownSponsor": "unknown-sponsor"
+        },
+        "window": {
+          "opensOn": "2026-06-01",
+          "endDate": "2026-07-01",
+          "days": 30
+        },
+        "forged": {
+          "otherId": "sponsor-mismatch",
+          "sameIdInflated": true,
+          "paid": 398,
+          "expected": 398
+        }
+      }
+    },
+    {
+      "name": "H: regra pura — janela [fim−30, fim], recusa antes/depois, perfil, flags e catálogo",
+      "ok": true,
+      "detail": {
+        "tooEarly": "too-early",
+        "windowOpen": "ok",
+        "lastDay": "ok",
+        "dayAfter": "expired",
+        "otherProfile": "wrong-profile",
+        "notRenewable": "not-renewable",
+        "noEnd": "no-end-date",
+        "renewed": "already-renewed",
+        "unknownSponsor": "unknown-sponsor"
+      }
+    },
+    {
+      "name": "H: patrocinador de outro id é recusado; valores inflados pelo chamador são ignorados",
+      "ok": true,
+      "detail": {
+        "otherId": "sponsor-mismatch",
+        "sameIdInflated": true,
+        "paid": 398,
+        "expected": 398
+      }
+    },
+    {
+      "name": "I: 5 chamadas simultâneas — exatamente 1 renovação",
+      "ok": true,
+      "detail": {
+        "results": [
+          "renovado",
+          "already-renewed",
+          "already-renewed",
+          "already-renewed",
+          "already-renewed"
+        ],
+        "delta": 398,
+        "contracts": 2,
+        "active": 1,
+        "ledger": 1
+      }
+    },
+    {
+      "name": "I: luvas pagas uma vez, 1 contrato novo, 1 linha de extrato",
+      "ok": true,
+      "detail": {
+        "results": [
+          "renovado",
+          "already-renewed",
+          "already-renewed",
+          "already-renewed",
+          "already-renewed"
+        ],
+        "delta": 398,
+        "contracts": 2,
+        "active": 1,
+        "ledger": 1
+      }
+    },
+    {
+      "name": "X: rescindir e reassinar no mesmo dia — só a primeira assinatura paga (E1-01b)",
+      "ok": true,
+      "detail": {
+        "id": "E1-01b",
+        "sponsor": "paddleague",
+        "signBonusesSameDay": [
+          372,
+          0,
+          0
+        ],
+        "outcomes": [
+          "assinado",
+          "resign-cooldown",
+          "resign-cooldown"
+        ],
+        "note": "Rescindir e reassinar o mesmo patrocinador no mesmo dia. Antes da H1-R1 pagava as luvas de novo a cada ciclo; com a carência de 90 dias, só a primeira assinatura paga."
+      }
+    }
+  ],
+  "cases": {
+    "P": {
+      "sponsor": "paddleague",
+      "signBonus": 372,
+      "renewalBonusesSameDay": [
+        0,
+        0,
+        0
+      ],
+      "outcomes": [
+        "recusado:too-early",
+        "recusado:too-early",
+        "recusado:too-early"
+      ],
+      "activeAfter": 1,
+      "contractsAfter": 1
+    },
+    "B": {
+      "endDate": "2026-07-01",
+      "attempts": [
+        "too-early",
+        "too-early"
+      ]
+    },
+    "A": {
+      "legit": "renovado",
+      "legitBonus": 398,
+      "expectedBonus": 398,
+      "repeats": [
+        "already-renewed",
+        "already-renewed",
+        "too-early",
+        "too-early"
+      ],
+      "renewedContract": {
+        "id": "playercontract-1791117379215-9tk174-renewal-1",
+        "started": "2026-06-01",
+        "end": "2026-12-01",
+        "from": "playercontract-1791117379215-9tk174"
+      }
+    },
+    "C": {
+      "first": true,
+      "afterReload": [
+        "already-renewed",
+        "too-early"
+      ],
+      "coins": [
+        1670,
+        1670,
+        1670
+      ],
+      "ledger": 1
+    },
+    "D": {
+      "sponsors": [
+        "paddleague",
+        "localfit"
+      ],
+      "ends": [
+        "2026-07-01",
+        "2026-07-01"
+      ],
+      "date": "2026-06-26",
+      "bothInWindow": true,
+      "results": [
+        "renovado",
+        "already-renewed",
+        "renovado"
+      ],
+      "deltas": [
+        398,
+        289
+      ]
+    },
+    "E": {
+      "first": true,
+      "earlySecond": "too-early",
+      "second": true,
+      "repeatSecond": "already-renewed",
+      "ids": [
+        "playercontract-1791117397819-89ay18",
+        "playercontract-1791117397819-89ay18-renewal-1",
+        "playercontract-1791117397819-89ay18-renewal-2"
+      ],
+      "delta": 398,
+      "ledger": 2
+    },
+    "F": {
+      "expired": "expired",
+      "terminated": "inactive",
+      "closedByMonthly": {
+        "reason": "Contrato expirado",
+        "result": "inactive"
+      },
+      "ledger": 0
+    },
+    "G": {
+      "failedInside": "PlayerContract não encontrado para atualização: __falha_injetada__",
+      "failedBefore": "falha de gravação injetada",
+      "retry": true,
+      "retry2": "already-renewed",
+      "coins": [
+        1272,
+        1272,
+        1272,
+        1272,
+        1670,
+        1670
+      ]
+    },
+    "H": {
+      "early": {
+        "ok": false,
+        "status": "refused",
+        "code": "too-early"
+      },
+      "missing": {
+        "status": "refused",
+        "code": "missing-contract"
+      },
+      "wrongProfile": {
+        "status": "refused",
+        "code": "wrong-profile"
+      },
+      "eligibility": {
+        "tooEarly": "too-early",
+        "windowOpen": "ok",
+        "lastDay": "ok",
+        "dayAfter": "expired",
+        "otherProfile": "wrong-profile",
+        "notRenewable": "not-renewable",
+        "noEnd": "no-end-date",
+        "renewed": "already-renewed",
+        "unknownSponsor": "unknown-sponsor"
+      },
+      "window": {
+        "opensOn": "2026-06-01",
+        "endDate": "2026-07-01",
+        "days": 30
+      },
+      "forged": {
+        "otherId": "sponsor-mismatch",
+        "sameIdInflated": true,
+        "paid": 398,
+        "expected": 398
+      }
+    },
+    "I": {
+      "results": [
+        "renovado",
+        "already-renewed",
+        "already-renewed",
+        "already-renewed",
+        "already-renewed"
+      ],
+      "delta": 398,
+      "contracts": 2,
+      "active": 1,
+      "ledger": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "E1-01b",
+      "sponsor": "paddleague",
+      "signBonusesSameDay": [
+        372,
+        0,
+        0
+      ],
+      "outcomes": [
+        "assinado",
+        "resign-cooldown",
+        "resign-cooldown"
+      ],
+      "note": "Rescindir e reassinar o mesmo patrocinador no mesmo dia. Antes da H1-R1 pagava as luvas de novo a cada ciclo; com a carência de 90 dias, só a primeira assinatura paga."
+    }
+  ],
+  "domainApi": true,
+  "summary": {
+    "total": 31,
+    "passed": 31,
+    "failed": 0
+  }
+}

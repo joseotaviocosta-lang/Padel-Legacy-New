@@ -2,7 +2,6 @@ import { localGame } from '@/api/localGameClient.js';
 import { publishContractEvent } from '@/lib/contractNews.js';
 import { ageAtDate } from '@/lib/padel.js';
 import { getBalance527, hasSponsorProof } from '@/lib/balance527.js';
-import { recordFinancialEntry } from '@/lib/financialLedger.js';
 
 // ─── Expanded Sponsor Catalog ────────────────────────────────────────────────
 // Each sponsor has own objectives, budget, preferences, marketing demands,
@@ -618,75 +617,193 @@ export function shouldTerminateContract(contract, satisfaction) {
 
 // ─── Actions ────────────────────────────────────────────────────────────────
 
-export async function signSponsorContract(profile, sponsor) {
-  const check = canSign(sponsor, profile);
-  if (!check.ok) throw new Error(check.reason);
-  const activeContracts = await localGame.entities.PlayerContract.filter({ profile_id: profile.id, is_active: true });
-  if ((activeContracts || []).some((contract) => contract.sponsor_id === sponsor.id)) throw new Error('Este patrocinador já possui contrato ativo.');
-  const slot = validateSponsorSlot(sponsor, activeContracts);
-  if (!slot.ok) throw new Error(slot.reason);
+// LOCAL-9E.1-H1-R1 — E1-01b: rescindir (sem multa) e reassinar o mesmo
+// patrocinador pagava as luvas de assinatura de novo, quantas vezes o jogador
+// quisesse. Rescisão VOLUNTÁRIA grava a data da carreira
+// (`voluntary_termination_on`); por SPONSOR_RESIGN_COOLDOWN_DAYS dias o mesmo
+// patrocinador (id canônico do catálogo, qualquer contrato da cadeia) não
+// assina de novo. Encerramentos naturais (vencimento, metas, renovação) não
+// geram carência. Rescisões gravadas antes desta regra não têm data e não
+// bloqueiam (não há como datá-las pela carreira).
+export const SPONSOR_RESIGN_COOLDOWN_DAYS = 90;
+export const VOLUNTARY_TERMINATION_REASON = 'Rescisão voluntária';
 
-  const offer = negotiateOffer(sponsor, profile);
-  const careerDate = profile.career_date || '2026-01-01';
+/** Regra pura da carência: { blocked, reason, terminatedOn, availableOn }. */
+export function getSponsorResignCooldown(sponsorId, contracts = [], careerDate) {
+  const today = isoDay(careerDate);
+  const last = (Array.isArray(contracts) ? contracts : [])
+    .filter((contract) => contract && isoDay(contract.voluntary_termination_on))
+    .filter((contract) => findContractSponsor(contract)?.id === sponsorId)
+    .map((contract) => isoDay(contract.voluntary_termination_on))
+    .sort()
+    .at(-1) || null;
+  if (!last || !today) return { blocked: false, reason: null, terminatedOn: last, availableOn: last ? addIsoDays(last, SPONSOR_RESIGN_COOLDOWN_DAYS) : null };
+  const availableOn = addIsoDays(last, SPONSOR_RESIGN_COOLDOWN_DAYS);
+  if (today >= availableOn) return { blocked: false, reason: null, terminatedOn: last, availableOn };
+  return { blocked: true, reason: `Contrato rescindido em ${brDate(last)}: nova assinatura com este patrocinador a partir de ${brDate(availableOn)}.`, terminatedOn: last, availableOn };
+}
+
+const refusal = (message, code) => Object.assign(new Error(message), { code });
+
+export async function signSponsorContract(profile, sponsor) {
+  // Relê o perfil: requisitos, data e saldo vêm do save, não do objeto da tela.
+  const current = await localGame.entities.PlayerProfile.get(profile?.id);
+  const check = canSign(sponsor, current);
+  if (!check.ok) throw refusal(check.reason, 'not-eligible');
+  const history = (await localGame.entities.PlayerContract.filter({ profile_id: current.id })) || [];
+  const activeContracts = history.filter((contract) => contract?.is_active === true);
+  if (activeContracts.some((contract) => contract.sponsor_id === sponsor.id)) throw refusal('Este patrocinador já possui contrato ativo.', 'already-active');
+  const careerDate = current.career_date || '2026-01-01';
+  const cooldown = getSponsorResignCooldown(sponsor.id, history, careerDate);
+  if (cooldown.blocked) throw refusal(cooldown.reason, 'resign-cooldown');
+  const slot = validateSponsorSlot(sponsor, activeContracts);
+  if (!slot.ok) throw refusal(slot.reason, 'slot');
+
+  const offer = negotiateOffer(sponsor, current);
   const d = new Date(careerDate + 'T00:00:00');
   d.setMonth(d.getMonth() + offer.duration_months);
+  // Identidade da assinatura: n-ésimo contrato deste patrocinador na carreira.
+  // Chamadas que leram o mesmo histórico disputam a MESMA chave; só a primeira grava.
+  const sequence = history.filter((contract) => findContractSponsor(contract)?.id === sponsor.id).length + 1;
+  const ledgerId = `sponsor-signing-${current.id}-${sponsor.id}-${careerDate}${sequence > 1 ? `-${sequence}` : ''}`;
 
-  await localGame.entities.PlayerContract.create({
-    profile_id: profile.id,
-    sponsor_id: sponsor.id,
-    sponsor_name: sponsor.name,
-    sponsor_tier: sponsor.tier,
-    sponsor_category: slot.category,
-    monthly_salary: offer.monthly_salary,
-    sign_bonus: offer.sign_bonus,
-    started_date: careerDate,
-    end_date: d.toISOString().slice(0, 10),
-    is_active: true,
-    duration_months: offer.duration_months,
-    marketing_requirements: sponsor.marketing_requirements || [],
-    commercial_goals: sponsor.commercial_goals || [],
-    performance_clauses: sponsor.performance_clauses || {},
-    goals_progress: {},
-    satisfaction_score: 50,
-    is_renewable: true,
-    signing_bonus_paid: true,
-    signing_bonus_paid_at: new Date().toISOString(),
-    last_payment_month: null,
-  });
+  const batch = await localGame.batch([
+    { type: 'create', entityName: 'PlayerContract', data: {
+      profile_id: current.id,
+      sponsor_id: sponsor.id,
+      sponsor_name: sponsor.name,
+      sponsor_tier: sponsor.tier,
+      sponsor_category: slot.category,
+      monthly_salary: offer.monthly_salary,
+      sign_bonus: offer.sign_bonus,
+      started_date: careerDate,
+      end_date: d.toISOString().slice(0, 10),
+      is_active: true,
+      duration_months: offer.duration_months,
+      marketing_requirements: sponsor.marketing_requirements || [],
+      commercial_goals: sponsor.commercial_goals || [],
+      performance_clauses: sponsor.performance_clauses || {},
+      goals_progress: {},
+      satisfaction_score: 50,
+      is_renewable: true,
+      signing_bonus_paid: true,
+      signing_bonus_paid_at: new Date().toISOString(),
+      last_payment_month: null,
+    } },
+    { type: 'playerIncrement', id: current.id, data: { coins: offer.sign_bonus } },
+    { type: 'upsert', entityName: 'FinancialTransaction', id: ledgerId, data: { profile_id: current.id, date: careerDate, type: 'income', category: 'patrocinio', description: `Luvas de patrocínio — ${sponsor.name}`, amount: offer.sign_bonus } },
+  ], { idempotencyKey: `sponsor-signing:${sponsor.id}:${sequence}`, caller: 'sponsors.signSponsorContract' });
+  if (batch?.skipped) throw refusal('Esta assinatura já foi processada.', 'duplicate');
 
+  const signed = batch?.player ? { ...current, ...batch.player } : current;
+  notifyBalance(signed);
   await publishContractEvent({
-    profileId: profile.id, playerName: profile.sport_name || profile.name,
+    profileId: current.id, playerName: current.sport_name || current.name,
     kind: 'sponsor', partyName: sponsor.name, careerDate, months: offer.duration_months,
   });
-
-  const signed = await localGame.entities.PlayerProfile.update(profile.id, {
-    coins: (profile.coins || 0) + offer.sign_bonus,
-  });
-  await recordFinancialEntry({ id: `sponsor-signing-${profile.id}-${sponsor.id}-${careerDate}`, profileId: profile.id, date: careerDate, type: 'income', category: 'patrocinio', description: `Luvas de patrocínio — ${sponsor.name}`, amount: offer.sign_bonus });
   return signed;
 }
 
-export async function renewContract(contract, sponsor, profile) {
-  if (!contract.is_renewable) throw new Error('Contrato não é renovável');
+// Mesmo aviso que PlayerAdapter.update dispara quando o saldo muda (header).
+function notifyBalance(profile) {
+  if (typeof window === 'undefined' || typeof CustomEvent === 'undefined') return;
+  window.dispatchEvent(new CustomEvent('padel:profile-updated', { detail: { profile, profileId: profile.id, careerDate: profile.career_date, source: 'player-adapter-balance' } }));
+}
 
+// ─── Renewal (LOCAL-9E.1-H1) ────────────────────────────────────────────────
+// E1-01: renovar a qualquer momento encerrava o contrato, criava outro com id
+// novo e pagava as luvas de renovação de novo — dinheiro ilimitado repetindo o
+// clique. Regras (docs/LOCAL_9E1_H1_SPONSORSHIP_RENEWAL_INTEGRITY.md):
+//   - só um contrato ativo, do próprio atleta, renovável, do catálogo, com
+//     data de fim, e só nos últimos SPONSOR_RENEWAL_WINDOW_DAYS dias até o fim
+//     (inclusive); vencido não renova;
+//   - cada contrato renova no máximo uma vez (`renewed_to_contract_id`); o
+//     contrato novo tem id determinístico (raiz + sequência);
+//   - contrato novo, encerramento do antigo, saldo e extrato vão num único
+//     lote (uma gravação do save) com chave de idempotência por contrato.
+export const SPONSOR_RENEWAL_WINDOW_DAYS = 30;
+
+const RENEWAL_REFUSALS = {
+  'missing-contract': 'Contrato não encontrado.',
+  'wrong-profile': 'Contrato não pertence a este atleta.',
+  'already-renewed': 'Este contrato já foi renovado.',
+  inactive: 'Contrato encerrado não pode ser renovado.',
+  'not-renewable': 'Contrato não é renovável',
+  'unknown-sponsor': 'Patrocinador fora do catálogo atual.',
+  'no-end-date': 'Contrato sem data de término.',
+  'invalid-date': 'Data da carreira inválida.',
+};
+
+function isoDay(value) {
+  const day = String(value || '').slice(0, 10);
+  return /^\d{4}-\d{2}-\d{2}$/.test(day) ? day : null;
+}
+function addIsoDays(day, days) {
+  const d = new Date(`${day}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+const brDate = (day) => day.split('-').reverse().join('/');
+
+function findContractSponsor(contract) {
+  if (contract.sponsor_id) return SPONSOR_CATALOG.find((s) => s?.id === contract.sponsor_id) || null;
+  // Contrato legado sem id de patrocinador: mesmo fallback por nome da tela.
+  const name = String(contract.sponsor_name || '').toLowerCase();
+  return name ? SPONSOR_CATALOG.find((s) => String(s?.name || '').toLowerCase() === name) || null : null;
+}
+
+/** Regra pura de elegibilidade. `careerDate` é a data da carreira (YYYY-MM-DD). */
+export function getSponsorRenewalEligibility(contract, careerDate, { profileId = null } = {}) {
+  const refuse = (code, extra = {}) => ({ ok: false, code, reason: RENEWAL_REFUSALS[code], ...extra });
+  if (!contract || typeof contract !== 'object' || !contract.id) return refuse('missing-contract');
+  if (profileId && contract.profile_id !== profileId) return refuse('wrong-profile');
+  if (contract.renewed_to_contract_id || contract.termination_reason === 'Renovado') return refuse('already-renewed');
+  if (!contract.is_active) return refuse('inactive');
+  if (!contract.is_renewable) return refuse('not-renewable');
+  const sponsor = findContractSponsor(contract);
+  if (!sponsor) return refuse('unknown-sponsor');
+  const endDate = isoDay(contract.end_date);
+  if (!endDate) return refuse('no-end-date');
+  const today = isoDay(careerDate);
+  if (!today) return refuse('invalid-date');
+  const opensOn = addIsoDays(endDate, -SPONSOR_RENEWAL_WINDOW_DAYS);
+  const term = { endDate, opensOn };
+  if (today > endDate) return { ...refuse('expired', term), reason: `Contrato venceu em ${brDate(endDate)}.` };
+  if (today < opensOn) return { ...refuse('too-early', term), reason: `Renovação disponível a partir de ${brDate(opensOn)} (últimos ${SPONSOR_RENEWAL_WINDOW_DAYS} dias do contrato).` };
+  const daysLeft = Math.round((Date.parse(`${endDate}T00:00:00Z`) - Date.parse(`${today}T00:00:00Z`)) / 86400000);
+  return { ok: true, code: 'eligible', reason: null, sponsor, daysLeft, ...term };
+}
+
+/**
+ * Renovação de domínio. Relê perfil e contrato da carreira (nunca confia no
+ * objeto da tela) e devolve { ok, status: 'renewed'|'duplicate'|'refused', code, reason, profile, contract, bonus }.
+ */
+export async function renewSponsorContract(profileId, contractId) {
+  const duplicate = (profile) => ({ ok: false, status: 'duplicate', code: 'already-renewed', reason: RENEWAL_REFUSALS['already-renewed'], profile });
+  const profile = await localGame.entities.PlayerProfile.get(profileId).catch(() => null);
+  if (!profile) return { ok: false, status: 'refused', code: 'wrong-profile', reason: RENEWAL_REFUSALS['wrong-profile'], profile: null };
+  const contract = contractId ? await localGame.entities.PlayerContract.get(contractId).catch(() => null) : null;
+  const careerDate = profile.career_date || '2026-01-01';
+  const eligibility = getSponsorRenewalEligibility(contract, careerDate, { profileId: profile.id });
+  if (!eligibility.ok) {
+    if (eligibility.code === 'already-renewed') return duplicate(profile);
+    return { ok: false, status: 'refused', code: eligibility.code, reason: eligibility.reason, profile, eligibility };
+  }
+
+  const { sponsor } = eligibility;
   const offer = negotiateOffer(sponsor, profile);
   const renewalBonus = Math.round(offer.sign_bonus * (1 + (sponsor.renewal_bonus_pct || 10) / 100));
-  const careerDate = profile.career_date || '2026-01-01';
   const d = new Date(careerDate + 'T00:00:00');
   d.setMonth(d.getMonth() + offer.duration_months);
-
-  // Deactivate old contract
-  await localGame.entities.PlayerContract.update(contract.id, {
-    is_active: false,
-    termination_reason: 'Renovado',
-  });
-
-  // Create renewed contract
-  await localGame.entities.PlayerContract.create({
+  const rootId = contract.renewal_root_id || contract.id;
+  const sequence = (Number(contract.renewal_sequence) || 0) + 1;
+  const renewedId = `${rootId}-renewal-${sequence}`;
+  const renewedData = {
     profile_id: profile.id,
     sponsor_id: sponsor.id,
     sponsor_name: sponsor.name,
     sponsor_tier: sponsor.tier,
+    sponsor_category: contract.sponsor_category || getSponsorCategory(sponsor),
     monthly_salary: offer.monthly_salary,
     sign_bonus: renewalBonus,
     started_date: careerDate,
@@ -699,23 +816,56 @@ export async function renewContract(contract, sponsor, profile) {
     goals_progress: {},
     satisfaction_score: Math.max(50, contract.satisfaction_score || 50),
     is_renewable: true,
-  });
+    renewed_from_contract_id: contract.id,
+    renewal_root_id: rootId,
+    renewal_sequence: sequence,
+  };
 
+  let batch;
+  try {
+    batch = await localGame.batch([
+      { type: 'create', entityName: 'PlayerContract', id: renewedId, data: renewedData },
+      { type: 'update', entityName: 'PlayerContract', id: contract.id, data: { is_active: false, termination_reason: 'Renovado', renewed_to_contract_id: renewedId } },
+      { type: 'playerIncrement', id: profile.id, data: { coins: renewalBonus } },
+      { type: 'upsert', entityName: 'FinancialTransaction', id: `sponsor-renewal-${contract.id}-${careerDate}`, data: { profile_id: profile.id, date: careerDate, type: 'income', category: 'patrocinio', description: `Renovação de patrocínio — ${sponsor.name}`, amount: renewalBonus } },
+    ], { idempotencyKey: `sponsor-renewal:${contract.id}`, caller: 'sponsors.renewSponsorContract' });
+  } catch (error) {
+    // Id determinístico já gravado: outra chamada concluiu este mesmo ciclo.
+    if (/já existe/.test(String(error?.message))) return duplicate(await localGame.entities.PlayerProfile.get(profile.id).catch(() => profile));
+    throw error;
+  }
+  if (batch?.skipped) return duplicate(batch.player ? { ...profile, ...batch.player } : profile);
+
+  const updated = batch?.player ? { ...profile, ...batch.player } : profile;
+  notifyBalance(updated);
   await publishContractEvent({
     profileId: profile.id, playerName: profile.sport_name || profile.name,
     kind: 'sponsor', partyName: sponsor.name, careerDate, months: offer.duration_months, renewal: true,
   });
-
-  const renewed = await localGame.entities.PlayerProfile.update(profile.id, {
-    coins: (profile.coins || 0) + renewalBonus,
-  });
-  await recordFinancialEntry({ id: `sponsor-renewal-${contract.id}-${careerDate}`, profileId: profile.id, date: careerDate, type: 'income', category: 'patrocinio', description: `Renovação de patrocínio — ${sponsor.name}`, amount: renewalBonus });
-  return renewed;
+  return { ok: true, status: 'renewed', code: 'renewed', reason: null, profile: updated, contract: { ...renewedData, id: renewedId }, bonus: renewalBonus };
 }
 
-export async function terminateSponsorContract(contract, reason = 'Rescisão voluntária') {
-  await localGame.entities.PlayerContract.update(contract.id, {
+/** Porta usada pela tela e pelo simulador: lança com o motivo quando recusa. */
+export async function renewContract(contract, sponsor, profile) {
+  if (sponsor?.id && contract?.sponsor_id && sponsor.id !== contract.sponsor_id) {
+    throw Object.assign(new Error('Patrocinador não corresponde ao contrato.'), { code: 'sponsor-mismatch' });
+  }
+  const result = await renewSponsorContract(profile?.id, contract?.id);
+  if (!result.ok) throw Object.assign(new Error(result.reason), { code: result.code, renewal: result });
+  return result.profile;
+}
+
+export async function terminateSponsorContract(contract, reason = VOLUNTARY_TERMINATION_REASON) {
+  // LOCAL-9E.1-H1-R1: relê o contrato; só um contrato ATIVO é rescindido (repetir
+  // não move a data da carreira nem reescreve "Renovado"/"Contrato expirado").
+  const current = contract?.id ? await localGame.entities.PlayerContract.get(contract.id).catch(() => null) : null;
+  if (!current) throw refusal('Contrato não encontrado.', 'missing-contract');
+  if (!current.is_active) return current;
+  const owner = await localGame.entities.PlayerProfile.get(current.profile_id).catch(() => null);
+  const terminatedOn = isoDay(owner?.career_date);
+  return localGame.entities.PlayerContract.update(current.id, {
     is_active: false,
     termination_reason: reason,
+    ...(terminatedOn ? { voluntary_termination_on: terminatedOn } : {}),
   });
 }

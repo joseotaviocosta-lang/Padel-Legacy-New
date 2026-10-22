@@ -410,6 +410,23 @@ export class CareerEntityRepository {
           records.push(career.player);
           continue;
         }
+        // LOCAL-9E.1-H1-R1 — soma sobre o valor ATUAL do perfil, dentro da
+        // gravação serializada: créditos de operações distintas não se
+        // sobrescrevem (playerUpdate grava valor absoluto lido antes do lote).
+        if (operation.type === 'playerIncrement') {
+          if (!career.player || (operation.id && career.player.id !== operation.id)) {
+            throw new Error(`PlayerProfile não encontrado para atualização: ${operation.id || 'sem id'}`);
+          }
+          const patch = {};
+          for (const [field, delta] of Object.entries(operation.data || {})) {
+            const amount = Number(delta);
+            if (!Number.isFinite(amount)) throw new Error(`Incremento inválido para ${field}: ${delta}`);
+            patch[field] = (Number(career.player[field]) || 0) + amount;
+          }
+          career.player = { ...career.player, ...patch, id: career.player.id, updated_date: timestamp };
+          records.push(career.player);
+          continue;
+        }
 
         const entityName = operation.entityName;
         if (!entityName) throw new Error('entityName obrigatório em operação batch.');
