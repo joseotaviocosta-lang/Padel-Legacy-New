@@ -1,0 +1,45 @@
+{
+ "generatedBy": "LOCAL-9C.2-A repro-c2a-defects",
+ "note": "legacy = réplica de Shop.jsx buy()/Inventory.jsx sellItem() do HEAD 173562e; canonical = src/game-core/shopTransactions.js",
+ "legacy": {
+  "C2A_01_double_purchase": {
+   "item": "Padel Start Control One Club",
+   "price": 346,
+   "results": [
+    "ok",
+    "ok"
+   ],
+   "delivered": 2,
+   "debited": 346,
+   "ledgerRows": 2,
+   "consistent": false
+  },
+  "C2A_02_zero_stock": {
+   "item": "Raquete de Madeira Original (1969)",
+   "month": "2026-07-15",
+   "stockBefore": 0,
+   "result": "ok",
+   "delivered": 1,
+   "debited": 178417,
+   "stockAfter": 0
+  },
+  "C2A_03_partial_failure": {
+   "item": "Tour Grip Dry Start",
+   "result": "erro",
+   "error": "falha injetada na gravação do débito",
+   "delivered": 1,
+   "debited": 0,
+   "ledgerRows": 0
+  },
+  "C2A_04_sale_overwrites_credit": {
+   "sponsor": "Padel League",
+   "staleCoins": 99941,
+   "concurrentCredit": 372,
+   "sellPrice": 16,
+   "expected": 100329,
+   "final": 99957,
+   "lost": 372,
+   "itemRemoved": true
+  }
+ }
+}

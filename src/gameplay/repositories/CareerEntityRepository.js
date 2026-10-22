@@ -377,7 +377,14 @@ export class CareerEntityRepository {
    * A operação playerUpdate atualiza o perfil raiz; as demais atuam nas coleções.
    */
   async batch(operations = [], options = {}) {
-    if (!Array.isArray(operations) || operations.length === 0) {
+    // LOCAL-9C.2-A — `operations` pode ser um planejador `(view) => ({
+    // operations, outcome } | { rejected })`, chamado DENTRO da gravação
+    // serializada, sobre o estado mais recente do save: validação (saldo,
+    // estoque, posse) e efeitos ficam na mesma transação. Recusa não aplica
+    // nada e não lança (lançar dentro de uma transação de avanço de dia a
+    // invalidaria inteira).
+    const planned = typeof operations === 'function';
+    if (!planned && (!Array.isArray(operations) || operations.length === 0)) {
       return { records: [], player: null, skipped: false, writes: 0 };
     }
     if (options.idempotencyKey) {
@@ -390,17 +397,42 @@ export class CareerEntityRepository {
         return { records: [], player, skipped: true, writes: 0 };
       }
     }
-    const touched = new Set(operations.map((operation) => operation?.entityName).filter(Boolean));
-    touched.forEach((entityName) => this.invalidate(entityName));
+    // LOCAL-9C.2-A-R1 — recusa sem gravação física: o planejador (puro) roda
+    // antes numa leitura, que já espera as gravações enfileiradas. Recusado
+    // ali, devolve sem passar por saveCareer; aceito, é reavaliado dentro da
+    // gravação serializada abaixo (que ainda pode recusar).
+    if (planned) {
+      const preview = await this.withCareer(async (career) => {
+        const plan = (await operations(this.planView(career))) || {};
+        return plan.rejected || !Array.isArray(plan.operations) || plan.operations.length === 0
+          ? { records: [], player: clone(career.player), skipped: false, rejected: plan.rejected || null, outcome: plan.outcome ?? null, writes: 0 }
+          : null;
+      }, { save: false, caller: `${options.caller || 'CareerEntityRepository.batch'}:preview` });
+      if (preview) return preview;
+    }
+    const invalidateTouched = (list) => new Set(list.map((operation) => operation?.entityName).filter(Boolean)).forEach((entityName) => this.invalidate(entityName));
+    if (!planned) invalidateTouched(operations);
     const result = await this.withCareer(async (career) => {
       const processedKeys = new Set(career.player?.processed_match_finalizations || []);
       if (options.idempotencyKey && processedKeys.has(options.idempotencyKey)) {
         return { records: [], player: career.player, skipped: true, writes: 0 };
       }
 
+      let list = operations;
+      let outcome = null;
+      if (planned) {
+        const plan = (await operations(this.planView(career))) || {};
+        outcome = plan.outcome ?? null;
+        if (plan.rejected || !Array.isArray(plan.operations) || plan.operations.length === 0) {
+          return { records: [], player: career.player, skipped: false, rejected: plan.rejected || null, outcome, writes: 0 };
+        }
+        list = plan.operations;
+        invalidateTouched(list);
+      }
+
       const timestamp = new Date().toISOString();
       const records = [];
-      for (const operation of operations) {
+      for (const operation of list) {
         if (!operation || typeof operation !== 'object') continue;
         if (operation.type === 'playerUpdate') {
           if (!career.player || (operation.id && career.player.id !== operation.id)) {
@@ -455,9 +487,20 @@ export class CareerEntityRepository {
         const nextKeys = [...processedKeys, options.idempotencyKey].slice(-250);
         career.player = { ...career.player, processed_match_finalizations: nextKeys, updated_date: timestamp };
       }
-      return { records, player: career.player, skipped: false, writes: 1 };
+      return { records, player: career.player, skipped: false, outcome, writes: 1 };
     }, { save: true, caller: options.caller || 'CareerEntityRepository.batch' });
     return result;
+  }
+
+  // Leitura do rascunho da gravação para um planejador de batch: só cópias,
+  // nunca a referência viva (o planejador não pode mutar o save por fora).
+  planView(career) {
+    const rows = (entityName) => this.ensureCollection(entityName, career);
+    return {
+      player: clone(career.player || null),
+      get: (entityName, id) => clone(rows(entityName).find((row) => row?.id === id) || null),
+      filter: (entityName, predicate) => rows(entityName).filter((row) => row && predicate(row)).map((row) => clone(row)),
+    };
   }
 
   async count(entityName, query = {}) {

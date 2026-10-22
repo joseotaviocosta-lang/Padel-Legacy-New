@@ -1,0 +1,1627 @@
+{
+ "generatedBy": "LOCAL-9C.2-A shop transaction integrity",
+ "checks": [
+  {
+   "name": "P1: compra legítima debita exatamente o preço cotado pela Loja, entrega 1 unidade e grava 1 linha de extrato com a data da carreira",
+   "ok": true,
+   "detail": {
+    "result": "purchased",
+    "price": 346,
+    "quote": 346,
+    "debited": 346,
+    "row": {
+     "id": "inventory-shop-p1",
+     "acquired_date": "2026-01-01",
+     "quantity": null
+    },
+    "ledger": {
+     "amount": 346,
+     "date": "2026-01-01",
+     "type": "expense"
+    },
+    "purchaseCount": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "name": "P2: saldo insuficiente é recusado sem efeito algum",
+   "ok": true,
+   "detail": {
+    "r2": {
+     "ok": false,
+     "code": "insufficient-funds",
+     "title": "Moedas insuficientes",
+     "message": "Você precisa de 59 moedas.",
+     "price": 59,
+     "profile": {
+      "created_by_id": "local-user-001",
+      "sport_name": "Novo Atleta",
+      "avatar_url": "",
+      "country": "Brasil",
+      "city": "",
+      "level": "Iniciante",
+      "career_level": 50,
+      "play_style": null,
+      "xp": 0,
+      "coins": 58,
+      "career_date": "2026-01-01",
+      "birth_date": "2010-01-01",
+      "serve": 10,
+      "forehand": 10,
+      "backhand": 10,
+      "volley": 10,
+      "bandeja": 10,
+      "smash": 10,
+      "defense": 10,
+      "agility": 10,
+      "strategy": 10,
+      "emotional_control": 10,
+      "court_side": null,
+      "career_difficulty": "normal",
+      "onboarding_completed": false,
+      "onboarding_stage": "welcome",
+      "unspent_attribute_points": 0,
+      "trainings_today": 0,
+      "practice_matches_today": 0,
+      "partner_chemistry": 50,
+      "energy": 100,
+      "fatigue": 0,
+      "morale": 70,
+      "confidence": 50,
+      "form": 50,
+      "weekly_training_plan": {},
+      "development_goals": [],
+      "did_physio_today": false,
+      "achievements_v2_reconciled": true,
+      "id": "playerprofile-1791115464988-9ca0kg",
+      "created_date": "2026-10-04T12:04:23.988Z",
+      "updated_date": "2026-10-04T12:39:18.988Z",
+      "save_schema_version": "4.0.0",
+      "ranking_position": 5,
+      "reputation": 95,
+      "tournaments_played": 10
+     }
+    },
+    "s2": {
+     "coins": 58,
+     "inv": [
+      "inventory-001:shop-003:false",
+      "inventory-shop-p1:shopitem-1791117424988-qjys6l:false"
+     ],
+     "ledger": [
+      "shop-purchase-p1:expense:346:2026-01-01"
+     ],
+     "hist": [
+      "price-1:undefined:0:undefined",
+      "price-2:undefined:0:undefined",
+      "price-3:undefined:0:undefined",
+      "price-4:undefined:0:undefined",
+      "stock-historical-relic-1969-raquete:5:0:80",
+      "stock-historical-relic-1970-bola:5:0:80",
+      "stock-historical-relic-1975-raquete:4:0:80",
+      "stock-historical-relic-1980-raquete:5:0:80",
+      "stock-historical-relic-1992-colecionavel:5:0:80",
+      "stock-historical-relic-1995-raquete:2:0:80",
+      "stock-historical-relic-2013-raquete:4:0:80",
+      "stock-historical-relic-2023-colecionavel:3:0:80",
+      "stock-historical-relic-2024-colecionavel:3:0:80",
+      "stock-historical-relic-2024-raquete:5:0:80"
+     ]
+    }
+   }
+  },
+  {
+   "name": "P3: item inexistente é recusado sem efeito",
+   "ok": true,
+   "detail": {
+    "ok": false,
+    "code": "item-not-found",
+    "title": "Item não encontrado",
+    "message": "Este item não existe no catálogo da Loja.",
+    "profile": {
+     "created_by_id": "local-user-001",
+     "sport_name": "Novo Atleta",
+     "avatar_url": "",
+     "country": "Brasil",
+     "city": "",
+     "level": "Iniciante",
+     "career_level": 50,
+     "play_style": null,
+     "xp": 0,
+     "coins": 100000,
+     "career_date": "2026-01-01",
+     "birth_date": "2010-01-01",
+     "serve": 10,
+     "forehand": 10,
+     "backhand": 10,
+     "volley": 10,
+     "bandeja": 10,
+     "smash": 10,
+     "defense": 10,
+     "agility": 10,
+     "strategy": 10,
+     "emotional_control": 10,
+     "court_side": null,
+     "career_difficulty": "normal",
+     "onboarding_completed": false,
+     "onboarding_stage": "welcome",
+     "unspent_attribute_points": 0,
+     "trainings_today": 0,
+     "practice_matches_today": 0,
+     "partner_chemistry": 50,
+     "energy": 100,
+     "fatigue": 0,
+     "morale": 70,
+     "confidence": 50,
+     "form": 50,
+     "weekly_training_plan": {},
+     "development_goals": [],
+     "did_physio_today": false,
+     "achievements_v2_reconciled": true,
+     "id": "playerprofile-1791115464988-9ca0kg",
+     "created_date": "2026-10-04T12:04:23.988Z",
+     "updated_date": "2026-10-04T12:39:24.988Z",
+     "save_schema_version": "4.0.0",
+     "ranking_position": 5,
+     "reputation": 95,
+     "tournaments_played": 10
+    }
+   }
+  },
+  {
+   "name": "P4: item bloqueado pelos requisitos atuais é recusado sem efeito",
+   "ok": true,
+   "detail": {
+    "ok": false,
+    "code": "locked",
+    "title": "Equipamento ainda bloqueado",
+    "message": "Você precisa de Experiência de carreira 3.",
+    "profile": {
+     "created_by_id": "local-user-001",
+     "sport_name": "Novo Atleta",
+     "avatar_url": "",
+     "country": "Brasil",
+     "city": "",
+     "level": "Iniciante",
+     "career_level": 1,
+     "play_style": null,
+     "xp": 0,
+     "coins": 100000,
+     "career_date": "2026-01-01",
+     "birth_date": "2010-01-01",
+     "serve": 10,
+     "forehand": 10,
+     "backhand": 10,
+     "volley": 10,
+     "bandeja": 10,
+     "smash": 10,
+     "defense": 10,
+     "agility": 10,
+     "strategy": 10,
+     "emotional_control": 10,
+     "court_side": null,
+     "career_difficulty": "normal",
+     "onboarding_completed": false,
+     "onboarding_stage": "welcome",
+     "unspent_attribute_points": 0,
+     "trainings_today": 0,
+     "practice_matches_today": 0,
+     "partner_chemistry": 50,
+     "energy": 100,
+     "fatigue": 0,
+     "morale": 70,
+     "confidence": 50,
+     "form": 50,
+     "weekly_training_plan": {},
+     "development_goals": [],
+     "did_physio_today": false,
+     "achievements_v2_reconciled": true,
+     "id": "playerprofile-1791115464988-9ca0kg",
+     "created_date": "2026-10-04T12:04:23.988Z",
+     "updated_date": "2026-10-04T12:39:33.988Z",
+     "save_schema_version": "4.0.0",
+     "ranking_position": 9999,
+     "reputation": 0,
+     "tournaments_played": 10
+    }
+   }
+  },
+  {
+   "name": "X1: item fora da rotação mensal é recusado (regra atual preservada)",
+   "ok": true,
+   "detail": {
+    "rx1": {
+     "ok": false,
+     "code": "out-of-rotation",
+     "title": "Item fora da rotação",
+     "message": "Fora da rotação mensal da loja",
+     "profile": {
+      "created_by_id": "local-user-001",
+      "sport_name": "Novo Atleta",
+      "avatar_url": "",
+      "country": "Brasil",
+      "city": "",
+      "level": "Iniciante",
+      "career_level": 50,
+      "play_style": null,
+      "xp": 0,
+      "coins": 100000,
+      "career_date": "2026-01-15",
+      "birth_date": "2010-01-01",
+      "serve": 10,
+      "forehand": 10,
+      "backhand": 10,
+      "volley": 10,
+      "bandeja": 10,
+      "smash": 10,
+      "defense": 10,
+      "agility": 10,
+      "strategy": 10,
+      "emotional_control": 10,
+      "court_side": null,
+      "career_difficulty": "normal",
+      "onboarding_completed": false,
+      "onboarding_stage": "welcome",
+      "unspent_attribute_points": 0,
+      "trainings_today": 0,
+      "practice_matches_today": 0,
+      "partner_chemistry": 50,
+      "energy": 100,
+      "fatigue": 0,
+      "morale": 70,
+      "confidence": 50,
+      "form": 50,
+      "weekly_training_plan": {},
+      "development_goals": [],
+      "did_physio_today": false,
+      "achievements_v2_reconciled": true,
+      "id": "playerprofile-1791115464988-9ca0kg",
+      "created_date": "2026-10-04T12:04:23.988Z",
+      "updated_date": "2026-10-04T12:39:48.988Z",
+      "save_schema_version": "4.0.0",
+      "ranking_position": 5,
+      "reputation": 95,
+      "tournaments_played": 10
+     }
+    },
+    "monthOut": "2026-01-15"
+   }
+  },
+  {
+   "name": "X2: item marcado como fora de venda é recusado",
+   "ok": true,
+   "detail": {
+    "ok": false,
+    "code": "item-unavailable",
+    "title": "Item indisponível",
+    "message": "Este item não está à venda.",
+    "profile": {
+     "created_by_id": "local-user-001",
+     "sport_name": "Novo Atleta",
+     "avatar_url": "",
+     "country": "Brasil",
+     "city": "",
+     "level": "Iniciante",
+     "career_level": 50,
+     "play_style": null,
+     "xp": 0,
+     "coins": 100000,
+     "career_date": "2026-01-01",
+     "birth_date": "2010-01-01",
+     "serve": 10,
+     "forehand": 10,
+     "backhand": 10,
+     "volley": 10,
+     "bandeja": 10,
+     "smash": 10,
+     "defense": 10,
+     "agility": 10,
+     "strategy": 10,
+     "emotional_control": 10,
+     "court_side": null,
+     "career_difficulty": "normal",
+     "onboarding_completed": false,
+     "onboarding_stage": "welcome",
+     "unspent_attribute_points": 0,
+     "trainings_today": 0,
+     "practice_matches_today": 0,
+     "partner_chemistry": 50,
+     "energy": 100,
+     "fatigue": 0,
+     "morale": 70,
+     "confidence": 50,
+     "form": 50,
+     "weekly_training_plan": {},
+     "development_goals": [],
+     "did_physio_today": false,
+     "achievements_v2_reconciled": true,
+     "id": "playerprofile-1791115464988-9ca0kg",
+     "created_date": "2026-10-04T12:04:23.988Z",
+     "updated_date": "2026-10-04T12:39:54.988Z",
+     "save_schema_version": "4.0.0",
+     "ranking_position": 5,
+     "reputation": 95,
+     "tournaments_played": 10
+    }
+   }
+  },
+  {
+   "name": "P9: repetir a mesma operação não cobra nem entrega de novo",
+   "ok": true,
+   "detail": {
+    "ok": false,
+    "code": "duplicate",
+    "title": "Operação já processada",
+    "message": "Esta compra já foi processada.",
+    "operationId": "p1",
+    "profile": {
+     "created_by_id": "local-user-001",
+     "sport_name": "Novo Atleta",
+     "avatar_url": "",
+     "country": "Brasil",
+     "city": "",
+     "level": "Iniciante",
+     "career_level": 50,
+     "play_style": null,
+     "xp": 0,
+     "coins": 100000,
+     "career_date": "2026-01-01",
+     "birth_date": "2010-01-01",
+     "serve": 10,
+     "forehand": 10,
+     "backhand": 10,
+     "volley": 10,
+     "bandeja": 10,
+     "smash": 10,
+     "defense": 10,
+     "agility": 10,
+     "strategy": 10,
+     "emotional_control": 10,
+     "court_side": null,
+     "career_difficulty": "normal",
+     "onboarding_completed": false,
+     "onboarding_stage": "welcome",
+     "unspent_attribute_points": 0,
+     "trainings_today": 0,
+     "practice_matches_today": 0,
+     "partner_chemistry": 50,
+     "energy": 100,
+     "fatigue": 0,
+     "morale": 70,
+     "confidence": 50,
+     "form": 50,
+     "weekly_training_plan": {},
+     "development_goals": [],
+     "did_physio_today": false,
+     "achievements_v2_reconciled": true,
+     "id": "playerprofile-1791115464988-9ca0kg",
+     "created_date": "2026-10-04T12:04:23.988Z",
+     "updated_date": "2026-10-04T12:39:54.988Z",
+     "save_schema_version": "4.0.0",
+     "ranking_position": 5,
+     "reputation": 95,
+     "tournaments_played": 10
+    }
+   }
+  },
+  {
+   "name": "P16: item único já possuído não é comprado de novo (intenção nova)",
+   "ok": true,
+   "detail": {
+    "ok": false,
+    "code": "already-owned",
+    "title": "Item já adquirido",
+    "message": "Padel Start Control One Club já está no seu inventário.",
+    "profile": {
+     "created_by_id": "local-user-001",
+     "sport_name": "Novo Atleta",
+     "avatar_url": "",
+     "country": "Brasil",
+     "city": "",
+     "level": "Iniciante",
+     "career_level": 50,
+     "play_style": null,
+     "xp": 0,
+     "coins": 100000,
+     "career_date": "2026-01-01",
+     "birth_date": "2010-01-01",
+     "serve": 10,
+     "forehand": 10,
+     "backhand": 10,
+     "volley": 10,
+     "bandeja": 10,
+     "smash": 10,
+     "defense": 10,
+     "agility": 10,
+     "strategy": 10,
+     "emotional_control": 10,
+     "court_side": null,
+     "career_difficulty": "normal",
+     "onboarding_completed": false,
+     "onboarding_stage": "welcome",
+     "unspent_attribute_points": 0,
+     "trainings_today": 0,
+     "practice_matches_today": 0,
+     "partner_chemistry": 50,
+     "energy": 100,
+     "fatigue": 0,
+     "morale": 70,
+     "confidence": 50,
+     "form": 50,
+     "weekly_training_plan": {},
+     "development_goals": [],
+     "did_physio_today": false,
+     "achievements_v2_reconciled": true,
+     "id": "playerprofile-1791115464988-9ca0kg",
+     "created_date": "2026-10-04T12:04:23.988Z",
+     "updated_date": "2026-10-04T12:39:54.988Z",
+     "save_schema_version": "4.0.0",
+     "ranking_position": 5,
+     "reputation": 95,
+     "tournaments_played": 10
+    }
+   }
+  },
+  {
+   "name": "P12: preço forjado nunca é cobrado — teto abaixo do canônico recusa; campos de preço do chamador são ignorados",
+   "ok": true,
+   "detail": {
+    "forgedExpected": "price-changed",
+    "forgedIgnored": {
+     "code": "purchased",
+     "charged": 59,
+     "canonical": 59
+    }
+   }
+  },
+  {
+   "name": "P15: desconto forjado pelo chamador é ignorado (sem contrato ativo, preço cheio)",
+   "ok": true,
+   "detail": {
+    "item": "Joma Court Basic",
+    "charged": 518,
+    "canonical": 518,
+    "sponsorDiscount": 0
+   }
+  },
+  {
+   "name": "P7: três compras simultâneas do mesmo item → 1 entrega, 1 débito, 1 linha de extrato",
+   "ok": true,
+   "detail": {
+    "results": [
+     "purchased",
+     "already-owned",
+     "already-owned"
+    ],
+    "delivered": 1,
+    "debited": 281,
+    "ledger": 1
+   }
+  },
+  {
+   "name": "P8: saldo para uma compra só → uma aprovada, outra recusada por saldo; saldo final = saldo − preço aprovado ≥ 0",
+   "ok": true,
+   "detail": {
+    "prices": [
+     1381,
+     1255
+    ],
+    "budget": 1381,
+    "results": [
+     "purchased",
+     "insufficient-funds"
+    ],
+    "final": 0,
+    "delivered": 1
+   }
+  },
+  {
+   "name": "P11: falha no meio do lote ou na gravação do save → nada aplicado (sem item, sem débito, sem extrato, sem estoque)",
+   "ok": true,
+   "detail": {
+    "midBatch": "falha injetada no meio do lote",
+    "saveFailure": "falha injetada na gravação do save",
+    "retry": "purchased",
+    "debitedAfterRetry": 65
+   }
+  },
+  {
+   "name": "P11: depois da falha, a mesma operação conclui uma única vez",
+   "ok": true,
+   "detail": {
+    "midBatch": "falha injetada no meio do lote",
+    "saveFailure": "falha injetada na gravação do save",
+    "retry": "purchased",
+    "debitedAfterRetry": 65
+   }
+  },
+  {
+   "name": "X3: compras não gravam chaves em processed_match_finalizations (sem disputa com partidas/patrocínios)",
+   "ok": true,
+   "detail": []
+  },
+  {
+   "name": "P5: relíquia com estoque 0 é recusada sem efeito",
+   "ok": true,
+   "detail": {
+    "ok": false,
+    "code": "out-of-stock",
+    "title": "Item esgotado",
+    "message": "Raquete de Madeira Original (1969) esgotou.",
+    "stockRemaining": 0,
+    "profile": {
+     "created_by_id": "local-user-001",
+     "sport_name": "Novo Atleta",
+     "avatar_url": "",
+     "country": "Brasil",
+     "city": "",
+     "level": "Iniciante",
+     "career_level": 50,
+     "play_style": null,
+     "xp": 0,
+     "coins": 5000000,
+     "career_date": "2026-07-15",
+     "birth_date": "2010-01-01",
+     "serve": 10,
+     "forehand": 10,
+     "backhand": 10,
+     "volley": 10,
+     "bandeja": 10,
+     "smash": 10,
+     "defense": 10,
+     "agility": 10,
+     "strategy": 10,
+     "emotional_control": 10,
+     "court_side": null,
+     "career_difficulty": "normal",
+     "onboarding_completed": false,
+     "onboarding_stage": "welcome",
+     "unspent_attribute_points": 0,
+     "trainings_today": 0,
+     "practice_matches_today": 0,
+     "partner_chemistry": 50,
+     "energy": 100,
+     "fatigue": 0,
+     "morale": 70,
+     "confidence": 50,
+     "form": 50,
+     "weekly_training_plan": {},
+     "development_goals": [],
+     "did_physio_today": false,
+     "achievements_v2_reconciled": true,
+     "id": "playerprofile-1791115377943-imjoxh",
+     "created_date": "2026-10-04T12:02:56.943Z",
+     "updated_date": "2026-10-04T12:37:42.943Z",
+     "save_schema_version": "4.0.0",
+     "ranking_position": 5,
+     "reputation": 95,
+     "tournaments_played": 10
+    }
+   }
+  },
+  {
+   "name": "P13: estoque forjado pelo chamador é ignorado",
+   "ok": true,
+   "detail": {
+    "ok": false,
+    "code": "out-of-stock",
+    "title": "Item esgotado",
+    "message": "Raquete de Madeira Original (1969) esgotou.",
+    "stockRemaining": 0,
+    "profile": {
+     "created_by_id": "local-user-001",
+     "sport_name": "Novo Atleta",
+     "avatar_url": "",
+     "country": "Brasil",
+     "city": "",
+     "level": "Iniciante",
+     "career_level": 50,
+     "play_style": null,
+     "xp": 0,
+     "coins": 5000000,
+     "career_date": "2026-07-15",
+     "birth_date": "2010-01-01",
+     "serve": 10,
+     "forehand": 10,
+     "backhand": 10,
+     "volley": 10,
+     "bandeja": 10,
+     "smash": 10,
+     "defense": 10,
+     "agility": 10,
+     "strategy": 10,
+     "emotional_control": 10,
+     "court_side": null,
+     "career_difficulty": "normal",
+     "onboarding_completed": false,
+     "onboarding_stage": "welcome",
+     "unspent_attribute_points": 0,
+     "trainings_today": 0,
+     "practice_matches_today": 0,
+     "partner_chemistry": 50,
+     "energy": 100,
+     "fatigue": 0,
+     "morale": 70,
+     "confidence": 50,
+     "form": 50,
+     "weekly_training_plan": {},
+     "development_goals": [],
+     "did_physio_today": false,
+     "achievements_v2_reconciled": true,
+     "id": "playerprofile-1791115377943-imjoxh",
+     "created_date": "2026-10-04T12:02:56.943Z",
+     "updated_date": "2026-10-04T12:37:42.943Z",
+     "save_schema_version": "4.0.0",
+     "ranking_position": 5,
+     "reputation": 95,
+     "tournaments_played": 10
+    }
+   }
+  },
+  {
+   "name": "P6: última unidade vendida uma vez; estoque vai a 0 (nunca negativo) no mesmo lote",
+   "ok": true,
+   "detail": {
+    "result": "purchased",
+    "stockAfter": 0,
+    "outcomeStock": 0,
+    "debited": 178006,
+    "price": 178006
+   }
+  },
+  {
+   "name": "X4: duas compras simultâneas da última unidade → uma aprovada, estoque 0, uma entrega",
+   "ok": true,
+   "detail": {
+    "relic": "Raquete WPT First Edition (2013)",
+    "results": [
+     "purchased",
+     "already-owned"
+    ],
+    "stock": 0,
+    "delivered": 1
+   }
+  },
+  {
+   "name": "P14/I39: desconto legítimo de patrocínio ativo (15% por sponsor_id) é aplicado e cobrado igual à tela",
+   "ok": true,
+   "detail": {
+    "sponsor": "Babolat",
+    "item": "Babolat Counter Club",
+    "full": 1134,
+    "discounted": 964,
+    "charged": 964,
+    "sponsorDiscount": 15
+   }
+  },
+  {
+   "name": "S17: venda legítima remove a unidade, credita e grava 1 linha de extrato (data da carreira)",
+   "ok": true,
+   "detail": {
+    "result": "sold",
+    "amount": 16,
+    "resale": 16,
+    "credited": 16,
+    "ledger": {
+     "amount": 16,
+     "type": "income",
+     "date": "2026-01-01"
+    }
+   }
+  },
+  {
+   "name": "S26: revenda = 30% do preço gravado do ShopItem (fórmula atual preservada) e igual ao valor exibido no Inventário",
+   "ok": true,
+   "detail": {
+    "result": "sold",
+    "amount": 16,
+    "resale": 16,
+    "credited": 16,
+    "ledger": {
+     "amount": 16,
+     "type": "income",
+     "date": "2026-01-01"
+    }
+   }
+  },
+  {
+   "name": "S18: vender item inexistente é recusado",
+   "ok": true,
+   "detail": {
+    "ok": false,
+    "code": "item-not-found",
+    "title": "Item não encontrado",
+    "message": "Este item não está no seu inventário.",
+    "profile": {
+     "created_by_id": "local-user-001",
+     "sport_name": "Novo Atleta",
+     "avatar_url": "",
+     "country": "Brasil",
+     "city": "",
+     "level": "Iniciante",
+     "career_level": 50,
+     "play_style": null,
+     "xp": 0,
+     "coins": 98460,
+     "career_date": "2026-01-01",
+     "birth_date": "2010-01-01",
+     "serve": 10,
+     "forehand": 10,
+     "backhand": 10,
+     "volley": 10,
+     "bandeja": 10,
+     "smash": 10,
+     "defense": 10,
+     "agility": 10,
+     "strategy": 10,
+     "emotional_control": 10,
+     "court_side": null,
+     "career_difficulty": "normal",
+     "onboarding_completed": false,
+     "onboarding_stage": "welcome",
+     "unspent_attribute_points": 0,
+     "trainings_today": 0,
+     "practice_matches_today": 0,
+     "partner_chemistry": 50,
+     "energy": 100,
+     "fatigue": 0,
+     "morale": 70,
+     "confidence": 50,
+     "form": 50,
+     "weekly_training_plan": {},
+     "development_goals": [],
+     "did_physio_today": false,
+     "achievements_v2_reconciled": true,
+     "id": "playerprofile-1791115390688-umjqy7",
+     "created_date": "2026-10-04T12:03:09.688Z",
+     "updated_date": "2026-10-04T12:38:49.688Z",
+     "save_schema_version": "4.0.0",
+     "ranking_position": 5,
+     "reputation": 95,
+     "tournaments_played": 10
+    }
+   }
+  },
+  {
+   "name": "S19: vender a mesma unidade de novo → duplicada, sem crédito",
+   "ok": true,
+   "detail": {
+    "ok": false,
+    "code": "duplicate",
+    "title": "Operação já processada",
+    "message": "Este item já foi vendido.",
+    "profile": {
+     "created_by_id": "local-user-001",
+     "sport_name": "Novo Atleta",
+     "avatar_url": "",
+     "country": "Brasil",
+     "city": "",
+     "level": "Iniciante",
+     "career_level": 50,
+     "play_style": null,
+     "xp": 0,
+     "coins": 98460,
+     "career_date": "2026-01-01",
+     "birth_date": "2010-01-01",
+     "serve": 10,
+     "forehand": 10,
+     "backhand": 10,
+     "volley": 10,
+     "bandeja": 10,
+     "smash": 10,
+     "defense": 10,
+     "agility": 10,
+     "strategy": 10,
+     "emotional_control": 10,
+     "court_side": null,
+     "career_difficulty": "normal",
+     "onboarding_completed": false,
+     "onboarding_stage": "welcome",
+     "unspent_attribute_points": 0,
+     "trainings_today": 0,
+     "practice_matches_today": 0,
+     "partner_chemistry": 50,
+     "energy": 100,
+     "fatigue": 0,
+     "morale": 70,
+     "confidence": 50,
+     "form": 50,
+     "weekly_training_plan": {},
+     "development_goals": [],
+     "did_physio_today": false,
+     "achievements_v2_reconciled": true,
+     "id": "playerprofile-1791115390688-umjqy7",
+     "created_date": "2026-10-04T12:03:09.688Z",
+     "updated_date": "2026-10-04T12:38:49.688Z",
+     "save_schema_version": "4.0.0",
+     "ranking_position": 5,
+     "reputation": 95,
+     "tournaments_played": 10
+    }
+   }
+  },
+  {
+   "name": "S20: três vendas simultâneas da mesma unidade → 1 crédito, 1 remoção, 1 extrato",
+   "ok": true,
+   "detail": {
+    "results": [
+     "sold",
+     "duplicate",
+     "duplicate"
+    ],
+    "credited": 13,
+    "ledger": 1
+   }
+  },
+  {
+   "name": "S21: venda concorrente com luvas de patrocínio e outro crédito → nenhum valor sobrescrito",
+   "ok": true,
+   "detail": {
+    "start": 98473,
+    "sale": 66,
+    "sponsorBonus": 372,
+    "otherCredit": 500,
+    "expected": 99411,
+    "final": 99411,
+    "signed": true
+   }
+  },
+  {
+   "name": "S22: venda e compra simultâneas → saldo = início + revenda − preço",
+   "ok": true,
+   "detail": {
+    "sale": 78,
+    "price": 979,
+    "start": 99411,
+    "final": 98510
+   }
+  },
+  {
+   "name": "S22b: duas vendas simultâneas de unidades distintas → as duas creditadas",
+   "ok": true,
+   "detail": [
+    "sold",
+    "sold"
+   ]
+  },
+  {
+   "name": "S23: falha no meio do lote ou na gravação → venda não aplicada (item continua, sem crédito, sem extrato)",
+   "ok": true,
+   "detail": {
+    "f23": {
+     "ok": false,
+     "error": "falha injetada no meio do lote"
+    },
+    "f23b": {
+     "ok": false,
+     "error": "falha injetada na gravação do save"
+    }
+   }
+  },
+  {
+   "name": "S24: item equipado não pode ser vendido (regra atual preservada); estado intacto",
+   "ok": true,
+   "detail": {
+    "ok": false,
+    "code": "equipped",
+    "title": "Item equipado",
+    "message": "Desequipe o item antes de vender.",
+    "profile": {
+     "created_by_id": "local-user-001",
+     "sport_name": "Novo Atleta",
+     "avatar_url": "",
+     "country": "Brasil",
+     "city": "",
+     "level": "Iniciante",
+     "career_level": 50,
+     "play_style": null,
+     "xp": 0,
+     "coins": 98672,
+     "career_date": "2026-01-01",
+     "birth_date": "2010-01-01",
+     "serve": 10,
+     "forehand": 10,
+     "backhand": 10,
+     "volley": 10,
+     "bandeja": 10,
+     "smash": 10,
+     "defense": 10,
+     "agility": 10,
+     "strategy": 10,
+     "emotional_control": 10,
+     "court_side": null,
+     "career_difficulty": "normal",
+     "onboarding_completed": false,
+     "onboarding_stage": "welcome",
+     "unspent_attribute_points": 0,
+     "trainings_today": 0,
+     "practice_matches_today": 0,
+     "partner_chemistry": 50,
+     "energy": 100,
+     "fatigue": 0,
+     "morale": 70,
+     "confidence": 50,
+     "form": 50,
+     "weekly_training_plan": {},
+     "development_goals": [],
+     "did_physio_today": false,
+     "achievements_v2_reconciled": true,
+     "id": "playerprofile-1791115390688-umjqy7",
+     "created_date": "2026-10-04T12:03:09.688Z",
+     "updated_date": "2026-10-04T12:40:20.688Z",
+     "save_schema_version": "4.0.0",
+     "ranking_position": 5,
+     "reputation": 95,
+     "tournaments_played": 10,
+     "processed_match_finalizations": [
+      "sponsor-signing:paddleague:1"
+     ],
+     "racket": "Padel Start Control One Club"
+    }
+   }
+  },
+  {
+   "name": "I36: desequipado e vendido → sem linha, sem modificador ativo",
+   "ok": true,
+   "detail": {
+    "r36": "sold",
+    "mods36": {}
+   }
+  },
+  {
+   "name": "S25: item sem preço de catálogo é recusado como não vendável (não some por 0 moedas)",
+   "ok": true,
+   "detail": {
+    "ok": false,
+    "code": "not-sellable",
+    "title": "Item não vendável",
+    "message": "Este item não tem valor de revenda no catálogo.",
+    "profile": {
+     "created_by_id": "local-user-001",
+     "sport_name": "Novo Atleta",
+     "avatar_url": "",
+     "country": "Brasil",
+     "city": "",
+     "level": "Iniciante",
+     "career_level": 50,
+     "play_style": null,
+     "xp": 0,
+     "coins": 98768,
+     "career_date": "2026-01-01",
+     "birth_date": "2010-01-01",
+     "serve": 10,
+     "forehand": 10,
+     "backhand": 10,
+     "volley": 10,
+     "bandeja": 10,
+     "smash": 10,
+     "defense": 10,
+     "agility": 10,
+     "strategy": 10,
+     "emotional_control": 10,
+     "court_side": null,
+     "career_difficulty": "normal",
+     "onboarding_completed": false,
+     "onboarding_stage": "welcome",
+     "unspent_attribute_points": 0,
+     "trainings_today": 0,
+     "practice_matches_today": 0,
+     "partner_chemistry": 50,
+     "energy": 100,
+     "fatigue": 0,
+     "morale": 70,
+     "confidence": 50,
+     "form": 50,
+     "weekly_training_plan": {},
+     "development_goals": [],
+     "did_physio_today": false,
+     "achievements_v2_reconciled": true,
+     "id": "playerprofile-1791115390688-umjqy7",
+     "created_date": "2026-10-04T12:03:09.688Z",
+     "updated_date": "2026-10-04T12:40:50.688Z",
+     "save_schema_version": "4.0.0",
+     "ranking_position": 5,
+     "reputation": 95,
+     "tournaments_played": 10,
+     "processed_match_finalizations": [
+      "sponsor-signing:paddleague:1"
+     ],
+     "racket": ""
+    }
+   }
+  },
+  {
+   "name": "X5: linha de inventário de outro perfil não pode ser vendida",
+   "ok": true,
+   "detail": {
+    "ok": false,
+    "code": "item-not-found",
+    "title": "Item não encontrado",
+    "message": "Este item não está no seu inventário.",
+    "profile": {
+     "created_by_id": "local-user-001",
+     "sport_name": "Novo Atleta",
+     "avatar_url": "",
+     "country": "Brasil",
+     "city": "",
+     "level": "Iniciante",
+     "career_level": 50,
+     "play_style": null,
+     "xp": 0,
+     "coins": 98768,
+     "career_date": "2026-01-01",
+     "birth_date": "2010-01-01",
+     "serve": 10,
+     "forehand": 10,
+     "backhand": 10,
+     "volley": 10,
+     "bandeja": 10,
+     "smash": 10,
+     "defense": 10,
+     "agility": 10,
+     "strategy": 10,
+     "emotional_control": 10,
+     "court_side": null,
+     "career_difficulty": "normal",
+     "onboarding_completed": false,
+     "onboarding_stage": "welcome",
+     "unspent_attribute_points": 0,
+     "trainings_today": 0,
+     "practice_matches_today": 0,
+     "partner_chemistry": 50,
+     "energy": 100,
+     "fatigue": 0,
+     "morale": 70,
+     "confidence": 50,
+     "form": 50,
+     "weekly_training_plan": {},
+     "development_goals": [],
+     "did_physio_today": false,
+     "achievements_v2_reconciled": true,
+     "id": "playerprofile-1791115390688-umjqy7",
+     "created_date": "2026-10-04T12:03:09.688Z",
+     "updated_date": "2026-10-04T12:40:50.688Z",
+     "save_schema_version": "4.0.0",
+     "ranking_position": 5,
+     "reputation": 95,
+     "tournaments_played": 10,
+     "processed_match_finalizations": [
+      "sponsor-signing:paddleague:1"
+     ],
+     "racket": ""
+    }
+   }
+  },
+  {
+   "name": "R27: save/load após compra preserva inventário, saldo, extrato e estoque",
+   "ok": true,
+   "detail": {
+    "before": {
+     "coins": 97346,
+     "inv": [
+      "inventory-001:shop-003:false",
+      "inventory-shop-r-0:shopitem-1791117402577-0egsbp:false",
+      "inventory-shop-r-1:shopitem-1791117407577-d5l321:false",
+      "inventory-shop-r-2:shopitem-1791117412577-gk9d8k:false",
+      "inventory-shop-r-3:shopitem-1791117417577-pyuocz:false",
+      "inventory-shop-r-4:shopitem-1791117422577-1d5o1s:false"
+     ],
+     "ledger": [
+      "shop-purchase-r-0:expense:346:2026-01-01",
+      "shop-purchase-r-1:expense:427:2026-01-01",
+      "shop-purchase-r-2:expense:501:2026-01-01",
+      "shop-purchase-r-3:expense:628:2026-01-01",
+      "shop-purchase-r-4:expense:752:2026-01-01"
+     ],
+     "hist": [
+      "price-1:undefined:0:undefined",
+      "price-2:undefined:0:undefined",
+      "price-3:undefined:0:undefined",
+      "price-4:undefined:0:undefined",
+      "stock-historical-relic-1969-raquete:5:0:80",
+      "stock-historical-relic-1970-bola:5:0:80",
+      "stock-historical-relic-1975-raquete:4:0:80",
+      "stock-historical-relic-1980-raquete:5:0:80",
+      "stock-historical-relic-1992-colecionavel:5:0:80",
+      "stock-historical-relic-1995-raquete:2:0:80",
+      "stock-historical-relic-2013-raquete:4:0:80",
+      "stock-historical-relic-2023-colecionavel:3:0:80",
+      "stock-historical-relic-2024-colecionavel:3:0:80",
+      "stock-historical-relic-2024-raquete:5:0:80"
+     ]
+    },
+    "afterBuy": {
+     "coins": 97346,
+     "inv": [
+      "inventory-001:shop-003:false",
+      "inventory-shop-r-0:shopitem-1791117402577-0egsbp:false",
+      "inventory-shop-r-1:shopitem-1791117407577-d5l321:false",
+      "inventory-shop-r-2:shopitem-1791117412577-gk9d8k:false",
+      "inventory-shop-r-3:shopitem-1791117417577-pyuocz:false",
+      "inventory-shop-r-4:shopitem-1791117422577-1d5o1s:false"
+     ],
+     "ledger": [
+      "shop-purchase-r-0:expense:346:2026-01-01",
+      "shop-purchase-r-1:expense:427:2026-01-01",
+      "shop-purchase-r-2:expense:501:2026-01-01",
+      "shop-purchase-r-3:expense:628:2026-01-01",
+      "shop-purchase-r-4:expense:752:2026-01-01"
+     ],
+     "hist": [
+      "price-1:undefined:0:undefined",
+      "price-2:undefined:0:undefined",
+      "price-3:undefined:0:undefined",
+      "price-4:undefined:0:undefined",
+      "stock-historical-relic-1969-raquete:5:0:80",
+      "stock-historical-relic-1970-bola:5:0:80",
+      "stock-historical-relic-1975-raquete:4:0:80",
+      "stock-historical-relic-1980-raquete:5:0:80",
+      "stock-historical-relic-1992-colecionavel:5:0:80",
+      "stock-historical-relic-1995-raquete:2:0:80",
+      "stock-historical-relic-2013-raquete:4:0:80",
+      "stock-historical-relic-2023-colecionavel:3:0:80",
+      "stock-historical-relic-2024-colecionavel:3:0:80",
+      "stock-historical-relic-2024-raquete:5:0:80"
+     ]
+    }
+   }
+  },
+  {
+   "name": "R28: save/load após venda preserva o estado",
+   "ok": true,
+   "detail": {
+    "beforeSale": {
+     "coins": 97560,
+     "inv": [
+      "inventory-001:shop-003:false",
+      "inventory-shop-r-2:shopitem-1791117412577-gk9d8k:false",
+      "inventory-shop-r-3:shopitem-1791117417577-pyuocz:false",
+      "inventory-shop-r-4:shopitem-1791117422577-1d5o1s:false"
+     ],
+     "ledger": [
+      "inventory-sale-inventory-shop-r-0:income:96:2026-01-01",
+      "inventory-sale-inventory-shop-r-1:income:118:2026-01-01",
+      "shop-purchase-r-0:expense:346:2026-01-01",
+      "shop-purchase-r-1:expense:427:2026-01-01",
+      "shop-purchase-r-2:expense:501:2026-01-01",
+      "shop-purchase-r-3:expense:628:2026-01-01",
+      "shop-purchase-r-4:expense:752:2026-01-01"
+     ],
+     "hist": [
+      "price-1:undefined:0:undefined",
+      "price-2:undefined:0:undefined",
+      "price-3:undefined:0:undefined",
+      "price-4:undefined:0:undefined",
+      "stock-historical-relic-1969-raquete:5:0:80",
+      "stock-historical-relic-1970-bola:5:0:80",
+      "stock-historical-relic-1975-raquete:4:0:80",
+      "stock-historical-relic-1980-raquete:5:0:80",
+      "stock-historical-relic-1992-colecionavel:5:0:80",
+      "stock-historical-relic-1995-raquete:2:0:80",
+      "stock-historical-relic-2013-raquete:4:0:80",
+      "stock-historical-relic-2023-colecionavel:3:0:80",
+      "stock-historical-relic-2024-colecionavel:3:0:80",
+      "stock-historical-relic-2024-raquete:5:0:80"
+     ]
+    },
+    "afterSale": {
+     "coins": 97560,
+     "inv": [
+      "inventory-001:shop-003:false",
+      "inventory-shop-r-2:shopitem-1791117412577-gk9d8k:false",
+      "inventory-shop-r-3:shopitem-1791117417577-pyuocz:false",
+      "inventory-shop-r-4:shopitem-1791117422577-1d5o1s:false"
+     ],
+     "ledger": [
+      "inventory-sale-inventory-shop-r-0:income:96:2026-01-01",
+      "inventory-sale-inventory-shop-r-1:income:118:2026-01-01",
+      "shop-purchase-r-0:expense:346:2026-01-01",
+      "shop-purchase-r-1:expense:427:2026-01-01",
+      "shop-purchase-r-2:expense:501:2026-01-01",
+      "shop-purchase-r-3:expense:628:2026-01-01",
+      "shop-purchase-r-4:expense:752:2026-01-01"
+     ],
+     "hist": [
+      "price-1:undefined:0:undefined",
+      "price-2:undefined:0:undefined",
+      "price-3:undefined:0:undefined",
+      "price-4:undefined:0:undefined",
+      "stock-historical-relic-1969-raquete:5:0:80",
+      "stock-historical-relic-1970-bola:5:0:80",
+      "stock-historical-relic-1975-raquete:4:0:80",
+      "stock-historical-relic-1980-raquete:5:0:80",
+      "stock-historical-relic-1992-colecionavel:5:0:80",
+      "stock-historical-relic-1995-raquete:2:0:80",
+      "stock-historical-relic-2013-raquete:4:0:80",
+      "stock-historical-relic-2023-colecionavel:3:0:80",
+      "stock-historical-relic-2024-colecionavel:3:0:80",
+      "stock-historical-relic-2024-raquete:5:0:80"
+     ]
+    }
+   }
+  },
+  {
+   "name": "R29/P10: após recarregar, repetir compra e venda já feitas → duplicadas, sem efeito",
+   "ok": true,
+   "detail": {
+    "again": "duplicate",
+    "againSale": "duplicate",
+    "rebuySold": "duplicate"
+   }
+  },
+  {
+   "name": "X6: depois de vender, uma nova intenção pode comprar o mesmo item de novo (compra distinta legítima)",
+   "ok": true,
+   "detail": "purchased"
+  },
+  {
+   "name": "R31/R32: saldo final = inicial − Σ compras + Σ vendas do extrato; uma linha por operação",
+   "ok": true,
+   "detail": {
+    "start": 100000,
+    "end": 97214,
+    "spent": 3000,
+    "earned": 214,
+    "purchases": 6,
+    "sales": 2,
+    "inventory": 5
+   }
+  },
+  {
+   "name": "R30: inventário íntegro — uma linha por item possuído, ids da operação, nenhum vendido remanescente",
+   "ok": true,
+   "detail": [
+    "inventory-shop-r-2",
+    "inventory-shop-r-3",
+    "inventory-shop-r-4",
+    "inventory-shop-r-0-recompra"
+   ]
+  },
+  {
+   "name": "I33: Loja e Inventário usam o domínio (sem gravar inventário, saldo ou extrato direto)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "I34: simulador compra pela operação canônica (sem réplica de Shop.jsx)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "I35: equipamento comprado pela operação canônica pode ser equipado",
+   "ok": true,
+   "detail": {
+    "item": "Padel Start Control One Club",
+    "equipped": true,
+    "mods": {
+     "volley": 1
+    },
+    "expected": {
+     "volley": 1
+    },
+    "baseAfter": {
+     "serve": 50,
+     "forehand": 50,
+     "backhand": 50,
+     "volley": 50,
+     "bandeja": 50,
+     "smash": 50,
+     "defense": 50,
+     "agility": 50,
+     "strategy": 50,
+     "emotional_control": 50
+    }
+   }
+  },
+  {
+   "name": "I37: bônus da LOCAL-9B = bônus do catálogo (derivado, um por categoria)",
+   "ok": true,
+   "detail": {
+    "item": "Padel Start Control One Club",
+    "equipped": true,
+    "mods": {
+     "volley": 1
+    },
+    "expected": {
+     "volley": 1
+    },
+    "baseAfter": {
+     "serve": 50,
+     "forehand": 50,
+     "backhand": 50,
+     "volley": 50,
+     "bandeja": 50,
+     "smash": 50,
+     "defense": 50,
+     "agility": 50,
+     "strategy": 50,
+     "emotional_control": 50
+    }
+   }
+  },
+  {
+   "name": "I38: atributos naturais não mudam com compra/equipar",
+   "ok": true,
+   "detail": {
+    "item": "Padel Start Control One Club",
+    "equipped": true,
+    "mods": {
+     "volley": 1
+    },
+    "expected": {
+     "volley": 1
+    },
+    "baseAfter": {
+     "serve": 50,
+     "forehand": 50,
+     "backhand": 50,
+     "volley": 50,
+     "bandeja": 50,
+     "smash": 50,
+     "defense": 50,
+     "agility": 50,
+     "strategy": 50,
+     "emotional_control": 50
+    }
+   }
+  },
+  {
+   "name": "I40: compra canônica não altera contagem/progresso das conquistas de coleção (fica para a 9C.2-B)",
+   "ok": true,
+   "detail": {
+    "quantityField": null,
+    "totalOwned": [
+     1,
+     1
+    ],
+    "achievementRows": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "name": "I34b: buyAndEquip do simulador grava extrato e cobra o preço cotado pela tela",
+   "ok": true,
+   "detail": {
+    "item": "Tour Grip Dry Start",
+    "rowPrice": 59,
+    "paid": 59,
+    "charged": 59,
+    "ledgerDelta": 1
+   }
+  },
+  {
+   "name": "X7: mesmas ações → mesmo resultado (ids de operação padrão determinísticos, sem RNG)",
+   "ok": true,
+   "detail": {
+    "a": {
+     "results": [
+      "purchased",
+      "purchased",
+      "purchased",
+      "purchased",
+      "sold"
+     ],
+     "coins": 98194,
+     "inv": [
+      "inventory-001:shop-003",
+      "inventory-shop-shopitem-1791117346224-axeb6w-2026-01-01-1:shopitem-1791117346224-axeb6w",
+      "inventory-shop-shopitem-1791117351224-mdob4y-2026-01-01-1:shopitem-1791117351224-mdob4y",
+      "inventory-shop-shopitem-1791117356224-6ky0n6-2026-01-01-1:shopitem-1791117356224-6ky0n6"
+     ],
+     "ledger": [
+      "inventory-sale-inventory-shop-shopitem-1791117341224-ufrfl8-2026-01-01-1:income:96:2026-01-01",
+      "shop-purchase-shopitem-1791117341224-ufrfl8-2026-01-01-1:expense:346:2026-01-01",
+      "shop-purchase-shopitem-1791117346224-axeb6w-2026-01-01-1:expense:427:2026-01-01",
+      "shop-purchase-shopitem-1791117351224-mdob4y-2026-01-01-1:expense:501:2026-01-01",
+      "shop-purchase-shopitem-1791117356224-6ky0n6-2026-01-01-1:expense:628:2026-01-01"
+     ]
+    },
+    "b": {
+     "results": [
+      "purchased",
+      "purchased",
+      "purchased",
+      "purchased",
+      "sold"
+     ],
+     "coins": 98194,
+     "inv": [
+      "inventory-001:shop-003",
+      "inventory-shop-shopitem-1791117346224-axeb6w-2026-01-01-1:shopitem-1791117346224-axeb6w",
+      "inventory-shop-shopitem-1791117351224-mdob4y-2026-01-01-1:shopitem-1791117351224-mdob4y",
+      "inventory-shop-shopitem-1791117356224-6ky0n6-2026-01-01-1:shopitem-1791117356224-6ky0n6"
+     ],
+     "ledger": [
+      "inventory-sale-inventory-shop-shopitem-1791117341224-ufrfl8-2026-01-01-1:income:96:2026-01-01",
+      "shop-purchase-shopitem-1791117341224-ufrfl8-2026-01-01-1:expense:346:2026-01-01",
+      "shop-purchase-shopitem-1791117346224-axeb6w-2026-01-01-1:expense:427:2026-01-01",
+      "shop-purchase-shopitem-1791117351224-mdob4y-2026-01-01-1:expense:501:2026-01-01",
+      "shop-purchase-shopitem-1791117356224-6ky0n6-2026-01-01-1:expense:628:2026-01-01"
+     ]
+    }
+   }
+  }
+ ],
+ "cases": {
+  "P1": {
+   "result": "purchased",
+   "price": 346,
+   "quote": 346,
+   "debited": 346,
+   "row": {
+    "id": "inventory-shop-p1",
+    "acquired_date": "2026-01-01",
+    "quantity": null
+   },
+   "ledger": {
+    "amount": 346,
+    "date": "2026-01-01",
+    "type": "expense"
+   },
+   "purchaseCount": [
+    0,
+    0
+   ]
+  },
+  "P12": {
+   "forgedExpected": "price-changed",
+   "forgedIgnored": {
+    "code": "purchased",
+    "charged": 59,
+    "canonical": 59
+   }
+  },
+  "P15": {
+   "item": "Joma Court Basic",
+   "charged": 518,
+   "canonical": 518,
+   "sponsorDiscount": 0
+  },
+  "P7": {
+   "results": [
+    "purchased",
+    "already-owned",
+    "already-owned"
+   ],
+   "delivered": 1,
+   "debited": 281,
+   "ledger": 1
+  },
+  "P8": {
+   "prices": [
+    1381,
+    1255
+   ],
+   "budget": 1381,
+   "results": [
+    "purchased",
+    "insufficient-funds"
+   ],
+   "final": 0,
+   "delivered": 1
+  },
+  "P11": {
+   "midBatch": "falha injetada no meio do lote",
+   "saveFailure": "falha injetada na gravação do save",
+   "retry": "purchased",
+   "debitedAfterRetry": 65
+  },
+  "P6": {
+   "result": "purchased",
+   "stockAfter": 0,
+   "outcomeStock": 0,
+   "debited": 178006,
+   "price": 178006
+  },
+  "X4": {
+   "relic": "Raquete WPT First Edition (2013)",
+   "results": [
+    "purchased",
+    "already-owned"
+   ],
+   "stock": 0,
+   "delivered": 1
+  },
+  "P14": {
+   "sponsor": "Babolat",
+   "item": "Babolat Counter Club",
+   "full": 1134,
+   "discounted": 964,
+   "charged": 964,
+   "sponsorDiscount": 15
+  },
+  "S17": {
+   "result": "sold",
+   "amount": 16,
+   "resale": 16,
+   "credited": 16,
+   "ledger": {
+    "amount": 16,
+    "type": "income",
+    "date": "2026-01-01"
+   }
+  },
+  "S20": {
+   "results": [
+    "sold",
+    "duplicate",
+    "duplicate"
+   ],
+   "credited": 13,
+   "ledger": 1
+  },
+  "S21": {
+   "start": 98473,
+   "sale": 66,
+   "sponsorBonus": 372,
+   "otherCredit": 500,
+   "expected": 99411,
+   "final": 99411,
+   "signed": true
+  },
+  "S22": {
+   "sale": 78,
+   "price": 979,
+   "start": 99411,
+   "final": 98510
+  },
+  "R30_32": {
+   "start": 100000,
+   "end": 97214,
+   "spent": 3000,
+   "earned": 214,
+   "purchases": 6,
+   "sales": 2,
+   "inventory": 5
+  },
+  "I35_38": {
+   "item": "Padel Start Control One Club",
+   "equipped": true,
+   "mods": {
+    "volley": 1
+   },
+   "expected": {
+    "volley": 1
+   },
+   "baseAfter": {
+    "serve": 50,
+    "forehand": 50,
+    "backhand": 50,
+    "volley": 50,
+    "bandeja": 50,
+    "smash": 50,
+    "defense": 50,
+    "agility": 50,
+    "strategy": 50,
+    "emotional_control": 50
+   }
+  },
+  "I40": {
+   "quantityField": null,
+   "totalOwned": [
+    1,
+    1
+   ],
+   "achievementRows": [
+    0,
+    0
+   ]
+  },
+  "I34b": {
+   "item": "Tour Grip Dry Start",
+   "rowPrice": 59,
+   "paid": 59,
+   "charged": 59,
+   "ledgerDelta": 1
+  }
+ },
+ "summary": {
+  "total": 47,
+  "passed": 47,
+  "failed": 0
+ }
+}

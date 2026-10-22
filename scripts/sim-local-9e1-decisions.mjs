@@ -284,7 +284,7 @@ async function simulateCareer(seed) {
           for (const k of ATTRS) if (profile[k] !== baseBefore[k]) violation('equipar-alterou-base', { attr: k, before: baseBefore[k], after: profile[k] });
           const realized = Math.round((view.applied - appliedBefore) * 1000) / 1000;
           if (Math.abs(realized - pick.gain) > 1e-6) violation('ganho-previsto-diferente', { item: pick.row.item.id, predicted: pick.gain, realized });
-          out.purchases.push({ day, item: pick.row.item.id, name: pick.row.item.name, category: pick.row.item.category, rarity: pick.row.item.rarity, price: pick.row.price, declaredBonus: pick.row.bonusTotal, gain: realized, roiPer1000: r1(pick.roi), freeCash: budget.free, coins: Number(profile.coins) || 0 });
+          out.purchases.push({ day, item: pick.row.item.id, name: pick.row.item.name, category: pick.row.item.category, rarity: pick.row.item.rarity, price: r.paid ?? pick.row.price, declaredBonus: pick.row.bonusTotal, gain: realized, roiPer1000: r1(pick.roi), freeCash: budget.free, coins: Number(profile.coins) || 0 });
         }
       }
     } catch (e) { out.errors.push(`loja:${e.message}`.slice(0, 140)); }

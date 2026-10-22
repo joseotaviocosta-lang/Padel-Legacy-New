@@ -1,0 +1,693 @@
+{
+ "generatedBy": "LOCAL-9C.2-A-R1 ui-shop-flow (Chrome real, puppeteer-core)",
+ "base": "http://127.0.0.1:5233",
+ "viewport": "390x844 mobile",
+ "checks": [
+  {
+   "name": "1. compra pelo modal conclui (toast \"Compra realizada!\", modal fecha)",
+   "ok": true,
+   "detail": {
+    "modalButton": {
+     "modal": true,
+     "owned": false,
+     "found": true,
+     "text": "5966",
+     "price": 59,
+     "disabled": false
+    },
+    "price": 59,
+    "coins": [
+     5000,
+     4941
+    ],
+    "row": {
+     "id": "inventory-shop-ui-shopitem-1792706940565-ivrz7k-mvk3fl0c-6gek9e",
+     "item": "Tour Grip Dry Start",
+     "equipped": false
+    },
+    "ledger": {
+     "id": "shop-purchase-ui-shopitem-1792706940565-ivrz7k-mvk3fl0c-6gek9e",
+     "type": "expense",
+     "amount": 59,
+     "date": "2026-01-01"
+    },
+    "seen": [
+     "pending:disabled",
+     "toast:Compra realizada!Tour Grip Dry Start adicionado ao inventário. Você economizou 11%!"
+    ]
+   }
+  },
+  {
+   "name": "2. débito = preço exibido no botão do modal; saldo do topo atualizado",
+   "ok": true,
+   "detail": {
+    "coins": [
+     5000,
+     4941
+    ],
+    "price1": 59
+   }
+  },
+  {
+   "name": "3. entregue ao inventário (linha inventory-shop-ui-…) e 1 linha de extrato com o mesmo valor",
+   "ok": true,
+   "detail": {
+    "row1": {
+     "id": "inventory-shop-ui-shopitem-1792706940565-ivrz7k-mvk3fl0c-6gek9e",
+     "item": "Tour Grip Dry Start",
+     "equipped": false
+    },
+    "led1": {
+     "id": "shop-purchase-ui-shopitem-1792706940565-ivrz7k-mvk3fl0c-6gek9e",
+     "type": "expense",
+     "amount": 59,
+     "date": "2026-01-01"
+    }
+   }
+  },
+  {
+   "name": "pendente: botão mostra \"Comprando\" desabilitado durante a operação",
+   "ok": true,
+   "detail": [
+    "pending:disabled",
+    "toast:Compra realizada!Tour Grip Dry Start adicionado ao inventário. Você economizou 11%!"
+   ]
+  },
+  {
+   "name": "card passa a mostrar \"Adquirido\" sem recarregar",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "6a. item possuído: modal mostra \"✓ Adquirido\" e nenhum botão de compra",
+   "ok": true,
+   "detail": {
+    "modal": true,
+    "owned": true,
+    "found": false,
+    "text": null,
+    "price": null,
+    "disabled": null
+   }
+  },
+  {
+   "name": "6b. tela desatualizada tenta comprar item já comprado em outro fluxo → \"Item já adquirido\", sem débito nem 2ª unidade",
+   "ok": true,
+   "detail": {
+    "otherTab": "purchased",
+    "seen": [
+     "pending:disabled",
+     "toast:Item já adquiridoTênis Court Pro já está no seu inventário."
+    ],
+    "coins": [
+     4563,
+     4563
+    ]
+   }
+  },
+  {
+   "name": "7a. sem saldo: botão do modal desabilitado (cadeado + preço)",
+   "ok": true,
+   "detail": {
+    "modal": true,
+    "owned": false,
+    "found": true,
+    "text": "49",
+    "price": 49,
+    "disabled": true
+   }
+  },
+  {
+   "name": "7b. saldo gasto em outro fluxo depois de abrir a tela → \"Moedas insuficientes\" do domínio; saldo não fica negativo",
+   "ok": true,
+   "detail": {
+    "seen": [
+     "pending:disabled",
+     "toast:Moedas insuficientesVocê precisa de 49 moedas."
+    ],
+    "coins": [
+     5,
+     5
+    ],
+    "rows": 0
+   }
+  },
+  {
+   "name": "8. relíquia com estoque 0 → \"Item esgotado\", sem débito, sem entrega, estoque 0",
+   "ok": true,
+   "detail": {
+    "relic": {
+     "id": "historical-relic-1969-raquete",
+     "name": "Raquete de Madeira Original (1969)",
+     "month": "2026-07-15"
+    },
+    "card": "EM ALTA 0 restamRaquete de Madeira Original (1969)Padel Heritage+15 Con+5 Est+3 For178.417 77%",
+    "modal": {
+     "modal": true,
+     "owned": false,
+     "found": true,
+     "text": "178.417",
+     "price": 178417,
+     "disabled": false
+    },
+    "seen": [
+     "pending:disabled",
+     "toast:Item esgotadoRaquete de Madeira Original (1969) esgotou."
+    ],
+    "coins": [
+     2000000,
+     2000000
+    ],
+    "stockAfter": 0
+   }
+  },
+  {
+   "name": "8 (observação de UX): o card mostra \"0 restam\" mas o botão do modal continua habilitado — a proteção é do domínio",
+   "ok": true,
+   "detail": {
+    "relicCard": "EM ALTA 0 restamRaquete de Madeira Original (1969)Padel Heritage+15 Con+5 Est+3 For178.417 77%",
+    "relicModal": {
+     "modal": true,
+     "owned": false,
+     "found": true,
+     "text": "178.417",
+     "price": 178417,
+     "disabled": false
+    }
+   }
+  },
+  {
+   "name": "9. dois cliques rápidos → 1 unidade, 1 débito, 1 linha de extrato, 1 toast de sucesso",
+   "ok": true,
+   "detail": {
+    "coins": [
+     5000,
+     4762
+    ],
+    "rows": [
+     {
+      "id": "inventory-shop-ui-shop-004-mvk3glfs-90b9bk",
+      "item": "Mochila Tour",
+      "equipped": false
+     }
+    ],
+    "ledger": [
+     {
+      "id": "shop-purchase-ui-shop-004-mvk3glfs-90b9bk",
+      "type": "expense",
+      "amount": 238,
+      "date": "2026-01-01"
+     }
+    ],
+    "seen": [
+     "pending:disabled",
+     "toast:Compra realizada!Mochila Tour adicionado ao inventário. Você economizou 10%!"
+    ]
+   }
+  },
+  {
+   "name": "4. item comprado equipa pelo botão do Inventário",
+   "ok": true,
+   "detail": {
+    "clicked": true,
+    "row": {
+     "id": "inventory-shop-ui-shopitem-1792706940565-ivrz7k-mvk3fl0c-6gek9e",
+     "item": "Tour Grip Dry Start",
+     "equipped": true
+    },
+    "mods": {
+     "forehand": 1
+    },
+    "catalogBonus": {
+     "forehand": 1
+    },
+    "attrs": {
+     "forehand": 10,
+     "serve": 10,
+     "volley": 10
+    }
+   }
+  },
+  {
+   "name": "5. bônus efetivo = bônus do catálogo (9B); atributo natural intacto",
+   "ok": true,
+   "detail": {
+    "clicked": true,
+    "row": {
+     "id": "inventory-shop-ui-shopitem-1792706940565-ivrz7k-mvk3fl0c-6gek9e",
+     "item": "Tour Grip Dry Start",
+     "equipped": true
+    },
+    "mods": {
+     "forehand": 1
+    },
+    "catalogBonus": {
+     "forehand": 1
+    },
+    "attrs": {
+     "forehand": 10,
+     "serve": 10,
+     "volley": 10
+    }
+   }
+  },
+  {
+   "name": "10. venda pelo botão do Inventário conclui (\"Item vendido!\")",
+   "ok": true,
+   "detail": {
+    "clicked": true,
+    "shownTitle": "Vender por 66 moedas",
+    "resale": 66,
+    "coins": [
+     4762,
+     4828
+    ],
+    "seen": [
+     "toast:Item equipado!Tour Grip Dry Start",
+     "toast:Item vendido!Mochila Tour vendido por 66 moedas."
+    ],
+    "equippedHasSellButton": false
+   }
+  },
+  {
+   "name": "11. unidade removida do inventário (dados e tela)",
+   "ok": true,
+   "detail": [
+    "Grip Performance",
+    "Tênis Court Pro",
+    "Tour Grip Dry Start"
+   ]
+  },
+  {
+   "name": "12. crédito = revenda exibida no botão (30% do preço gravado) + 1 linha de extrato",
+   "ok": true,
+   "detail": {
+    "clicked": true,
+    "shownTitle": "Vender por 66 moedas",
+    "resale": 66,
+    "coins": [
+     4762,
+     4828
+    ],
+    "seen": [
+     "toast:Item equipado!Tour Grip Dry Start",
+     "toast:Item vendido!Mochila Tour vendido por 66 moedas."
+    ],
+    "equippedHasSellButton": false
+   }
+  },
+  {
+   "name": "item equipado não oferece venda (regra atual)",
+   "ok": true,
+   "detail": {
+    "equippedHasSell": false
+   }
+  },
+  {
+   "name": "13–14. após recarregar: saldo, inventário, item equipado, bônus e extrato idênticos",
+   "ok": true,
+   "detail": {
+    "before": {
+     "id": "playerprofile-1792706941373-23wqza",
+     "coins": 4828,
+     "date": "2026-01-01",
+     "attrs": {
+      "forehand": 10,
+      "serve": 10,
+      "volley": 10
+     },
+     "inv": [
+      {
+       "id": "inventory-001",
+       "item": "Grip Performance",
+       "equipped": false
+      },
+      {
+       "id": "inventory-shop-outra-aba",
+       "item": "Tênis Court Pro",
+       "equipped": false
+      },
+      {
+       "id": "inventory-shop-ui-shopitem-1792706940565-ivrz7k-mvk3fl0c-6gek9e",
+       "item": "Tour Grip Dry Start",
+       "equipped": true
+      }
+     ],
+     "ledger": [
+      {
+       "id": "inventory-sale-inventory-shop-ui-shop-004-mvk3glfs-90b9bk",
+       "type": "income",
+       "amount": 66,
+       "date": "2026-01-01"
+      },
+      {
+       "id": "shop-purchase-outra-aba",
+       "type": "expense",
+       "amount": 378,
+       "date": "2026-01-01"
+      },
+      {
+       "id": "shop-purchase-ui-shop-004-mvk3glfs-90b9bk",
+       "type": "expense",
+       "amount": 238,
+       "date": "2026-01-01"
+      },
+      {
+       "id": "shop-purchase-ui-shopitem-1792706940565-ivrz7k-mvk3fl0c-6gek9e",
+       "type": "expense",
+       "amount": 59,
+       "date": "2026-01-01"
+      }
+     ],
+     "mods": {
+      "forehand": 1
+     }
+    },
+    "after": {
+     "id": "playerprofile-1792706941373-23wqza",
+     "coins": 4828,
+     "date": "2026-01-01",
+     "attrs": {
+      "forehand": 10,
+      "serve": 10,
+      "volley": 10
+     },
+     "inv": [
+      {
+       "id": "inventory-001",
+       "item": "Grip Performance",
+       "equipped": false
+      },
+      {
+       "id": "inventory-shop-outra-aba",
+       "item": "Tênis Court Pro",
+       "equipped": false
+      },
+      {
+       "id": "inventory-shop-ui-shopitem-1792706940565-ivrz7k-mvk3fl0c-6gek9e",
+       "item": "Tour Grip Dry Start",
+       "equipped": true
+      }
+     ],
+     "ledger": [
+      {
+       "id": "inventory-sale-inventory-shop-ui-shop-004-mvk3glfs-90b9bk",
+       "type": "income",
+       "amount": 66,
+       "date": "2026-01-01"
+      },
+      {
+       "id": "shop-purchase-outra-aba",
+       "type": "expense",
+       "amount": 378,
+       "date": "2026-01-01"
+      },
+      {
+       "id": "shop-purchase-ui-shop-004-mvk3glfs-90b9bk",
+       "type": "expense",
+       "amount": 238,
+       "date": "2026-01-01"
+      },
+      {
+       "id": "shop-purchase-ui-shopitem-1792706940565-ivrz7k-mvk3fl0c-6gek9e",
+       "type": "expense",
+       "amount": 59,
+       "date": "2026-01-01"
+      }
+     ],
+     "mods": {
+      "forehand": 1
+     }
+    }
+   }
+  },
+  {
+   "name": "sem erros de página (pageerror)",
+   "ok": true,
+   "detail": null
+  }
+ ],
+ "steps": {
+  "start": {
+   "coins": 5000,
+   "date": "2026-01-01",
+   "inventory": 1
+  },
+  "buy": {
+   "modalButton": {
+    "modal": true,
+    "owned": false,
+    "found": true,
+    "text": "5966",
+    "price": 59,
+    "disabled": false
+   },
+   "price": 59,
+   "coins": [
+    5000,
+    4941
+   ],
+   "row": {
+    "id": "inventory-shop-ui-shopitem-1792706940565-ivrz7k-mvk3fl0c-6gek9e",
+    "item": "Tour Grip Dry Start",
+    "equipped": false
+   },
+   "ledger": {
+    "id": "shop-purchase-ui-shopitem-1792706940565-ivrz7k-mvk3fl0c-6gek9e",
+    "type": "expense",
+    "amount": 59,
+    "date": "2026-01-01"
+   },
+   "seen": [
+    "pending:disabled",
+    "toast:Compra realizada!Tour Grip Dry Start adicionado ao inventário. Você economizou 11%!"
+   ]
+  },
+  "alreadyOwnedStale": {
+   "otherTab": "purchased",
+   "seen": [
+    "pending:disabled",
+    "toast:Item já adquiridoTênis Court Pro já está no seu inventário."
+   ],
+   "coins": [
+    4563,
+    4563
+   ]
+  },
+  "noMoneyStale": {
+   "seen": [
+    "pending:disabled",
+    "toast:Moedas insuficientesVocê precisa de 49 moedas."
+   ],
+   "coins": [
+    5,
+    5
+   ],
+   "rows": 0
+  },
+  "zeroStock": {
+   "relic": {
+    "id": "historical-relic-1969-raquete",
+    "name": "Raquete de Madeira Original (1969)",
+    "month": "2026-07-15"
+   },
+   "card": "EM ALTA 0 restamRaquete de Madeira Original (1969)Padel Heritage+15 Con+5 Est+3 For178.417 77%",
+   "modal": {
+    "modal": true,
+    "owned": false,
+    "found": true,
+    "text": "178.417",
+    "price": 178417,
+    "disabled": false
+   },
+   "seen": [
+    "pending:disabled",
+    "toast:Item esgotadoRaquete de Madeira Original (1969) esgotou."
+   ],
+   "coins": [
+    2000000,
+    2000000
+   ],
+   "stockAfter": 0
+  },
+  "doubleClick": {
+   "coins": [
+    5000,
+    4762
+   ],
+   "rows": [
+    {
+     "id": "inventory-shop-ui-shop-004-mvk3glfs-90b9bk",
+     "item": "Mochila Tour",
+     "equipped": false
+    }
+   ],
+   "ledger": [
+    {
+     "id": "shop-purchase-ui-shop-004-mvk3glfs-90b9bk",
+     "type": "expense",
+     "amount": 238,
+     "date": "2026-01-01"
+    }
+   ],
+   "seen": [
+    "pending:disabled",
+    "toast:Compra realizada!Mochila Tour adicionado ao inventário. Você economizou 10%!"
+   ]
+  },
+  "equip": {
+   "clicked": true,
+   "row": {
+    "id": "inventory-shop-ui-shopitem-1792706940565-ivrz7k-mvk3fl0c-6gek9e",
+    "item": "Tour Grip Dry Start",
+    "equipped": true
+   },
+   "mods": {
+    "forehand": 1
+   },
+   "catalogBonus": {
+    "forehand": 1
+   },
+   "attrs": {
+    "forehand": 10,
+    "serve": 10,
+    "volley": 10
+   }
+  },
+  "sell": {
+   "clicked": true,
+   "shownTitle": "Vender por 66 moedas",
+   "resale": 66,
+   "coins": [
+    4762,
+    4828
+   ],
+   "seen": [
+    "toast:Item equipado!Tour Grip Dry Start",
+    "toast:Item vendido!Mochila Tour vendido por 66 moedas."
+   ],
+   "equippedHasSellButton": false
+  },
+  "reload": {
+   "before": {
+    "id": "playerprofile-1792706941373-23wqza",
+    "coins": 4828,
+    "date": "2026-01-01",
+    "attrs": {
+     "forehand": 10,
+     "serve": 10,
+     "volley": 10
+    },
+    "inv": [
+     {
+      "id": "inventory-001",
+      "item": "Grip Performance",
+      "equipped": false
+     },
+     {
+      "id": "inventory-shop-outra-aba",
+      "item": "Tênis Court Pro",
+      "equipped": false
+     },
+     {
+      "id": "inventory-shop-ui-shopitem-1792706940565-ivrz7k-mvk3fl0c-6gek9e",
+      "item": "Tour Grip Dry Start",
+      "equipped": true
+     }
+    ],
+    "ledger": [
+     {
+      "id": "inventory-sale-inventory-shop-ui-shop-004-mvk3glfs-90b9bk",
+      "type": "income",
+      "amount": 66,
+      "date": "2026-01-01"
+     },
+     {
+      "id": "shop-purchase-outra-aba",
+      "type": "expense",
+      "amount": 378,
+      "date": "2026-01-01"
+     },
+     {
+      "id": "shop-purchase-ui-shop-004-mvk3glfs-90b9bk",
+      "type": "expense",
+      "amount": 238,
+      "date": "2026-01-01"
+     },
+     {
+      "id": "shop-purchase-ui-shopitem-1792706940565-ivrz7k-mvk3fl0c-6gek9e",
+      "type": "expense",
+      "amount": 59,
+      "date": "2026-01-01"
+     }
+    ],
+    "mods": {
+     "forehand": 1
+    }
+   },
+   "after": {
+    "id": "playerprofile-1792706941373-23wqza",
+    "coins": 4828,
+    "date": "2026-01-01",
+    "attrs": {
+     "forehand": 10,
+     "serve": 10,
+     "volley": 10
+    },
+    "inv": [
+     {
+      "id": "inventory-001",
+      "item": "Grip Performance",
+      "equipped": false
+     },
+     {
+      "id": "inventory-shop-outra-aba",
+      "item": "Tênis Court Pro",
+      "equipped": false
+     },
+     {
+      "id": "inventory-shop-ui-shopitem-1792706940565-ivrz7k-mvk3fl0c-6gek9e",
+      "item": "Tour Grip Dry Start",
+      "equipped": true
+     }
+    ],
+    "ledger": [
+     {
+      "id": "inventory-sale-inventory-shop-ui-shop-004-mvk3glfs-90b9bk",
+      "type": "income",
+      "amount": 66,
+      "date": "2026-01-01"
+     },
+     {
+      "id": "shop-purchase-outra-aba",
+      "type": "expense",
+      "amount": 378,
+      "date": "2026-01-01"
+     },
+     {
+      "id": "shop-purchase-ui-shop-004-mvk3glfs-90b9bk",
+      "type": "expense",
+      "amount": 238,
+      "date": "2026-01-01"
+     },
+     {
+      "id": "shop-purchase-ui-shopitem-1792706940565-ivrz7k-mvk3fl0c-6gek9e",
+      "type": "expense",
+      "amount": 59,
+      "date": "2026-01-01"
+     }
+    ],
+    "mods": {
+     "forehand": 1
+    }
+   }
+  }
+ },
+ "consoleErrors": [],
+ "pageErrors": [],
+ "summary": {
+  "total": 20,
+  "passed": 20,
+  "failed": 0
+ }
+}

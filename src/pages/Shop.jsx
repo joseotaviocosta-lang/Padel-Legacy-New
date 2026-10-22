@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { ShoppingBag, Coins, Check, Lock, Package, Search, SlidersHorizontal, TrendingUp, TrendingDown, Flame } from 'lucide-react';
@@ -10,11 +10,11 @@ import ItemDetailModal from '@/components/shop/ItemDetailModal';
 import ItemImage from '@/components/shop/ItemImage';
 import MarketEventsBanner from '@/components/shop/MarketEventsBanner';
 import { RARITY_STYLES, RARITY_ORDER } from '@/lib/equipmentCatalog';
-import { computeItemPrice, BADGE_COLORS, isMarketEventActive, normalizeMarketEvent } from '@/lib/marketEngine';
+import { BADGE_COLORS, isMarketEventActive, normalizeMarketEvent } from '@/lib/marketEngine';
 import { normalizeShopItem, getShopItemAccess } from '@/lib/storeCatalog';
 import { loadModuleTasks } from '@/lib/moduleLoading';
 import { getEquipmentMarketState } from '@/lib/sportsEconomyV26';
-import { recordFinancialEntry } from '@/lib/financialLedger.js';
+import { purchaseShopItem, quoteShopItem, selectItemPriceHistory } from '@/game-core/shopTransactions.js';
 
 const PAGE_SIZE = 24;
 
@@ -77,6 +77,10 @@ export default function Shop() {
   const [marketEvents, setMarketEvents] = useState([]);
   const [priceHistories, setPriceHistories] = useState([]);
   const [playerSponsors, setPlayerSponsors] = useState([]);
+  // LOCAL-9C.2-A: trava síncrona (o estado `buying` só chega no re-render) e
+  // identidade da intenção de compra — um retry da mesma intenção não cobra de novo.
+  const purchaseLock = useRef(false);
+  const purchaseIntent = useRef(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -113,11 +117,10 @@ export default function Shop() {
 
   // ─── Dynamic price map ──────────────────────────────────────────────────
   const priceMap = useMemo(() => {
+    // LOCAL-9C.2-A: mesma cotação e mesmo histórico da compra canônica.
     const map = {};
-    const histMap = {};
-    (priceHistories || []).forEach(h => { histMap[h.item_id] = h; });
     (items || []).forEach(item => {
-      map[item.id] = computeItemPrice(item, marketEvents, histMap[item.id], playerSponsors, profile?.career_date);
+      map[item.id] = quoteShopItem(item, { events: marketEvents, history: selectItemPriceHistory(priceHistories, item.id), sponsors: playerSponsors, careerDate: profile?.career_date });
     });
     return map;
   }, [items, marketEvents, priceHistories, playerSponsors, profile?.career_date]);
@@ -223,42 +226,36 @@ export default function Shop() {
       toast({ title: 'Moedas insuficientes', description: `Você precisa de ${formatCoins(currentPrice)} moedas.`, variant: 'destructive' });
       return;
     }
+    if (purchaseLock.current) return;
+    purchaseLock.current = true;
+    if (purchaseIntent.current?.itemId !== item.id) {
+      purchaseIntent.current = { itemId: item.id, id: `ui-${item.id}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}` };
+    }
     setBuying(item.id);
     try {
-      await localGame.entities.PlayerInventory.create({
-        profile_id: profile.id,
-        item_id: item.id,
-        item_name: item.name,
-        category: item.category,
-        rarity: item.rarity,
-        equipped: false,
-        acquired_date: profile.career_date || new Date().toISOString().slice(0, 10),
-        current_durability: item.durability || 100,
-        usage_count: 0,
-      });
-      const updated = await localGame.entities.PlayerProfile.update(profile.id, {
-        coins: (profile.coins || 0) - currentPrice,
-      });
-      await recordFinancialEntry({ profileId: profile.id, date: profile.career_date, type: 'expense', category: 'loja', description: `Compra: ${item.name}`, amount: currentPrice });
-      setProfile(updated);
-      setOwnedIds(prev => new Set([...prev, item.id]));
-      incrementMissionProgress(profile.id, 'buy_item').catch(() => {});
-
-      // Update demand in MarketPriceHistory
-      const hist = priceHistories.find(h => h.item_id === item.id);
-      if (hist) {
-        localGame.entities.MarketPriceHistory.update(hist.id, {
-          demand_score: Math.min(100, (hist.demand_score || 50) + 5),
-          purchase_count: (hist.purchase_count || 0) + 1,
-          stock_remaining: hist.is_limited_stock ? Math.max(0, (hist.stock_remaining || 0) - 1) : -1,
-        }).catch(() => {});
+      // LOCAL-9C.2-A: validação, débito, entrega, extrato e estoque numa única
+      // operação de domínio, sobre o save atual; a tela só pede e mostra.
+      const result = await purchaseShopItem(profile.id, item.id, { operationId: purchaseIntent.current.id, expectedPrice: currentPrice });
+      purchaseIntent.current = null;
+      if (result.profile) setProfile(prev => ({ ...prev, ...result.profile }));
+      if (!result.ok) {
+        if (result.code === 'already-owned' || result.code === 'duplicate') setOwnedIds(prev => new Set([...prev, item.id]));
+        toast({ title: result.title, description: result.message, variant: result.code === 'duplicate' ? undefined : 'destructive' });
+        return;
       }
-
-      toast({ title: 'Compra realizada!', description: `${item.name} adicionado ao inventário. ${pricing?.discount > 0 ? `Você economizou ${pricing.discount}%!` : ''}` });
+      setOwnedIds(prev => new Set([...prev, item.id]));
+      if (result.stockRemaining !== null) {
+        setPriceHistories(prev => prev.map(h => (h.item_id === item.id && h.is_limited_stock ? { ...h, stock_remaining: result.stockRemaining } : h)));
+      }
+      incrementMissionProgress(profile.id, 'buy_item').catch(() => {});
+      toast({ title: 'Compra realizada!', description: `${item.name} adicionado ao inventário. ${result.pricing?.discount > 0 ? `Você economizou ${result.pricing.discount}%!` : ''}` });
       setDetailItem(null);
     } catch (e) {
       toast({ title: 'Erro', description: 'Não foi possível concluir a compra.', variant: 'destructive' });
-    } finally { setBuying(null); }
+    } finally {
+      purchaseLock.current = false;
+      setBuying(null);
+    }
   }
 
   if (loading) {
@@ -436,7 +433,7 @@ export default function Shop() {
                   const currentPrice = safePrice(pricing?.currentPrice, safePrice(item?.price));
                   const access = accessMap[item.id] || getShopItemAccess(profile, item);
                   const canAfford = access.unlocked && (profile?.coins || 0) >= currentPrice;
-                  const hist = priceHistories.find(h => h.item_id === item.id);
+                  const hist = selectItemPriceHistory(priceHistories, item.id);
                   const isLimited = hist?.is_limited_stock && hist?.stock_remaining >= 0;
                   const stockLeft = hist?.stock_remaining || 0;
                   return (

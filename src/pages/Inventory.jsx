@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { Package, ShoppingBag, Check, Zap, Coins } from 'lucide-react';
@@ -7,8 +7,8 @@ import { RarityBadge, RARITY_STYLES } from '@/components/padel/GameShared';
 import { Page, PageContent, PageHeader, PageSkeleton, Surface, SurfaceHeader, StatCard, StatusBadge, EmptyState, Button } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
 import ItemImage from '@/components/shop/ItemImage';
-import { recordFinancialEntry } from '@/lib/financialLedger.js';
 import { toggleEquipItem } from '@/game-core/equipmentLifecycle.js';
+import { computeResalePrice, sellInventoryItem } from '@/game-core/shopTransactions.js';
 import { computeEquipmentModifiers, totalAppliedModifier } from '@/lib/equipmentModifiers.js';
 const CATEGORY_LABELS = {
   raquete: 'Raquetes',
@@ -38,6 +38,7 @@ export default function Inventory() {
   const [loading, setLoading] = useState(true);
   const [toggling, setToggling] = useState(null);
   const [selling, setSelling] = useState(null);
+  const sellLock = useRef(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -89,22 +90,26 @@ export default function Inventory() {
   }
 
   async function sellItem(invItem) {
-    if (invItem.equipped) return;
-    const shopItem = shopMap[invItem.item_id];
-    const sellPrice = Math.floor((shopItem?.price || 0) * 0.3);
+    if (!profile || invItem.equipped || sellLock.current) return;
+    sellLock.current = true;
     setSelling(invItem.id);
     try {
-      await localGame.entities.PlayerInventory.delete(invItem.id);
-      const updated = await localGame.entities.PlayerProfile.update(profile.id, {
-        coins: (profile.coins || 0) + sellPrice,
-      });
-      await recordFinancialEntry({ id: `inventory-sale-${invItem.id}`, profileId: profile.id, date: profile.career_date, type: 'income', category: 'loja', description: `Venda: ${invItem.item_name}`, amount: sellPrice });
-      setProfile(updated);
-      setInventory(prev => prev.filter(i => i.id !== invItem.id));
-      toast({ title: 'Item vendido!', description: `${invItem.item_name} vendido por ${sellPrice} moedas.` });
+      // LOCAL-9C.2-A: remoção, crédito (incremento sobre o saldo atual) e
+      // extrato numa única operação de domínio.
+      const result = await sellInventoryItem(profile.id, invItem.id);
+      if (result.profile) setProfile(prev => ({ ...prev, ...result.profile }));
+      if (result.ok || result.code === 'duplicate' || result.code === 'item-not-found') setInventory(prev => prev.filter(i => i.id !== invItem.id));
+      if (!result.ok) {
+        toast({ title: result.title, description: result.message, variant: result.code === 'duplicate' ? undefined : 'destructive' });
+        return;
+      }
+      toast({ title: 'Item vendido!', description: `${invItem.item_name} vendido por ${result.amount} moedas.` });
     } catch (e) {
       toast({ title: 'Erro', description: 'Não foi possível vender o item.', variant: 'destructive' });
-    } finally { setSelling(null); }
+    } finally {
+      sellLock.current = false;
+      setSelling(null);
+    }
   }
 
   if (loading) {
@@ -226,12 +231,12 @@ export default function Inventory() {
                           onClick={() => sellItem(invItem)}
                           disabled={selling === invItem.id}
                           className="bg-destructive/10 text-destructive hover:bg-destructive/20"
-                          title={`Vender por ${Math.floor((shopMap[invItem.item_id]?.price || 0) * 0.3)} moedas`}
+                          title={`Vender por ${computeResalePrice(shopMap[invItem.item_id])} moedas`}
                         >
                           {selling === invItem.id ? (
                             <div className="w-3 h-3 border-2 border-destructive/30 border-t-destructive rounded-full animate-spin" />
                           ) : (
-                            <><Coins className="h-3 w-3" />{Math.floor((shopMap[invItem.item_id]?.price || 0) * 0.3)}</>
+                            <><Coins className="h-3 w-3" />{computeResalePrice(shopMap[invItem.item_id])}</>
                           )}
                         </Button>
                       )}

@@ -4,8 +4,8 @@ import { appendFileSync } from 'node:fs';
 // Cada função chama as MESMAS funções de domínio que a página correspondente
 // chama. Onde a lógica vive dentro do componente (sem função de domínio
 // exportada), ela é reproduzida aqui linha a linha e isso é declarado:
-//  - Shop.jsx `buy` (PlayerInventory.create + débito) e Inventory.jsx
-//    `toggleEquip` (aplica attribute_bonus com teto/piso e grava o delta);
+//  - (LOCAL-9C.2-A: a compra deixou de ser réplica — Shop.jsx e buyAndEquip
+//    chamam shopTransactions.purchaseShopItem; equipar usa toggleEquipItem);
 //  - Missions.jsx onboarding (nome/lado/estilo → buildInitialProfile);
 //  - TournamentModal.jsx `handleMatchFinished` (sequência de finalização da
 //    rodada: recordTournamentMatchResult, recompensa da partida, físico,
@@ -313,12 +313,16 @@ export async function shopOptions(rt, A, profile) {
     localGame.entities.MarketPriceHistory.filter({}, '-last_updated_date', 200).catch(() => []),
     localGame.entities.PlayerContract.filter({ profile_id: profile.id, is_active: true }).catch(() => []),
   ]);
-  const histMap = Object.fromEntries((histories || []).map((h) => [h.item_id, h]));
-  const sponsorsRef = (contracts || []).map((c) => ({ sponsor_id: c.sponsor_id, sponsor_name: c.sponsor_name }));
+  // LOCAL-9C.2-A: a mesma cotação da Loja e da compra canônica (eventos
+  // vigentes na data da carreira, histórico mais recente, patrocínio ativo).
+  // Antes: eventos sem filtro de vigência e sem a data (dia 1 fixo).
+  const T = await rt.load('/src/game-core/shopTransactions.js');
+  const sponsorsRef = T.sponsorRefsFromContracts(contracts || []);
   const marketProfile = { ...profile, active_sponsor_names: sponsorsRef.map((s) => s.sponsor_name) };
+  const activeEvents = T.selectShopEvents(events || [], profile.career_date);
   const owned = new Set((inventory || []).map((i) => i.item_id));
   const rows = (items || []).filter(Boolean).map(A.store.normalizeShopItem).map((item) => {
-    const price = Number(A.market.computeItemPrice(item, events || [], histMap[item.id], sponsorsRef)?.currentPrice ?? item.price) || Number(item.price) || 0;
+    const price = Number(T.quoteShopItem(item, { events: activeEvents, history: T.selectItemPriceHistory(histories || [], item.id), sponsors: sponsorsRef, careerDate: profile.career_date })?.currentPrice ?? item.price) || Number(item.price) || 0;
     const access = A.store.getShopItemAccess(profile, item);
     const marketState = A.sportsEconomy.getEquipmentMarketState(item, marketProfile);
     const bonusTotal = Object.values(item.attribute_bonus || {}).reduce((s, v) => s + (Number(v) || 0), 0);
@@ -331,11 +335,13 @@ export async function buyAndEquip(rt, profile, row, inventory) {
   const { localGame } = rt;
   const item = row.item;
   if ((profile.coins || 0) < row.price) return { profile, bought: false };
-  const inv = await localGame.entities.PlayerInventory.create({
-    profile_id: profile.id, item_id: item.id, item_name: item.name, category: item.category, rarity: item.rarity,
-    equipped: false, acquired_date: profile.career_date, current_durability: item.durability || 100, usage_count: 0,
-  });
-  let p = await localGame.entities.PlayerProfile.update(profile.id, { coins: (profile.coins || 0) - row.price });
+  // LOCAL-9C.2-A: a mesma operação de domínio da Loja (Shop.jsx): valida e
+  // cobra sobre o save atual, grava extrato e estoque no mesmo lote.
+  const { purchaseShopItem } = await rt.load('/src/game-core/shopTransactions.js');
+  const purchase = await purchaseShopItem(profile.id, item.id, { expectedPrice: row.price });
+  if (!purchase.ok) return { profile: purchase.profile ? { ...profile, ...purchase.profile } : profile, bought: false, refused: purchase.code };
+  const inv = purchase.inventoryItem;
+  const p = purchase.profile;
   // Shop.jsx dispara sem await; aqui aguardamos só para o ledger atribuir a
   // recompensa da missão ao passo certo (mesmo efeito, outra ordem).
   await rt.padel.incrementMissionProgress(p.id, 'buy_item').catch(() => {});
@@ -346,7 +352,7 @@ export async function buyAndEquip(rt, profile, row, inventory) {
   const shopItems = await localGame.entities.ShopItem.list();
   await toggleEquipItem({ profile: p, inventory: [...inventory, inv], target: inv, shopItems });
   await rt.padel.incrementMissionProgress(p.id, 'equip_item').catch(() => {});
-  return { profile: await localGame.entities.PlayerProfile.get(p.id), bought: true, appliedBonus: { ...(item.attribute_bonus || {}) } };
+  return { profile: await localGame.entities.PlayerProfile.get(p.id), bought: true, paid: purchase.price, appliedBonus: { ...(item.attribute_bonus || {}) } };
 }
 
 // ── Investimento (Economy.jsx) ──────────────────────────────────────────────

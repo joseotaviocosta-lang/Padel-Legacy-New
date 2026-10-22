@@ -1,0 +1,399 @@
+{
+ "generatedBy": "LOCAL-9C.2-A-R1 batch compatibility and financial concurrency",
+ "checks": [
+  {
+   "name": "B1: lista aplicada na ordem (create→update→incremento→upsert→delete) numa gravação",
+   "ok": true,
+   "detail": {
+    "keys": [
+     "outcome",
+     "player",
+     "records",
+     "skipped",
+     "writes"
+    ],
+    "records": [
+     "b1-x",
+     "b1-x",
+     "playerprofile-1791115521039-oexw0x",
+     "b1-y",
+     "b1-y"
+    ],
+    "step": 2,
+    "yDeleted": true,
+    "coins": 7
+   }
+  },
+  {
+   "name": "B2: formato do resultado da lista preservado (records, player, skipped=false, writes=1; outcome=null é aditivo)",
+   "ok": true,
+   "detail": {
+    "keys": [
+     "outcome",
+     "player",
+     "records",
+     "skipped",
+     "writes"
+    ],
+    "records": [
+     "b1-x",
+     "b1-x",
+     "playerprofile-1791115521039-oexw0x",
+     "b1-y",
+     "b1-y"
+    ],
+    "step": 2,
+    "yDeleted": true,
+    "coins": 7
+   }
+  },
+  {
+   "name": "B3: erro no meio da lista propaga e não aplica nada (sem crédito, sem linha)",
+   "ok": true,
+   "detail": {
+    "ok": false,
+    "error": "PlayerInventory não encontrado para atualização: nao-existe"
+   }
+  },
+  {
+   "name": "B4: idempotencyKey preservada (2ª execução skipped, sem crédito, sem gravação)",
+   "ok": true,
+   "detail": {
+    "b4a": false,
+    "b4b": true
+   }
+  },
+  {
+   "name": "B5: recusas (saldo, item inexistente, venda inexistente) → nenhuma mutação e NENHUMA gravação do save",
+   "ok": true,
+   "detail": {
+    "codes": [
+     "insufficient-funds",
+     "item-not-found",
+     "item-not-found"
+    ],
+    "physicalSaves": 0,
+    "logicalWrites": 0
+   }
+  },
+  {
+   "name": "B5: a recusa devolve o perfil atual (a tela atualiza o saldo)",
+   "ok": true,
+   "detail": 1
+  },
+  {
+   "name": "B6: compra aceita = exatamente 1 gravação do save",
+   "ok": true,
+   "detail": {
+    "saves": 1
+   }
+  },
+  {
+   "name": "B6b: operação repetida → duplicate sem gravação",
+   "ok": true,
+   "detail": {
+    "code": "duplicate",
+    "saves": 0
+   }
+  },
+  {
+   "name": "B7: dentro de withPersistenceTransaction a recusa não aborta a transação; a compra e as gravações seguintes são confirmadas",
+   "ok": true,
+   "detail": {
+    "tx": {
+     "ok": true,
+     "value": {
+      "refused": "already-owned",
+      "bought": true,
+      "price": 281
+     }
+    },
+    "msgCommitted": true,
+    "debit": 281
+   }
+  },
+  {
+   "name": "B8: assinatura de patrocínio concorrente continua idempotente (1 contrato, 1 pagamento de luvas)",
+   "ok": true,
+   "detail": {
+    "sg1": true,
+    "sg2": "Esta assinatura já foi processada.",
+    "contracts8": 1,
+    "bonus8": 372
+   }
+  },
+  {
+   "name": "C1: duas compras simultâneas → saldo = início − p1 − p2; 2 unidades; 2 linhas de extrato",
+   "ok": true,
+   "detail": {
+    "results": [
+     "purchased",
+     "purchased"
+    ],
+    "prices": [
+     346,
+     427
+    ],
+    "coins": [
+     97264,
+     96491
+    ],
+    "rows": 2,
+    "ledger": 2
+   }
+  },
+  {
+   "name": "C2: compra e venda simultâneas → saldo = início − preço + revenda; inventário +1 −1; 2 linhas",
+   "ok": true,
+   "detail": {
+    "buy": "purchased",
+    "sell": "sold",
+    "price": 1017,
+    "resale": 139,
+    "coins": [
+     96491,
+     95613
+    ],
+    "rows": 0,
+    "ledger": 2
+   }
+  },
+  {
+   "name": "C3: compra e luvas simultâneas → saldo = início − preço + luvas (nenhum valor sobrescrito)",
+   "ok": true,
+   "detail": {
+    "buy": "purchased",
+    "sign": true,
+    "price": 65,
+    "bonus": 372,
+    "coins": [
+     95613,
+     95920
+    ]
+   }
+  },
+  {
+   "name": "C4: venda e luvas simultâneas → saldo = início + revenda + luvas",
+   "ok": true,
+   "detail": {
+    "sell": "sold",
+    "sign": true,
+    "resale": 174,
+    "bonus": 273,
+    "coins": [
+     95920,
+     96367
+    ]
+   }
+  },
+  {
+   "name": "C5: duas vendas simultâneas (+ repetição da 1ª) → 2 créditos, 2 remoções, 2 linhas; a repetição é duplicate",
+   "ok": true,
+   "detail": {
+    "results": [
+     "sold",
+     "sold",
+     "duplicate"
+    ],
+    "coins": [
+     96367,
+     96812
+    ],
+    "expected": 96812,
+    "rows": -2,
+    "ledger": 2
+   }
+  },
+  {
+   "name": "C6: última unidade disputada + outra compra → relíquia vendida 1×, estoque 0, outra compra concluída, saldo = início − Σ pagos",
+   "ok": true,
+   "detail": {
+    "relic": "Raquete de Madeira Original (1969)",
+    "results": [
+     "purchased",
+     "already-owned",
+     "purchased"
+    ],
+    "stock": 0,
+    "coins": [
+     5000000,
+     4821730
+    ],
+    "paid": 178270,
+    "rows": 2
+   }
+  },
+  {
+   "name": "C7: compra com falha de persistência não aplica nada; a venda concorrente conclui inteira; o retry da compra conclui 1×",
+   "ok": true,
+   "detail": {
+    "purchase": "falha injetada na persistência",
+    "sale": "sold",
+    "coins": [
+     4821730,
+     4821826,
+     4821250
+    ],
+    "resale": 96,
+    "retry": "purchased"
+   }
+  },
+  {
+   "name": "E1 (risco residual, fora do escopo): investimento a partir de perfil desatualizado sobrescreve o débito de uma compra gravada no intervalo",
+   "ok": true,
+   "detail": {
+    "product": "savings",
+    "stale": 100000,
+    "purchase": 346,
+    "final": 99000,
+    "expected": 98654,
+    "lostDebit": 346,
+    "itemDelivered": true
+   }
+  }
+ ],
+ "cases": {
+  "B1": {
+   "keys": [
+    "outcome",
+    "player",
+    "records",
+    "skipped",
+    "writes"
+   ],
+   "records": [
+    "b1-x",
+    "b1-x",
+    "playerprofile-1791115521039-oexw0x",
+    "b1-y",
+    "b1-y"
+   ],
+   "step": 2,
+   "yDeleted": true,
+   "coins": 7
+  },
+  "B5": {
+   "codes": [
+    "insufficient-funds",
+    "item-not-found",
+    "item-not-found"
+   ],
+   "physicalSaves": 0,
+   "logicalWrites": 0
+  },
+  "B7": {
+   "tx": {
+    "ok": true,
+    "value": {
+     "refused": "already-owned",
+     "bought": true,
+     "price": 281
+    }
+   },
+   "msgCommitted": true,
+   "debit": 281
+  },
+  "C1": {
+   "results": [
+    "purchased",
+    "purchased"
+   ],
+   "prices": [
+    346,
+    427
+   ],
+   "coins": [
+    97264,
+    96491
+   ],
+   "rows": 2,
+   "ledger": 2
+  },
+  "C2": {
+   "buy": "purchased",
+   "sell": "sold",
+   "price": 1017,
+   "resale": 139,
+   "coins": [
+    96491,
+    95613
+   ],
+   "rows": 0,
+   "ledger": 2
+  },
+  "C3": {
+   "buy": "purchased",
+   "sign": true,
+   "price": 65,
+   "bonus": 372,
+   "coins": [
+    95613,
+    95920
+   ]
+  },
+  "C4": {
+   "sell": "sold",
+   "sign": true,
+   "resale": 174,
+   "bonus": 273,
+   "coins": [
+    95920,
+    96367
+   ]
+  },
+  "C5": {
+   "results": [
+    "sold",
+    "sold",
+    "duplicate"
+   ],
+   "coins": [
+    96367,
+    96812
+   ],
+   "expected": 96812,
+   "rows": -2,
+   "ledger": 2
+  },
+  "C6": {
+   "relic": "Raquete de Madeira Original (1969)",
+   "results": [
+    "purchased",
+    "already-owned",
+    "purchased"
+   ],
+   "stock": 0,
+   "coins": [
+    5000000,
+    4821730
+   ],
+   "paid": 178270,
+   "rows": 2
+  },
+  "C7": {
+   "purchase": "falha injetada na persistência",
+   "sale": "sold",
+   "coins": [
+    4821730,
+    4821826,
+    4821250
+   ],
+   "resale": 96,
+   "retry": "purchased"
+  },
+  "E1": {
+   "product": "savings",
+   "stale": 100000,
+   "purchase": 346,
+   "final": 99000,
+   "expected": 98654,
+   "lostDebit": 346,
+   "itemDelivered": true
+  }
+ },
+ "summary": {
+  "total": 18,
+  "passed": 18,
+  "failed": 0
+ }
+}
