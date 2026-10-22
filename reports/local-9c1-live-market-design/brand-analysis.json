@@ -1,0 +1,1080 @@
+{
+ "generatedBy": "tools/live-market-audit.mjs",
+ "brands": [
+  {
+   "brand": "Padel Heritage",
+   "items": 15,
+   "categories": [
+    "colecionavel",
+    "raquete",
+    "bola"
+   ],
+   "byRarity": {
+    "raro": 1,
+    "epico": 1,
+    "lendario": 1,
+    "mitico": 1,
+    "exclusivo": 11
+   },
+   "price": {
+    "min": 1440,
+    "median": 84000,
+    "max": 108000
+   },
+   "pricePerPoint": {
+    "min": 720,
+    "median": 3857,
+    "max": 6500
+   },
+   "attributeProfilePct": {
+    "emotional_control": 48,
+    "strategy": 24,
+    "smash": 13,
+    "forehand": 11,
+    "volley": 3,
+    "defense": 1
+   },
+   "racketStyles": [
+    "power",
+    "control",
+    "hybrid"
+   ],
+   "sources": [
+    "storeCatalog",
+    "reliquia"
+   ],
+   "sponsor": null,
+   "minRarity": "raro",
+   "maxRarity": "exclusivo"
+  },
+  {
+   "brand": "Bullpadel",
+   "items": 13,
+   "categories": [
+    "raquete",
+    "grip",
+    "bola",
+    "roupa",
+    "mochila"
+   ],
+   "byRarity": {
+    "comum": 1,
+    "incomum": 1,
+    "raro": 2,
+    "epico": 4,
+    "lendario": 1,
+    "mitico": 3,
+    "exclusivo": 1
+   },
+   "price": {
+    "min": 1130,
+    "median": 6000,
+    "max": 78000
+   },
+   "pricePerPoint": {
+    "min": 565,
+    "median": 2000,
+    "max": 7200
+   },
+   "attributeProfilePct": {
+    "smash": 23,
+    "bandeja": 23,
+    "strategy": 17,
+    "emotional_control": 17,
+    "volley": 11,
+    "agility": 9
+   },
+   "racketStyles": [
+    "power"
+   ],
+   "sources": [
+    "storeCatalog"
+   ],
+   "sponsor": {
+    "id": "bullpadel",
+    "tier": "Ouro",
+    "industry": "Equipamentos",
+    "slot": "raquete"
+   },
+   "minRarity": "comum",
+   "maxRarity": "exclusivo"
+  },
+  {
+   "brand": "Padel Start",
+   "items": 12,
+   "categories": [
+    "raquete",
+    "bola",
+    "mochila"
+   ],
+   "byRarity": {
+    "comum": 4,
+    "incomum": 2,
+    "raro": 2,
+    "epico": 2,
+    "lendario": 1,
+    "mitico": 1
+   },
+   "price": {
+    "min": 54,
+    "median": 1195,
+    "max": 42000
+   },
+   "pricePerPoint": {
+    "min": 54,
+    "median": 811,
+    "max": 8400
+   },
+   "attributeProfilePct": {
+    "smash": 48,
+    "volley": 44,
+    "serve": 4,
+    "strategy": 4
+   },
+   "racketStyles": [
+    "control",
+    "power"
+   ],
+   "sources": [
+    "storeCatalog"
+   ],
+   "sponsor": null,
+   "minRarity": "comum",
+   "maxRarity": "mitico"
+  },
+  {
+   "brand": "Nox",
+   "items": 12,
+   "categories": [
+    "raquete",
+    "grip",
+    "roupa",
+    "mochila",
+    "acessorio"
+   ],
+   "byRarity": {
+    "comum": 1,
+    "incomum": 1,
+    "raro": 3,
+    "epico": 4,
+    "lendario": 2,
+    "exclusivo": 1
+   },
+   "price": {
+    "min": 835,
+    "median": 6759,
+    "max": 78000
+   },
+   "pricePerPoint": {
+    "min": 418,
+    "median": 1577,
+    "max": 6500
+   },
+   "attributeProfilePct": {
+    "volley": 31,
+    "defense": 24,
+    "strategy": 15,
+    "emotional_control": 11,
+    "agility": 11,
+    "backhand": 7
+   },
+   "racketStyles": [
+    "control",
+    "hybrid"
+   ],
+   "sources": [
+    "storeCatalog"
+   ],
+   "sponsor": {
+    "id": "nox",
+    "tier": "Prata",
+    "industry": "Equipamentos",
+    "slot": "raquete"
+   },
+   "minRarity": "comum",
+   "maxRarity": "exclusivo"
+  },
+  {
+   "brand": "Wilson",
+   "items": 12,
+   "categories": [
+    "raquete",
+    "grip",
+    "bola",
+    "roupa",
+    "mochila"
+   ],
+   "byRarity": {
+    "comum": 1,
+    "incomum": 1,
+    "raro": 3,
+    "epico": 1,
+    "lendario": 5,
+    "exclusivo": 1
+   },
+   "price": {
+    "min": 1394,
+    "median": 15873,
+    "max": 78000
+   },
+   "pricePerPoint": {
+    "min": 360,
+    "median": 3825,
+    "max": 13000
+   },
+   "attributeProfilePct": {
+    "emotional_control": 26,
+    "volley": 23,
+    "strategy": 17,
+    "backhand": 13,
+    "defense": 13,
+    "forehand": 4,
+    "serve": 4
+   },
+   "racketStyles": [
+    "control"
+   ],
+   "sources": [
+    "storeCatalog"
+   ],
+   "sponsor": {
+    "id": "wilson",
+    "tier": "Prata",
+    "industry": "Equipamentos",
+    "slot": "raquete"
+   },
+   "minRarity": "comum",
+   "maxRarity": "exclusivo"
+  },
+  {
+   "brand": "Adidas",
+   "items": 11,
+   "categories": [
+    "raquete",
+    "roupa",
+    "tenis",
+    "acessorio"
+   ],
+   "byRarity": {
+    "comum": 1,
+    "incomum": 3,
+    "raro": 1,
+    "epico": 2,
+    "lendario": 2,
+    "mitico": 2
+   },
+   "price": {
+    "min": 300,
+    "median": 6000,
+    "max": 66000
+   },
+   "pricePerPoint": {
+    "min": 300,
+    "median": 1426,
+    "max": 6600
+   },
+   "attributeProfilePct": {
+    "agility": 38,
+    "forehand": 22,
+    "emotional_control": 16,
+    "strategy": 15,
+    "smash": 9
+   },
+   "racketStyles": [
+    "hybrid"
+   ],
+   "sources": [
+    "storeCatalog"
+   ],
+   "sponsor": {
+    "id": "adidas",
+    "tier": "Prata",
+    "industry": "Vestuário",
+    "slot": "vestuario"
+   },
+   "minRarity": "comum",
+   "maxRarity": "mitico"
+  },
+  {
+   "brand": "Joma",
+   "items": 9,
+   "categories": [
+    "raquete",
+    "roupa",
+    "tenis",
+    "acessorio"
+   ],
+   "byRarity": {
+    "comum": 4,
+    "incomum": 1,
+    "raro": 1,
+    "epico": 2,
+    "lendario": 1
+   },
+   "price": {
+    "min": 72,
+    "median": 1003,
+    "max": 19200
+   },
+   "pricePerPoint": {
+    "min": 72,
+    "median": 1003,
+    "max": 4800
+   },
+   "attributeProfilePct": {
+    "defense": 70,
+    "agility": 25,
+    "emotional_control": 5
+   },
+   "racketStyles": [
+    "control"
+   ],
+   "sources": [
+    "storeCatalog"
+   ],
+   "sponsor": {
+    "id": "joma",
+    "tier": "Prata",
+    "industry": "Vestuário",
+    "slot": "vestuario"
+   },
+   "minRarity": "comum",
+   "maxRarity": "lendario"
+  },
+  {
+   "brand": "Head",
+   "items": 9,
+   "categories": [
+    "raquete",
+    "grip",
+    "bola",
+    "mochila"
+   ],
+   "byRarity": {
+    "comum": 1,
+    "incomum": 4,
+    "raro": 1,
+    "epico": 2,
+    "mitico": 1
+   },
+   "price": {
+    "min": 300,
+    "median": 1258,
+    "max": 42000
+   },
+   "pricePerPoint": {
+    "min": 300,
+    "median": 699,
+    "max": 4200
+   },
+   "attributeProfilePct": {
+    "backhand": 39,
+    "forehand": 36,
+    "strategy": 15,
+    "emotional_control": 9
+   },
+   "racketStyles": [
+    "hybrid"
+   ],
+   "sources": [
+    "storeCatalog"
+   ],
+   "sponsor": {
+    "id": "head",
+    "tier": "Ouro",
+    "industry": "Equipamentos",
+    "slot": "raquete"
+   },
+   "minRarity": "comum",
+   "maxRarity": "mitico"
+  },
+  {
+   "brand": "Babolat",
+   "items": 7,
+   "categories": [
+    "raquete",
+    "grip",
+    "tenis"
+   ],
+   "byRarity": {
+    "comum": 1,
+    "incomum": 1,
+    "raro": 1,
+    "epico": 2,
+    "lendario": 1,
+    "mitico": 1
+   },
+   "price": {
+    "min": 1260,
+    "median": 10200,
+    "max": 42000
+   },
+   "pricePerPoint": {
+    "min": 630,
+    "median": 1700,
+    "max": 4800
+   },
+   "attributeProfilePct": {
+    "defense": 35,
+    "smash": 35,
+    "agility": 12,
+    "forehand": 9,
+    "volley": 9
+   },
+   "racketStyles": [
+    "hybrid"
+   ],
+   "sources": [
+    "storeCatalog"
+   ],
+   "sponsor": {
+    "id": "babolat",
+    "tier": "Bronze",
+    "industry": "Equipamentos",
+    "slot": "raquete"
+   },
+   "minRarity": "comum",
+   "maxRarity": "mitico"
+  },
+  {
+   "brand": "Siux",
+   "items": 5,
+   "categories": [
+    "raquete"
+   ],
+   "byRarity": {
+    "comum": 1,
+    "incomum": 1,
+    "raro": 1,
+    "epico": 1,
+    "mitico": 1
+   },
+   "price": {
+    "min": 1534,
+    "median": 6137,
+    "max": 49091
+   },
+   "pricePerPoint": {
+    "min": 767,
+    "median": 1534,
+    "max": 4909
+   },
+   "attributeProfilePct": {
+    "smash": 50,
+    "forehand": 50
+   },
+   "racketStyles": [
+    "power"
+   ],
+   "sources": [
+    "storeCatalog"
+   ],
+   "sponsor": {
+    "id": "siux",
+    "tier": "Bronze",
+    "industry": "Equipamentos",
+    "slot": "raquete"
+   },
+   "minRarity": "comum",
+   "maxRarity": "mitico"
+  },
+  {
+   "brand": "Court Labs",
+   "items": 3,
+   "categories": [
+    "tenis",
+    "grip",
+    "mochila"
+   ],
+   "byRarity": {
+    "comum": 3
+   },
+   "price": {
+    "min": 96,
+    "median": 264,
+    "max": 420
+   },
+   "pricePerPoint": null,
+   "attributeProfilePct": {},
+   "racketStyles": [],
+   "sources": [
+    "localSeed"
+   ],
+   "sponsor": null,
+   "minRarity": "comum",
+   "maxRarity": "comum"
+  },
+  {
+   "brand": "Asics",
+   "items": 2,
+   "categories": [
+    "tenis"
+   ],
+   "byRarity": {
+    "incomum": 1,
+    "lendario": 1
+   },
+   "price": {
+    "min": 1020,
+    "median": 18510,
+    "max": 36000
+   },
+   "pricePerPoint": {
+    "min": 1020,
+    "median": 2760,
+    "max": 4500
+   },
+   "attributeProfilePct": {
+    "agility": 56,
+    "smash": 44
+   },
+   "racketStyles": [],
+   "sources": [
+    "storeCatalog"
+   ],
+   "sponsor": {
+    "id": "asics",
+    "tier": "Bronze",
+    "industry": "Calçados",
+    "slot": "calcado"
+   },
+   "minRarity": "incomum",
+   "maxRarity": "lendario"
+  },
+  {
+   "brand": "PlaySight",
+   "items": 2,
+   "categories": [
+    "acessorio_tec"
+   ],
+   "byRarity": {
+    "raro": 1,
+    "lendario": 1
+   },
+   "price": {
+    "min": 3120,
+    "median": 11160,
+    "max": 19200
+   },
+   "pricePerPoint": {
+    "min": 1560,
+    "median": 3180,
+    "max": 4800
+   },
+   "attributeProfilePct": {
+    "strategy": 100
+   },
+   "racketStyles": [],
+   "sources": [
+    "storeCatalog"
+   ],
+   "sponsor": null,
+   "minRarity": "raro",
+   "maxRarity": "lendario"
+  },
+  {
+   "brand": "Garmin",
+   "items": 2,
+   "categories": [
+    "acessorio_tec"
+   ],
+   "byRarity": {
+    "epico": 2
+   },
+   "price": {
+    "min": 6240,
+    "median": 9720,
+    "max": 13200
+   },
+   "pricePerPoint": {
+    "min": 2080,
+    "median": 2140,
+    "max": 2200
+   },
+   "attributeProfilePct": {
+    "emotional_control": 33,
+    "strategy": 33,
+    "agility": 33
+   },
+   "racketStyles": [],
+   "sources": [
+    "storeCatalog"
+   ],
+   "sponsor": {
+    "id": "garmin",
+    "tier": "Prata",
+    "industry": "Tecnologia",
+    "slot": "comercial"
+   },
+   "minRarity": "epico",
+   "maxRarity": "epico"
+  },
+  {
+   "brand": "Therabody",
+   "items": 2,
+   "categories": [
+    "acessorio"
+   ],
+   "byRarity": {
+    "lendario": 1,
+    "mitico": 1
+   },
+   "price": {
+    "min": 19200,
+    "median": 38400,
+    "max": 57600
+   },
+   "pricePerPoint": {
+    "min": 4800,
+    "median": 5280,
+    "max": 5760
+   },
+   "attributeProfilePct": {
+    "emotional_control": 36,
+    "defense": 36,
+    "agility": 29
+   },
+   "racketStyles": [],
+   "sources": [
+    "storeCatalog"
+   ],
+   "sponsor": {
+    "id": "therabody",
+    "tier": "Prata",
+    "industry": "Saúde e Recuperação",
+    "slot": "comercial"
+   },
+   "minRarity": "lendario",
+   "maxRarity": "mitico"
+  },
+  {
+   "brand": "Tour Grip",
+   "items": 1,
+   "categories": [
+    "grip"
+   ],
+   "byRarity": {
+    "comum": 1
+   },
+   "price": {
+    "min": 66,
+    "median": 66,
+    "max": 66
+   },
+   "pricePerPoint": {
+    "min": 66,
+    "median": 66,
+    "max": 66
+   },
+   "attributeProfilePct": {
+    "forehand": 100
+   },
+   "racketStyles": [],
+   "sources": [
+    "storeCatalog"
+   ],
+   "sponsor": null,
+   "minRarity": "comum",
+   "maxRarity": "comum"
+  },
+  {
+   "brand": "Premier Labs",
+   "items": 1,
+   "categories": [
+    "bola"
+   ],
+   "byRarity": {
+    "lendario": 1
+   },
+   "price": {
+    "min": 19200,
+    "median": 19200,
+    "max": 19200
+   },
+   "pricePerPoint": {
+    "min": 4800,
+    "median": 4800,
+    "max": 4800
+   },
+   "attributeProfilePct": {
+    "agility": 100
+   },
+   "racketStyles": [],
+   "sources": [
+    "storeCatalog"
+   ],
+   "sponsor": null,
+   "minRarity": "lendario",
+   "maxRarity": "lendario"
+  },
+  {
+   "brand": "Mizuno",
+   "items": 1,
+   "categories": [
+    "tenis"
+   ],
+   "byRarity": {
+    "raro": 1
+   },
+   "price": {
+    "min": 2160,
+    "median": 2160,
+    "max": 2160
+   },
+   "pricePerPoint": {
+    "min": 1080,
+    "median": 1080,
+    "max": 1080
+   },
+   "attributeProfilePct": {
+    "agility": 100
+   },
+   "racketStyles": [],
+   "sources": [
+    "storeCatalog"
+   ],
+   "sponsor": null,
+   "minRarity": "raro",
+   "maxRarity": "raro"
+  },
+  {
+   "brand": "Pulse",
+   "items": 1,
+   "categories": [
+    "acessorio_tec"
+   ],
+   "byRarity": {
+    "incomum": 1
+   },
+   "price": {
+    "min": 1080,
+    "median": 1080,
+    "max": 1080
+   },
+   "pricePerPoint": {
+    "min": 1080,
+    "median": 1080,
+    "max": 1080
+   },
+   "attributeProfilePct": {
+    "emotional_control": 100
+   },
+   "racketStyles": [],
+   "sources": [
+    "storeCatalog"
+   ],
+   "sponsor": null,
+   "minRarity": "incomum",
+   "maxRarity": "incomum"
+  },
+  {
+   "brand": "NeuroCourt",
+   "items": 1,
+   "categories": [
+    "acessorio_tec"
+   ],
+   "byRarity": {
+    "mitico": 1
+   },
+   "price": {
+    "min": 42000,
+    "median": 42000,
+    "max": 42000
+   },
+   "pricePerPoint": {
+    "min": 8400,
+    "median": 8400,
+    "max": 8400
+   },
+   "attributeProfilePct": {
+    "strategy": 100
+   },
+   "racketStyles": [],
+   "sources": [
+    "storeCatalog"
+   ],
+   "sponsor": null,
+   "minRarity": "mitico",
+   "maxRarity": "mitico"
+  },
+  {
+   "brand": "Playtomic",
+   "items": 1,
+   "categories": [
+    "acessorio_tec"
+   ],
+   "byRarity": {
+    "lendario": 1
+   },
+   "price": {
+    "min": 38400,
+    "median": 38400,
+    "max": 38400
+   },
+   "pricePerPoint": {
+    "min": 4800,
+    "median": 4800,
+    "max": 4800
+   },
+   "attributeProfilePct": {
+    "strategy": 50,
+    "defense": 50
+   },
+   "racketStyles": [],
+   "sources": [
+    "storeCatalog"
+   ],
+   "sponsor": {
+    "id": "playtomic",
+    "tier": "Prata",
+    "industry": "Tecnologia",
+    "slot": "comercial"
+   },
+   "minRarity": "lendario",
+   "maxRarity": "lendario"
+  },
+  {
+   "brand": "Movistar",
+   "items": 1,
+   "categories": [
+    "acessorio_tec"
+   ],
+   "byRarity": {
+    "mitico": 1
+   },
+   "price": {
+    "min": 64800,
+    "median": 64800,
+    "max": 64800
+   },
+   "pricePerPoint": {
+    "min": 6480,
+    "median": 6480,
+    "max": 6480
+   },
+   "attributeProfilePct": {
+    "strategy": 50,
+    "agility": 50
+   },
+   "racketStyles": [],
+   "sources": [
+    "storeCatalog"
+   ],
+   "sponsor": {
+    "id": "movistar",
+    "tier": "Prata",
+    "industry": "Telecomunicações",
+    "slot": "comercial"
+   },
+   "minRarity": "mitico",
+   "maxRarity": "mitico"
+  },
+  {
+   "brand": "HydroSport",
+   "items": 1,
+   "categories": [
+    "acessorio"
+   ],
+   "byRarity": {
+    "epico": 1
+   },
+   "price": {
+    "min": 6000,
+    "median": 6000,
+    "max": 6000
+   },
+   "pricePerPoint": {
+    "min": 2000,
+    "median": 2000,
+    "max": 2000
+   },
+   "attributeProfilePct": {
+    "emotional_control": 100
+   },
+   "racketStyles": [],
+   "sources": [
+    "storeCatalog"
+   ],
+   "sponsor": null,
+   "minRarity": "epico",
+   "maxRarity": "epico"
+  },
+  {
+   "brand": "Padel Legacy",
+   "items": 1,
+   "categories": [
+    "raquete"
+   ],
+   "byRarity": {
+    "comum": 1
+   },
+   "price": {
+    "min": 600,
+    "median": 600,
+    "max": 600
+   },
+   "pricePerPoint": {
+    "min": 600,
+    "median": 600,
+    "max": 600
+   },
+   "attributeProfilePct": {
+    "strategy": 100
+   },
+   "racketStyles": [
+    "geral"
+   ],
+   "sources": [
+    "localSeed"
+   ],
+   "sponsor": null,
+   "minRarity": "comum",
+   "maxRarity": "comum"
+  }
+ ],
+ "sponsorsWithoutItems": [
+  {
+   "id": "varlion",
+   "name": "Varlion",
+   "tier": "Bronze",
+   "industry": "Equipamentos"
+  },
+  {
+   "id": "redbull",
+   "name": "Red Bull",
+   "tier": "Ouro",
+   "industry": "Bebidas"
+  },
+  {
+   "id": "decathlon",
+   "name": "Decathlon",
+   "tier": "Bronze",
+   "industry": "Varejo Esportivo"
+  },
+  {
+   "id": "estrelladamm",
+   "name": "Estrella Damm",
+   "tier": "Ouro",
+   "industry": "Hospitalidade"
+  },
+  {
+   "id": "cupra",
+   "name": "Cupra",
+   "tier": "Ouro",
+   "industry": "Automotivo"
+  },
+  {
+   "id": "paddleague",
+   "name": "Padel League",
+   "tier": "Bronze",
+   "industry": "Eventos"
+  },
+  {
+   "id": "iberdrola",
+   "name": "Iberdrola",
+   "tier": "Ouro",
+   "industry": "Energia"
+  },
+  {
+   "id": "localfit",
+   "name": "LocalFit",
+   "tier": "Bronze",
+   "industry": "Academia"
+  }
+ ],
+ "racketsSameRarity": [
+  {
+   "rarity": "comum",
+   "models": 10,
+   "bonusTotals": [
+    1,
+    2
+   ],
+   "price": {
+    "min": 384,
+    "median": 893,
+    "max": 1534
+   }
+  },
+  {
+   "rarity": "incomum",
+   "models": 10,
+   "bonusTotals": [
+    1,
+    2
+   ],
+   "price": {
+    "min": 691,
+    "median": 1608,
+    "max": 2761
+   }
+  },
+  {
+   "rarity": "raro",
+   "models": 10,
+   "bonusTotals": [
+    2,
+    4
+   ],
+   "price": {
+    "min": 1536,
+    "median": 3572,
+    "max": 6137
+   }
+  },
+  {
+   "rarity": "epico",
+   "models": 10,
+   "bonusTotals": [
+    3,
+    6
+   ],
+   "price": {
+    "min": 6000,
+    "median": 8036,
+    "max": 13807
+   }
+  },
+  {
+   "rarity": "lendario",
+   "models": 5,
+   "bonusTotals": [
+    4,
+    8
+   ],
+   "price": {
+    "min": 19200,
+    "median": 19200,
+    "max": 25091
+   }
+  },
+  {
+   "rarity": "mitico",
+   "models": 5,
+   "bonusTotals": [
+    5,
+    10
+   ],
+   "price": {
+    "min": 42000,
+    "median": 42000,
+    "max": 49091
+   }
+  },
+  {
+   "rarity": "exclusivo",
+   "models": 3,
+   "bonusTotals": [
+    12,
+    6
+   ],
+   "price": {
+    "min": 78000,
+    "median": 78000,
+    "max": 78000
+   }
+  }
+ ],
+ "sponsorCatalogSize": 21,
+ "brandsWithSponsor": 13
+}

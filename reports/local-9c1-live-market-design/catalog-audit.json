@@ -1,0 +1,7721 @@
+{
+ "generatedBy": "tools/live-market-audit.mjs",
+ "head": "b24eef3",
+ "careerDate": "2026-01-01",
+ "counts": {
+  "items": 125,
+  "bySource": {
+   "storeCatalog": 111,
+   "reliquia": 10,
+   "localSeed": 4,
+   "outro": 0
+  },
+  "byClass": {
+   "normal": 103,
+   "colecionavel": 5,
+   "exclusivo": 3,
+   "demonstracao": 4,
+   "reliquia": 10
+  },
+  "categories": 9,
+  "byCategory": {
+   "raquete": 60,
+   "grip": 9,
+   "bola": 6,
+   "roupa": 8,
+   "tenis": 9,
+   "mochila": 9,
+   "acessorio_tec": 8,
+   "acessorio": 8,
+   "colecionavel": 8
+  },
+  "byRarity": {
+   "comum": 20,
+   "incomum": 17,
+   "raro": 18,
+   "epico": 24,
+   "lendario": 19,
+   "mitico": 13,
+   "exclusivo": 14
+  },
+  "brands": 24,
+  "attributeUsage": {
+   "serve": {
+    "items": 2,
+    "points": 3
+   },
+   "forehand": {
+    "items": 23,
+    "points": 74
+   },
+   "backhand": {
+    "items": 9,
+    "points": 23
+   },
+   "volley": {
+    "items": 21,
+    "points": 58
+   },
+   "bandeja": {
+    "items": 6,
+    "points": 17
+   },
+   "smash": {
+    "items": 26,
+    "points": 99
+   },
+   "defense": {
+    "items": 21,
+    "points": 57
+   },
+   "agility": {
+    "items": 23,
+    "points": 66
+   },
+   "strategy": {
+    "items": 31,
+    "points": 135
+   },
+   "emotional_control": {
+    "items": 32,
+    "points": 194
+   }
+  },
+  "activeEventsDay1": [
+   {
+    "title": "Semana de lançamento",
+    "modifier": 0.9,
+    "end": "2026-01-07"
+   }
+  ],
+  "pricePreset": {
+   "shopPriceMultiplier": 1.2,
+   "floors": {
+    "comum": 40,
+    "incomum": 250,
+    "raro": 1200,
+    "epico": 5000,
+    "lendario": 16000,
+    "mitico": 35000,
+    "exclusivo": 65000
+   }
+  }
+ },
+ "issues": {
+  "duplicateNames": [],
+  "zeroBonus": [
+   {
+    "id": "shop-002",
+    "name": "Tênis Court Pro",
+    "source": "localSeed"
+   },
+   {
+    "id": "shop-003",
+    "name": "Grip Performance",
+    "source": "localSeed"
+   },
+   {
+    "id": "shop-004",
+    "name": "Mochila Tour",
+    "source": "localSeed"
+   }
+  ],
+  "droppedSourceKeys": [
+   {
+    "name": "Padel Start Control One Club",
+    "rarity": "comum",
+    "dropped": [
+     "positioning"
+    ],
+    "effectiveBonus": {
+     "volley": 1
+    }
+   },
+   {
+    "name": "Padel Start Control One Sport",
+    "rarity": "incomum",
+    "dropped": [
+     "positioning"
+    ],
+    "effectiveBonus": {
+     "volley": 1
+    }
+   },
+   {
+    "name": "Padel Start Control One Pro",
+    "rarity": "raro",
+    "dropped": [
+     "positioning"
+    ],
+    "effectiveBonus": {
+     "volley": 2
+    }
+   },
+   {
+    "name": "Padel Start Control One Elite",
+    "rarity": "epico",
+    "dropped": [
+     "positioning"
+    ],
+    "effectiveBonus": {
+     "volley": 3
+    }
+   },
+   {
+    "name": "Padel Start Control One Legend",
+    "rarity": "lendario",
+    "dropped": [
+     "positioning"
+    ],
+    "effectiveBonus": {
+     "volley": 4
+    }
+   },
+   {
+    "name": "Padel Start Power Entry Club",
+    "rarity": "comum",
+    "dropped": [
+     "strength"
+    ],
+    "effectiveBonus": {
+     "smash": 1
+    }
+   },
+   {
+    "name": "Padel Start Power Entry Sport",
+    "rarity": "incomum",
+    "dropped": [
+     "strength"
+    ],
+    "effectiveBonus": {
+     "smash": 1
+    }
+   },
+   {
+    "name": "Padel Start Power Entry Pro",
+    "rarity": "raro",
+    "dropped": [
+     "strength"
+    ],
+    "effectiveBonus": {
+     "smash": 2
+    }
+   },
+   {
+    "name": "Padel Start Power Entry Elite",
+    "rarity": "epico",
+    "dropped": [
+     "strength"
+    ],
+    "effectiveBonus": {
+     "smash": 3
+    }
+   },
+   {
+    "name": "Padel Start Power Entry Mythic",
+    "rarity": "mitico",
+    "dropped": [
+     "strength"
+    ],
+    "effectiveBonus": {
+     "smash": 5
+    }
+   },
+   {
+    "name": "Joma Soft Touch Club",
+    "rarity": "comum",
+    "dropped": [
+     "control"
+    ],
+    "effectiveBonus": {
+     "defense": 1
+    }
+   },
+   {
+    "name": "Joma Soft Touch Sport",
+    "rarity": "incomum",
+    "dropped": [
+     "control"
+    ],
+    "effectiveBonus": {
+     "defense": 1
+    }
+   },
+   {
+    "name": "Joma Soft Touch Pro",
+    "rarity": "raro",
+    "dropped": [
+     "control"
+    ],
+    "effectiveBonus": {
+     "defense": 2
+    }
+   },
+   {
+    "name": "Joma Soft Touch Elite",
+    "rarity": "epico",
+    "dropped": [
+     "control"
+    ],
+    "effectiveBonus": {
+     "defense": 3
+    }
+   },
+   {
+    "name": "Joma Soft Touch Legend",
+    "rarity": "lendario",
+    "dropped": [
+     "control"
+    ],
+    "effectiveBonus": {
+     "defense": 4
+    }
+   },
+   {
+    "name": "Wilson Pro Staff Club",
+    "rarity": "comum",
+    "dropped": [
+     "positioning"
+    ],
+    "effectiveBonus": {
+     "volley": 1
+    }
+   },
+   {
+    "name": "Wilson Pro Staff Sport",
+    "rarity": "incomum",
+    "dropped": [
+     "positioning"
+    ],
+    "effectiveBonus": {
+     "volley": 1
+    }
+   },
+   {
+    "name": "Wilson Pro Staff Pro",
+    "rarity": "raro",
+    "dropped": [
+     "positioning"
+    ],
+    "effectiveBonus": {
+     "volley": 2
+    }
+   },
+   {
+    "name": "Wilson Pro Staff Elite",
+    "rarity": "epico",
+    "dropped": [
+     "positioning"
+    ],
+    "effectiveBonus": {
+     "volley": 3
+    }
+   },
+   {
+    "name": "Wilson Pro Staff Legend",
+    "rarity": "lendario",
+    "dropped": [
+     "positioning"
+    ],
+    "effectiveBonus": {
+     "volley": 4
+    }
+   },
+   {
+    "name": "Bullpadel Hesacore Elite",
+    "rarity": "epico",
+    "dropped": [
+     "control"
+    ],
+    "effectiveBonus": {
+     "volley": 3
+    }
+   },
+   {
+    "name": "Bullpadel Premium Final x3",
+    "rarity": "epico",
+    "dropped": [
+     "reflexes"
+    ],
+    "effectiveBonus": {
+     "strategy": 3
+    }
+   },
+   {
+    "name": "Premier Championship Case",
+    "rarity": "lendario",
+    "dropped": [
+     "reflexes"
+    ],
+    "effectiveBonus": {
+     "agility": 4
+    }
+   },
+   {
+    "name": "Nox Travel Team",
+    "rarity": "epico",
+    "dropped": [
+     "reputation"
+    ],
+    "effectiveBonus": {
+     "emotional_control": 3
+    }
+   },
+   {
+    "name": "Adidas Pro Stability",
+    "rarity": "epico",
+    "dropped": [
+     "stamina"
+    ],
+    "effectiveBonus": {
+     "agility": 3
+    }
+   },
+   {
+    "name": "Babolat Jet Legend",
+    "rarity": "lendario",
+    "dropped": [
+     "speed"
+    ],
+    "effectiveBonus": {
+     "agility": 4
+    }
+   },
+   {
+    "name": "Wilson Tour Vault",
+    "rarity": "lendario",
+    "dropped": [
+     "reputation"
+    ],
+    "effectiveBonus": {
+     "emotional_control": 4
+    }
+   },
+   {
+    "name": "PlaySight Shot Sensor",
+    "rarity": "raro",
+    "dropped": [
+     "concentration"
+    ],
+    "effectiveBonus": {
+     "strategy": 2
+    }
+   },
+   {
+    "name": "PlaySight Match Vision",
+    "rarity": "lendario",
+    "dropped": [
+     "tactics"
+    ],
+    "effectiveBonus": {
+     "strategy": 4
+    }
+   },
+   {
+    "name": "NeuroCourt Tactical Lab",
+    "rarity": "mitico",
+    "dropped": [
+     "concentration",
+     "tactics"
+    ],
+    "effectiveBonus": {
+     "strategy": 5
+    }
+   },
+   {
+    "name": "Wilson Heritage Control",
+    "rarity": "exclusivo",
+    "dropped": [
+     "positioning"
+    ],
+    "effectiveBonus": {
+     "defense": 6
+    }
+   }
+  ],
+  "priceAtFloor": [
+   {
+    "name": "Padel Start Control One Elite",
+    "rarity": "epico",
+    "listPrice": 6000
+   },
+   {
+    "name": "Padel Start Control One Legend",
+    "rarity": "lendario",
+    "listPrice": 19200
+   },
+   {
+    "name": "Padel Start Power Entry Elite",
+    "rarity": "epico",
+    "listPrice": 6000
+   },
+   {
+    "name": "Padel Start Power Entry Mythic",
+    "rarity": "mitico",
+    "listPrice": 42000
+   },
+   {
+    "name": "Joma Soft Touch Elite",
+    "rarity": "epico",
+    "listPrice": 6000
+   },
+   {
+    "name": "Joma Soft Touch Legend",
+    "rarity": "lendario",
+    "listPrice": 19200
+   },
+   {
+    "name": "Head Flash Motion Mythic",
+    "rarity": "mitico",
+    "listPrice": 42000
+   },
+   {
+    "name": "Nox Equation Legend",
+    "rarity": "lendario",
+    "listPrice": 19200
+   },
+   {
+    "name": "Adidas Drive Mythic",
+    "rarity": "mitico",
+    "listPrice": 42000
+   },
+   {
+    "name": "Babolat Counter Mythic",
+    "rarity": "mitico",
+    "listPrice": 42000
+   },
+   {
+    "name": "Head Comfort Sport",
+    "rarity": "incomum",
+    "listPrice": 300
+   },
+   {
+    "name": "Wilson Tacky Pro",
+    "rarity": "raro",
+    "listPrice": 1440
+   },
+   {
+    "name": "Bullpadel Hesacore Elite",
+    "rarity": "epico",
+    "listPrice": 6000
+   },
+   {
+    "name": "Nox Custom Legend",
+    "rarity": "lendario",
+    "listPrice": 19200
+   },
+   {
+    "name": "Head Club Match x3",
+    "rarity": "incomum",
+    "listPrice": 300
+   },
+   {
+    "name": "Wilson Pro Tour x3",
+    "rarity": "raro",
+    "listPrice": 1440
+   },
+   {
+    "name": "Bullpadel Premium Final x3",
+    "rarity": "epico",
+    "listPrice": 6000
+   },
+   {
+    "name": "Premier Championship Case",
+    "rarity": "lendario",
+    "listPrice": 19200
+   },
+   {
+    "name": "Bullpadel Competition Set",
+    "rarity": "raro",
+    "listPrice": 1440
+   },
+   {
+    "name": "Nox Travel Team",
+    "rarity": "epico",
+    "listPrice": 6000
+   },
+   {
+    "name": "Wilson Signature Tour",
+    "rarity": "lendario",
+    "listPrice": 19200
+   },
+   {
+    "name": "Adidas Pro Stability",
+    "rarity": "epico",
+    "listPrice": 6000
+   },
+   {
+    "name": "Babolat Jet Legend",
+    "rarity": "lendario",
+    "listPrice": 19200
+   },
+   {
+    "name": "Bullpadel Pro 12",
+    "rarity": "epico",
+    "listPrice": 6000
+   },
+   {
+    "name": "Wilson Tour Vault",
+    "rarity": "lendario",
+    "listPrice": 19200
+   },
+   {
+    "name": "PlaySight Match Vision",
+    "rarity": "lendario",
+    "listPrice": 19200
+   },
+   {
+    "name": "NeuroCourt Tactical Lab",
+    "rarity": "mitico",
+    "listPrice": 42000
+   },
+   {
+    "name": "Adidas Focus Headband",
+    "rarity": "incomum",
+    "listPrice": 300
+   },
+   {
+    "name": "Nox Racket Protector",
+    "rarity": "raro",
+    "listPrice": 1440
+   },
+   {
+    "name": "HydroSport Thermal Pro",
+    "rarity": "epico",
+    "listPrice": 6000
+   },
+   {
+    "name": "Therabody Recovery Kit",
+    "rarity": "lendario",
+    "listPrice": 19200
+   },
+   {
+    "name": "Medalha Circuito Local",
+    "rarity": "raro",
+    "listPrice": 1440
+   },
+   {
+    "name": "Réplica Troféu Major",
+    "rarity": "epico",
+    "listPrice": 6000
+   },
+   {
+    "name": "Raquete Vintage 1995",
+    "rarity": "lendario",
+    "listPrice": 19200
+   },
+   {
+    "name": "Troféu Fundadores",
+    "rarity": "mitico",
+    "listPrice": 42000
+   },
+   {
+    "name": "Coroa do Grand Slam",
+    "rarity": "exclusivo",
+    "listPrice": 78000
+   },
+   {
+    "name": "Bullpadel Legacy Crown",
+    "rarity": "exclusivo",
+    "listPrice": 78000
+   },
+   {
+    "name": "Nox Maestro One of One",
+    "rarity": "exclusivo",
+    "listPrice": 78000
+   },
+   {
+    "name": "Wilson Heritage Control",
+    "rarity": "exclusivo",
+    "listPrice": 78000
+   }
+  ],
+  "belowRarityFloor": [],
+  "relicsOutOfScale": [
+   {
+    "name": "Raquete de Madeira Original (1969)",
+    "category": "raquete",
+    "bonusTotal": 23,
+    "listPrice": 100800,
+    "pricePerPoint": 4383,
+    "stock": 5
+   },
+   {
+    "name": "Raquete Vintage Marplatense (1975)",
+    "category": "raquete",
+    "bonusTotal": 23,
+    "listPrice": 91200,
+    "pricePerPoint": 3965,
+    "stock": 4
+   },
+   {
+    "name": "Raquete Espanhola Clássica (1980)",
+    "category": "raquete",
+    "bonusTotal": 19,
+    "listPrice": 87600,
+    "pricePerPoint": 4611,
+    "stock": 5
+   },
+   {
+    "name": "Bola de Padel Original (1970)",
+    "category": "bola",
+    "bonusTotal": 12,
+    "listPrice": 78000,
+    "pricePerPoint": 6500,
+    "stock": 5
+   },
+   {
+    "name": "Raquete Carbono Pioneer (1995)",
+    "category": "raquete",
+    "bonusTotal": 23,
+    "listPrice": 84000,
+    "pricePerPoint": 3652,
+    "stock": 2
+   },
+   {
+    "name": "Raquete WPT First Edition (2013)",
+    "category": "raquete",
+    "bonusTotal": 21,
+    "listPrice": 79200,
+    "pricePerPoint": 3771,
+    "stock": 4
+   },
+   {
+    "name": "Troféu Primeiro Campeão Mundial (1992)",
+    "category": "colecionavel",
+    "bonusTotal": 28,
+    "listPrice": 108000,
+    "pricePerPoint": 3857,
+    "stock": 5
+   },
+   {
+    "name": "Raquete Olímpica Paris 2024",
+    "category": "raquete",
+    "bonusTotal": 40,
+    "listPrice": 94800,
+    "pricePerPoint": 2370,
+    "stock": 5
+   },
+   {
+    "name": "Bola Dourada WPT Final (2023)",
+    "category": "colecionavel",
+    "bonusTotal": 23,
+    "listPrice": 87600,
+    "pricePerPoint": 3809,
+    "stock": 3
+   },
+   {
+    "name": "Raquete Dourada do Circuito (2024)",
+    "category": "colecionavel",
+    "bonusTotal": 43,
+    "listPrice": 97200,
+    "pricePerPoint": 2260,
+    "stock": 3
+   }
+  ],
+  "collectiblesWithSportBonus": [
+   {
+    "name": "Medalha Circuito Local",
+    "rarity": "raro",
+    "bonusTotal": 2,
+    "source": "storeCatalog"
+   },
+   {
+    "name": "Réplica Troféu Major",
+    "rarity": "epico",
+    "bonusTotal": 3,
+    "source": "storeCatalog"
+   },
+   {
+    "name": "Raquete Vintage 1995",
+    "rarity": "lendario",
+    "bonusTotal": 4,
+    "source": "storeCatalog"
+   },
+   {
+    "name": "Troféu Fundadores",
+    "rarity": "mitico",
+    "bonusTotal": 10,
+    "source": "storeCatalog"
+   },
+   {
+    "name": "Coroa do Grand Slam",
+    "rarity": "exclusivo",
+    "bonusTotal": 12,
+    "source": "storeCatalog"
+   },
+   {
+    "name": "Troféu Primeiro Campeão Mundial (1992)",
+    "rarity": "exclusivo",
+    "bonusTotal": 28,
+    "source": "reliquia"
+   },
+   {
+    "name": "Bola Dourada WPT Final (2023)",
+    "rarity": "exclusivo",
+    "bonusTotal": 23,
+    "source": "reliquia"
+   },
+   {
+    "name": "Raquete Dourada do Circuito (2024)",
+    "rarity": "exclusivo",
+    "bonusTotal": 43,
+    "source": "reliquia"
+   }
+  ],
+  "incomumNoBetterThanComum": [
+   {
+    "category": "raquete",
+    "bestComum": 2,
+    "bestIncomum": 2,
+    "cheapestComum": 384,
+    "cheapestIncomum": 691
+   },
+   {
+    "category": "grip",
+    "bestComum": 1,
+    "bestIncomum": 1,
+    "cheapestComum": 66,
+    "cheapestIncomum": 300
+   },
+   {
+    "category": "bola",
+    "bestComum": 1,
+    "bestIncomum": 1,
+    "cheapestComum": 54,
+    "cheapestIncomum": 300
+   },
+   {
+    "category": "roupa",
+    "bestComum": 1,
+    "bestIncomum": 1,
+    "cheapestComum": 264,
+    "cheapestIncomum": 504
+   },
+   {
+    "category": "tenis",
+    "bestComum": 1,
+    "bestIncomum": 1,
+    "cheapestComum": 576,
+    "cheapestIncomum": 1020
+   },
+   {
+    "category": "mochila",
+    "bestComum": 1,
+    "bestIncomum": 1,
+    "cheapestComum": 312,
+    "cheapestIncomum": 744
+   },
+   {
+    "category": "acessorio",
+    "bestComum": 1,
+    "bestIncomum": 1,
+    "cheapestComum": 72,
+    "cheapestIncomum": 300
+   }
+  ],
+  "rarityInversions": [
+   {
+    "category": "raquete",
+    "item": "Padel Start Control One Sport",
+    "rarity": "incomum",
+    "bonus": 1,
+    "bestOfPreviousRarity": 2,
+    "listPrice": 691
+   },
+   {
+    "category": "raquete",
+    "item": "Padel Start Power Entry Sport",
+    "rarity": "incomum",
+    "bonus": 1,
+    "bestOfPreviousRarity": 2,
+    "listPrice": 853
+   },
+   {
+    "category": "raquete",
+    "item": "Joma Soft Touch Sport",
+    "rarity": "incomum",
+    "bonus": 1,
+    "bestOfPreviousRarity": 2,
+    "listPrice": 1003
+   },
+   {
+    "category": "raquete",
+    "item": "Wilson Pro Staff Sport",
+    "rarity": "incomum",
+    "bonus": 1,
+    "bestOfPreviousRarity": 2,
+    "listPrice": 2509
+   },
+   {
+    "category": "raquete",
+    "item": "Padel Start Control One Elite",
+    "rarity": "epico",
+    "bonus": 3,
+    "bestOfPreviousRarity": 4,
+    "listPrice": 6000
+   },
+   {
+    "category": "raquete",
+    "item": "Padel Start Power Entry Elite",
+    "rarity": "epico",
+    "bonus": 3,
+    "bestOfPreviousRarity": 4,
+    "listPrice": 6000
+   },
+   {
+    "category": "raquete",
+    "item": "Joma Soft Touch Elite",
+    "rarity": "epico",
+    "bonus": 3,
+    "bestOfPreviousRarity": 4,
+    "listPrice": 6000
+   },
+   {
+    "category": "raquete",
+    "item": "Wilson Pro Staff Elite",
+    "rarity": "epico",
+    "bonus": 3,
+    "bestOfPreviousRarity": 4,
+    "listPrice": 12545
+   },
+   {
+    "category": "raquete",
+    "item": "Padel Start Control One Legend",
+    "rarity": "lendario",
+    "bonus": 4,
+    "bestOfPreviousRarity": 6,
+    "listPrice": 19200
+   },
+   {
+    "category": "raquete",
+    "item": "Joma Soft Touch Legend",
+    "rarity": "lendario",
+    "bonus": 4,
+    "bestOfPreviousRarity": 6,
+    "listPrice": 19200
+   },
+   {
+    "category": "raquete",
+    "item": "Wilson Pro Staff Legend",
+    "rarity": "lendario",
+    "bonus": 4,
+    "bestOfPreviousRarity": 6,
+    "listPrice": 25091
+   },
+   {
+    "category": "raquete",
+    "item": "Padel Start Power Entry Mythic",
+    "rarity": "mitico",
+    "bonus": 5,
+    "bestOfPreviousRarity": 8,
+    "listPrice": 42000
+   },
+   {
+    "category": "raquete",
+    "item": "Wilson Heritage Control",
+    "rarity": "exclusivo",
+    "bonus": 6,
+    "bestOfPreviousRarity": 10,
+    "listPrice": 78000
+   },
+   {
+    "category": "grip",
+    "item": "Bullpadel Hesacore Elite",
+    "rarity": "epico",
+    "bonus": 3,
+    "bestOfPreviousRarity": 4,
+    "listPrice": 6000
+   },
+   {
+    "category": "grip",
+    "item": "Nox Custom Legend",
+    "rarity": "lendario",
+    "bonus": 4,
+    "bestOfPreviousRarity": 6,
+    "listPrice": 19200
+   },
+   {
+    "category": "roupa",
+    "item": "Wilson Signature Tour",
+    "rarity": "lendario",
+    "bonus": 4,
+    "bestOfPreviousRarity": 6,
+    "listPrice": 19200
+   },
+   {
+    "category": "tenis",
+    "item": "Babolat Jet Legend",
+    "rarity": "lendario",
+    "bonus": 4,
+    "bestOfPreviousRarity": 6,
+    "listPrice": 19200
+   },
+   {
+    "category": "mochila",
+    "item": "Wilson Tour Vault",
+    "rarity": "lendario",
+    "bonus": 4,
+    "bestOfPreviousRarity": 6,
+    "listPrice": 19200
+   },
+   {
+    "category": "acessorio_tec",
+    "item": "PlaySight Match Vision",
+    "rarity": "lendario",
+    "bonus": 4,
+    "bestOfPreviousRarity": 6,
+    "listPrice": 19200
+   },
+   {
+    "category": "acessorio_tec",
+    "item": "NeuroCourt Tactical Lab",
+    "rarity": "mitico",
+    "bonus": 5,
+    "bestOfPreviousRarity": 8,
+    "listPrice": 42000
+   }
+  ],
+  "sameRaritySamePriceBandSpread": [
+   {
+    "category": "raquete",
+    "rarity": "comum",
+    "items": [
+     {
+      "name": "Padel Start Control One Club",
+      "listPrice": 384,
+      "bonus": 1,
+      "pricePerPoint": 384
+     },
+     {
+      "name": "Padel Start Power Entry Club",
+      "listPrice": 474,
+      "bonus": 1,
+      "pricePerPoint": 474
+     },
+     {
+      "name": "Joma Soft Touch Club",
+      "listPrice": 557,
+      "bonus": 1,
+      "pricePerPoint": 557
+     },
+     {
+      "name": "Head Flash Motion Club",
+      "listPrice": 698,
+      "bonus": 2,
+      "pricePerPoint": 349
+     },
+     {
+      "name": "Nox Equation Club",
+      "listPrice": 835,
+      "bonus": 2,
+      "pricePerPoint": 418
+     },
+     {
+      "name": "Adidas Drive Club",
+      "listPrice": 950,
+      "bonus": 2,
+      "pricePerPoint": 475
+     },
+     {
+      "name": "Bullpadel Vertex Club",
+      "listPrice": 1130,
+      "bonus": 2,
+      "pricePerPoint": 565
+     },
+     {
+      "name": "Babolat Counter Club",
+      "listPrice": 1260,
+      "bonus": 2,
+      "pricePerPoint": 630
+     },
+     {
+      "name": "Wilson Pro Staff Club",
+      "listPrice": 1394,
+      "bonus": 1,
+      "pricePerPoint": 1394
+     },
+     {
+      "name": "Siux Electra Club",
+      "listPrice": 1534,
+      "bonus": 2,
+      "pricePerPoint": 767
+     }
+    ]
+   },
+   {
+    "category": "raquete",
+    "rarity": "incomum",
+    "items": [
+     {
+      "name": "Padel Start Control One Sport",
+      "listPrice": 691,
+      "bonus": 1,
+      "pricePerPoint": 691
+     },
+     {
+      "name": "Padel Start Power Entry Sport",
+      "listPrice": 853,
+      "bonus": 1,
+      "pricePerPoint": 853
+     },
+     {
+      "name": "Joma Soft Touch Sport",
+      "listPrice": 1003,
+      "bonus": 1,
+      "pricePerPoint": 1003
+     },
+     {
+      "name": "Head Flash Motion Sport",
+      "listPrice": 1258,
+      "bonus": 2,
+      "pricePerPoint": 629
+     },
+     {
+      "name": "Nox Equation Sport",
+      "listPrice": 1504,
+      "bonus": 2,
+      "pricePerPoint": 752
+     },
+     {
+      "name": "Adidas Drive Sport",
+      "listPrice": 1711,
+      "bonus": 2,
+      "pricePerPoint": 856
+     },
+     {
+      "name": "Bullpadel Vertex Sport",
+      "listPrice": 2035,
+      "bonus": 2,
+      "pricePerPoint": 1018
+     },
+     {
+      "name": "Babolat Counter Sport",
+      "listPrice": 2267,
+      "bonus": 2,
+      "pricePerPoint": 1134
+     },
+     {
+      "name": "Wilson Pro Staff Sport",
+      "listPrice": 2509,
+      "bonus": 1,
+      "pricePerPoint": 2509
+     },
+     {
+      "name": "Siux Electra Sport",
+      "listPrice": 2761,
+      "bonus": 2,
+      "pricePerPoint": 1381
+     }
+    ]
+   },
+   {
+    "category": "raquete",
+    "rarity": "raro",
+    "items": [
+     {
+      "name": "Padel Start Control One Pro",
+      "listPrice": 1536,
+      "bonus": 2,
+      "pricePerPoint": 768
+     },
+     {
+      "name": "Padel Start Power Entry Pro",
+      "listPrice": 1897,
+      "bonus": 2,
+      "pricePerPoint": 949
+     },
+     {
+      "name": "Joma Soft Touch Pro",
+      "listPrice": 2230,
+      "bonus": 2,
+      "pricePerPoint": 1115
+     },
+     {
+      "name": "Head Flash Motion Pro",
+      "listPrice": 2796,
+      "bonus": 4,
+      "pricePerPoint": 699
+     },
+     {
+      "name": "Nox Equation Pro",
+      "listPrice": 3341,
+      "bonus": 4,
+      "pricePerPoint": 835
+     },
+     {
+      "name": "Adidas Drive Pro",
+      "listPrice": 3802,
+      "bonus": 4,
+      "pricePerPoint": 951
+     },
+     {
+      "name": "Bullpadel Vertex Pro",
+      "listPrice": 4524,
+      "bonus": 4,
+      "pricePerPoint": 1131
+     },
+     {
+      "name": "Babolat Counter Pro",
+      "listPrice": 5038,
+      "bonus": 4,
+      "pricePerPoint": 1260
+     },
+     {
+      "name": "Wilson Pro Staff Pro",
+      "listPrice": 5575,
+      "bonus": 2,
+      "pricePerPoint": 2788
+     },
+     {
+      "name": "Siux Electra Pro",
+      "listPrice": 6137,
+      "bonus": 4,
+      "pricePerPoint": 1534
+     }
+    ]
+   },
+   {
+    "category": "raquete",
+    "rarity": "epico",
+    "items": [
+     {
+      "name": "Padel Start Control One Elite",
+      "listPrice": 6000,
+      "bonus": 3,
+      "pricePerPoint": 2000
+     },
+     {
+      "name": "Padel Start Power Entry Elite",
+      "listPrice": 6000,
+      "bonus": 3,
+      "pricePerPoint": 2000
+     },
+     {
+      "name": "Joma Soft Touch Elite",
+      "listPrice": 6000,
+      "bonus": 3,
+      "pricePerPoint": 2000
+     },
+     {
+      "name": "Head Flash Motion Elite",
+      "listPrice": 6290,
+      "bonus": 6,
+      "pricePerPoint": 1048
+     },
+     {
+      "name": "Nox Equation Elite",
+      "listPrice": 7517,
+      "bonus": 6,
+      "pricePerPoint": 1253
+     },
+     {
+      "name": "Adidas Drive Elite",
+      "listPrice": 8554,
+      "bonus": 6,
+      "pricePerPoint": 1426
+     },
+     {
+      "name": "Bullpadel Vertex Elite",
+      "listPrice": 10178,
+      "bonus": 6,
+      "pricePerPoint": 1696
+     },
+     {
+      "name": "Babolat Counter Elite",
+      "listPrice": 11335,
+      "bonus": 6,
+      "pricePerPoint": 1889
+     },
+     {
+      "name": "Wilson Pro Staff Elite",
+      "listPrice": 12545,
+      "bonus": 3,
+      "pricePerPoint": 4182
+     },
+     {
+      "name": "Siux Electra Elite",
+      "listPrice": 13807,
+      "bonus": 6,
+      "pricePerPoint": 2301
+     }
+    ]
+   },
+   {
+    "category": "raquete",
+    "rarity": "lendario",
+    "items": [
+     {
+      "name": "Padel Start Control One Legend",
+      "listPrice": 19200,
+      "bonus": 4,
+      "pricePerPoint": 4800
+     },
+     {
+      "name": "Joma Soft Touch Legend",
+      "listPrice": 19200,
+      "bonus": 4,
+      "pricePerPoint": 4800
+     },
+     {
+      "name": "Nox Equation Legend",
+      "listPrice": 19200,
+      "bonus": 8,
+      "pricePerPoint": 2400
+     },
+     {
+      "name": "Bullpadel Vertex Legend",
+      "listPrice": 20356,
+      "bonus": 8,
+      "pricePerPoint": 2545
+     },
+     {
+      "name": "Wilson Pro Staff Legend",
+      "listPrice": 25091,
+      "bonus": 4,
+      "pricePerPoint": 6273
+     }
+    ]
+   }
+  ],
+  "exclusiveFlagMismatch": [],
+  "nonEquippable": [],
+  "serveOnlyItems": [
+   "Padel Start Training x3",
+   "Wilson Pro Tour x3"
+  ]
+ },
+ "items": [
+  {
+   "id": "shopitem-1791117485204-zdh7xn",
+   "name": "Padel Start Control One Club",
+   "manufacturer": "Padel Start",
+   "category": "raquete",
+   "subcategory": "control",
+   "rarity": "comum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 320,
+   "listPrice": 384,
+   "priceNoEventsDay1": 384,
+   "priceWithDay1Events": 346,
+   "priceWithSponsor": null,
+   "dailySwingPct": 0,
+   "bonus": {
+    "volley": 1
+   },
+   "bonusTotal": 1,
+   "attributesTouched": 1,
+   "pricePerPoint": 384,
+   "droppedSourceKeys": [
+    "positioning"
+   ],
+   "requirement": {
+    "minCareerLevel": 1,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Início da carreira"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2021,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 96,
+   "sellPctOfList": 25,
+   "durability": 72,
+   "catalogOrder": 0,
+   "extra": {
+    "shape": "redonda",
+    "balance": "baixo",
+    "weight": 350,
+    "collection": "Padel Start Control One",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117486204-no8wo8",
+   "name": "Padel Start Control One Sport",
+   "manufacturer": "Padel Start",
+   "category": "raquete",
+   "subcategory": "control",
+   "rarity": "incomum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 576,
+   "listPrice": 691,
+   "priceNoEventsDay1": 687,
+   "priceWithDay1Events": 619,
+   "priceWithSponsor": null,
+   "dailySwingPct": 2,
+   "bonus": {
+    "volley": 1
+   },
+   "bonusTotal": 1,
+   "attributesTouched": 1,
+   "pricePerPoint": 691,
+   "droppedSourceKeys": [
+    "positioning"
+   ],
+   "requirement": {
+    "minCareerLevel": 3,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Circuito amador"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2022,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 172,
+   "sellPctOfList": 24.9,
+   "durability": 80,
+   "catalogOrder": 1,
+   "extra": {
+    "shape": "redonda",
+    "balance": "baixo",
+    "weight": 353,
+    "collection": "Padel Start Control One",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117487204-qtcr6e",
+   "name": "Padel Start Control One Pro",
+   "manufacturer": "Padel Start",
+   "category": "raquete",
+   "subcategory": "control",
+   "rarity": "raro",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 1280,
+   "listPrice": 1536,
+   "priceNoEventsDay1": 1553,
+   "priceWithDay1Events": 1398,
+   "priceWithSponsor": null,
+   "dailySwingPct": 4.9,
+   "bonus": {
+    "volley": 2
+   },
+   "bonusTotal": 2,
+   "attributesTouched": 1,
+   "pricePerPoint": 768,
+   "droppedSourceKeys": [
+    "positioning"
+   ],
+   "requirement": {
+    "minCareerLevel": 8,
+    "maxRanking": 500,
+    "minReputation": 8,
+    "label": "Circuito regional"
+   },
+   "monthlyAvailabilityPct": 89,
+   "alwaysInRotation": false,
+   "releaseYear": 2023,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 384,
+   "sellPctOfList": 25,
+   "durability": 88,
+   "catalogOrder": 2,
+   "extra": {
+    "shape": "redonda",
+    "balance": "baixo",
+    "weight": 356,
+    "collection": "Padel Start Control One",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117488204-3syavp",
+   "name": "Padel Start Control One Elite",
+   "manufacturer": "Padel Start",
+   "category": "raquete",
+   "subcategory": "control",
+   "rarity": "epico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 5000,
+   "listPrice": 6000,
+   "priceNoEventsDay1": 5786,
+   "priceWithDay1Events": 5208,
+   "priceWithSponsor": null,
+   "dailySwingPct": 8,
+   "bonus": {
+    "volley": 3
+   },
+   "bonusTotal": 3,
+   "attributesTouched": 1,
+   "pricePerPoint": 2000,
+   "droppedSourceKeys": [
+    "positioning"
+   ],
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "label": "Circuito nacional"
+   },
+   "monthlyAvailabilityPct": 74,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 1500,
+   "sellPctOfList": 25,
+   "durability": 94,
+   "catalogOrder": 3,
+   "extra": {
+    "shape": "redonda",
+    "balance": "baixo",
+    "weight": 359,
+    "collection": "Padel Start Control One",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117489204-0wlnnp",
+   "name": "Padel Start Control One Legend",
+   "manufacturer": "Padel Start",
+   "category": "raquete",
+   "subcategory": "control",
+   "rarity": "lendario",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 16000,
+   "listPrice": 19200,
+   "priceNoEventsDay1": 18175,
+   "priceWithDay1Events": 16357,
+   "priceWithSponsor": null,
+   "dailySwingPct": 12,
+   "bonus": {
+    "volley": 4
+   },
+   "bonusTotal": 4,
+   "attributesTouched": 1,
+   "pricePerPoint": 4800,
+   "droppedSourceKeys": [
+    "positioning"
+   ],
+   "requirement": {
+    "minCareerLevel": 25,
+    "maxRanking": 100,
+    "minReputation": 40,
+    "label": "Circuito internacional"
+   },
+   "monthlyAvailabilityPct": 47,
+   "alwaysInRotation": false,
+   "releaseYear": 2025,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 4800,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": 4,
+   "extra": {
+    "shape": "redonda",
+    "balance": "baixo",
+    "weight": 362,
+    "collection": "Padel Start Control One",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117490204-qa3cve",
+   "name": "Padel Start Power Entry Club",
+   "manufacturer": "Padel Start",
+   "category": "raquete",
+   "subcategory": "power",
+   "rarity": "comum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 395,
+   "listPrice": 474,
+   "priceNoEventsDay1": 474,
+   "priceWithDay1Events": 427,
+   "priceWithSponsor": null,
+   "dailySwingPct": 0,
+   "bonus": {
+    "smash": 1
+   },
+   "bonusTotal": 1,
+   "attributesTouched": 1,
+   "pricePerPoint": 474,
+   "droppedSourceKeys": [
+    "strength"
+   ],
+   "requirement": {
+    "minCareerLevel": 1,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Início da carreira"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2021,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 118,
+   "sellPctOfList": 24.9,
+   "durability": 72,
+   "catalogOrder": 5,
+   "extra": {
+    "shape": "diamante",
+    "balance": "alto",
+    "weight": 357,
+    "collection": "Padel Start Power Entry",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117491204-utv6iw",
+   "name": "Padel Start Power Entry Sport",
+   "manufacturer": "Padel Start",
+   "category": "raquete",
+   "subcategory": "power",
+   "rarity": "incomum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 711,
+   "listPrice": 853,
+   "priceNoEventsDay1": 850,
+   "priceWithDay1Events": 765,
+   "priceWithSponsor": null,
+   "dailySwingPct": 2,
+   "bonus": {
+    "smash": 1
+   },
+   "bonusTotal": 1,
+   "attributesTouched": 1,
+   "pricePerPoint": 853,
+   "droppedSourceKeys": [
+    "strength"
+   ],
+   "requirement": {
+    "minCareerLevel": 3,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Circuito amador"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2022,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 213,
+   "sellPctOfList": 25,
+   "durability": 80,
+   "catalogOrder": 6,
+   "extra": {
+    "shape": "diamante",
+    "balance": "alto",
+    "weight": 360,
+    "collection": "Padel Start Power Entry",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117492204-49zg85",
+   "name": "Padel Start Power Entry Pro",
+   "manufacturer": "Padel Start",
+   "category": "raquete",
+   "subcategory": "power",
+   "rarity": "raro",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 1581,
+   "listPrice": 1897,
+   "priceNoEventsDay1": 1916,
+   "priceWithDay1Events": 1724,
+   "priceWithSponsor": null,
+   "dailySwingPct": 5,
+   "bonus": {
+    "smash": 2
+   },
+   "bonusTotal": 2,
+   "attributesTouched": 1,
+   "pricePerPoint": 949,
+   "droppedSourceKeys": [
+    "strength"
+   ],
+   "requirement": {
+    "minCareerLevel": 8,
+    "maxRanking": 500,
+    "minReputation": 8,
+    "label": "Circuito regional"
+   },
+   "monthlyAvailabilityPct": 83,
+   "alwaysInRotation": false,
+   "releaseYear": 2023,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 474,
+   "sellPctOfList": 25,
+   "durability": 88,
+   "catalogOrder": 7,
+   "extra": {
+    "shape": "diamante",
+    "balance": "alto",
+    "weight": 363,
+    "collection": "Padel Start Power Entry",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117493204-0f5a5s",
+   "name": "Padel Start Power Entry Elite",
+   "manufacturer": "Padel Start",
+   "category": "raquete",
+   "subcategory": "power",
+   "rarity": "epico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 5000,
+   "listPrice": 6000,
+   "priceNoEventsDay1": 6227,
+   "priceWithDay1Events": 5604,
+   "priceWithSponsor": null,
+   "dailySwingPct": 8,
+   "bonus": {
+    "smash": 3
+   },
+   "bonusTotal": 3,
+   "attributesTouched": 1,
+   "pricePerPoint": 2000,
+   "droppedSourceKeys": [
+    "strength"
+   ],
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "label": "Circuito nacional"
+   },
+   "monthlyAvailabilityPct": 77,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 1500,
+   "sellPctOfList": 25,
+   "durability": 94,
+   "catalogOrder": 8,
+   "extra": {
+    "shape": "diamante",
+    "balance": "alto",
+    "weight": 366,
+    "collection": "Padel Start Power Entry",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117494204-sfhc1t",
+   "name": "Padel Start Power Entry Mythic",
+   "manufacturer": "Padel Start",
+   "category": "raquete",
+   "subcategory": "power",
+   "rarity": "mitico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 35000,
+   "listPrice": 42000,
+   "priceNoEventsDay1": 42895,
+   "priceWithDay1Events": 38605,
+   "priceWithSponsor": null,
+   "dailySwingPct": 17.9,
+   "bonus": {
+    "smash": 5
+   },
+   "bonusTotal": 5,
+   "attributesTouched": 1,
+   "pricePerPoint": 8400,
+   "droppedSourceKeys": [
+    "strength"
+   ],
+   "requirement": {
+    "minCareerLevel": 35,
+    "maxRanking": 40,
+    "minReputation": 65,
+    "label": "Elite mundial"
+   },
+   "monthlyAvailabilityPct": 28,
+   "alwaysInRotation": false,
+   "releaseYear": 2026,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 10500,
+   "sellPctOfList": 25,
+   "durability": 105,
+   "catalogOrder": 9,
+   "extra": {
+    "shape": "diamante",
+    "balance": "alto",
+    "weight": 372,
+    "collection": "Padel Start Power Entry",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117495204-wqfqpd",
+   "name": "Joma Soft Touch Club",
+   "manufacturer": "Joma",
+   "category": "raquete",
+   "subcategory": "control",
+   "rarity": "comum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 464,
+   "listPrice": 557,
+   "priceNoEventsDay1": 557,
+   "priceWithDay1Events": 501,
+   "priceWithSponsor": 473,
+   "dailySwingPct": 0,
+   "bonus": {
+    "defense": 1
+   },
+   "bonusTotal": 1,
+   "attributesTouched": 1,
+   "pricePerPoint": 557,
+   "droppedSourceKeys": [
+    "control"
+   ],
+   "requirement": {
+    "minCareerLevel": 1,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Início da carreira"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2021,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "joma",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "vestuario",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 139,
+   "sellPctOfList": 25,
+   "durability": 72,
+   "catalogOrder": 10,
+   "extra": {
+    "shape": "redonda",
+    "balance": "baixo",
+    "weight": 364,
+    "collection": "Joma Soft Touch",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117496204-vqu36m",
+   "name": "Joma Soft Touch Sport",
+   "manufacturer": "Joma",
+   "category": "raquete",
+   "subcategory": "control",
+   "rarity": "incomum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 836,
+   "listPrice": 1003,
+   "priceNoEventsDay1": 1011,
+   "priceWithDay1Events": 910,
+   "priceWithSponsor": 860,
+   "dailySwingPct": 2,
+   "bonus": {
+    "defense": 1
+   },
+   "bonusTotal": 1,
+   "attributesTouched": 1,
+   "pricePerPoint": 1003,
+   "droppedSourceKeys": [
+    "control"
+   ],
+   "requirement": {
+    "minCareerLevel": 3,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Circuito amador"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2022,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "joma",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "vestuario",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 250,
+   "sellPctOfList": 24.9,
+   "durability": 80,
+   "catalogOrder": 11,
+   "extra": {
+    "shape": "redonda",
+    "balance": "baixo",
+    "weight": 367,
+    "collection": "Joma Soft Touch",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117497204-vuz1f0",
+   "name": "Joma Soft Touch Pro",
+   "manufacturer": "Joma",
+   "category": "raquete",
+   "subcategory": "control",
+   "rarity": "raro",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 1858,
+   "listPrice": 2230,
+   "priceNoEventsDay1": 2187,
+   "priceWithDay1Events": 1968,
+   "priceWithSponsor": 1859,
+   "dailySwingPct": 5,
+   "bonus": {
+    "defense": 2
+   },
+   "bonusTotal": 2,
+   "attributesTouched": 1,
+   "pricePerPoint": 1115,
+   "droppedSourceKeys": [
+    "control"
+   ],
+   "requirement": {
+    "minCareerLevel": 8,
+    "maxRanking": 500,
+    "minReputation": 8,
+    "label": "Circuito regional"
+   },
+   "monthlyAvailabilityPct": 94,
+   "alwaysInRotation": false,
+   "releaseYear": 2023,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "joma",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "vestuario",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 557,
+   "sellPctOfList": 25,
+   "durability": 88,
+   "catalogOrder": 12,
+   "extra": {
+    "shape": "redonda",
+    "balance": "baixo",
+    "weight": 370,
+    "collection": "Joma Soft Touch",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117498204-pb7zwv",
+   "name": "Joma Soft Touch Elite",
+   "manufacturer": "Joma",
+   "category": "raquete",
+   "subcategory": "control",
+   "rarity": "epico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 5000,
+   "listPrice": 6000,
+   "priceNoEventsDay1": 5764,
+   "priceWithDay1Events": 5188,
+   "priceWithSponsor": 4900,
+   "dailySwingPct": 8,
+   "bonus": {
+    "defense": 3
+   },
+   "bonusTotal": 3,
+   "attributesTouched": 1,
+   "pricePerPoint": 2000,
+   "droppedSourceKeys": [
+    "control"
+   ],
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "label": "Circuito nacional"
+   },
+   "monthlyAvailabilityPct": 75,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "joma",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "vestuario",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 1500,
+   "sellPctOfList": 25,
+   "durability": 94,
+   "catalogOrder": 13,
+   "extra": {
+    "shape": "redonda",
+    "balance": "baixo",
+    "weight": 373,
+    "collection": "Joma Soft Touch",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117499204-d5b3hd",
+   "name": "Joma Soft Touch Legend",
+   "manufacturer": "Joma",
+   "category": "raquete",
+   "subcategory": "control",
+   "rarity": "lendario",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 16000,
+   "listPrice": 19200,
+   "priceNoEventsDay1": 18617,
+   "priceWithDay1Events": 16755,
+   "priceWithSponsor": 15824,
+   "dailySwingPct": 12,
+   "bonus": {
+    "defense": 4
+   },
+   "bonusTotal": 4,
+   "attributesTouched": 1,
+   "pricePerPoint": 4800,
+   "droppedSourceKeys": [
+    "control"
+   ],
+   "requirement": {
+    "minCareerLevel": 25,
+    "maxRanking": 100,
+    "minReputation": 40,
+    "label": "Circuito internacional"
+   },
+   "monthlyAvailabilityPct": 46,
+   "alwaysInRotation": false,
+   "releaseYear": 2025,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "joma",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "vestuario",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 4800,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": 14,
+   "extra": {
+    "shape": "redonda",
+    "balance": "baixo",
+    "weight": 376,
+    "collection": "Joma Soft Touch",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117500204-mspdvb",
+   "name": "Head Flash Motion Club",
+   "manufacturer": "Head",
+   "category": "raquete",
+   "subcategory": "hybrid",
+   "rarity": "comum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 582,
+   "listPrice": 698,
+   "priceNoEventsDay1": 698,
+   "priceWithDay1Events": 628,
+   "priceWithSponsor": 593,
+   "dailySwingPct": 0,
+   "bonus": {
+    "forehand": 1,
+    "backhand": 1
+   },
+   "bonusTotal": 2,
+   "attributesTouched": 2,
+   "pricePerPoint": 349,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 1,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Início da carreira"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2021,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "head",
+   "sponsorTier": "Ouro",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 174,
+   "sellPctOfList": 24.9,
+   "durability": 72,
+   "catalogOrder": 15,
+   "extra": {
+    "shape": "lagrima",
+    "balance": "medio",
+    "weight": 371,
+    "collection": "Head Flash Motion",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117501204-yh6mam",
+   "name": "Head Flash Motion Sport",
+   "manufacturer": "Head",
+   "category": "raquete",
+   "subcategory": "hybrid",
+   "rarity": "incomum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 1048,
+   "listPrice": 1258,
+   "priceNoEventsDay1": 1268,
+   "priceWithDay1Events": 1141,
+   "priceWithSponsor": 1078,
+   "dailySwingPct": 2.1,
+   "bonus": {
+    "forehand": 1,
+    "backhand": 1
+   },
+   "bonusTotal": 2,
+   "attributesTouched": 2,
+   "pricePerPoint": 629,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 3,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Circuito amador"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2022,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "head",
+   "sponsorTier": "Ouro",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 314,
+   "sellPctOfList": 25,
+   "durability": 80,
+   "catalogOrder": 16,
+   "extra": {
+    "shape": "lagrima",
+    "balance": "medio",
+    "weight": 374,
+    "collection": "Head Flash Motion",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117502204-bmrmqs",
+   "name": "Head Flash Motion Pro",
+   "manufacturer": "Head",
+   "category": "raquete",
+   "subcategory": "hybrid",
+   "rarity": "raro",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 2330,
+   "listPrice": 2796,
+   "priceNoEventsDay1": 2862,
+   "priceWithDay1Events": 2576,
+   "priceWithSponsor": 2433,
+   "dailySwingPct": 5,
+   "bonus": {
+    "forehand": 2,
+    "backhand": 2
+   },
+   "bonusTotal": 4,
+   "attributesTouched": 2,
+   "pricePerPoint": 699,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 8,
+    "maxRanking": 500,
+    "minReputation": 8,
+    "label": "Circuito regional"
+   },
+   "monthlyAvailabilityPct": 83,
+   "alwaysInRotation": false,
+   "releaseYear": 2023,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "head",
+   "sponsorTier": "Ouro",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 699,
+   "sellPctOfList": 25,
+   "durability": 88,
+   "catalogOrder": 17,
+   "extra": {
+    "shape": "lagrima",
+    "balance": "medio",
+    "weight": 377,
+    "collection": "Head Flash Motion",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117503204-1na7vz",
+   "name": "Head Flash Motion Elite",
+   "manufacturer": "Head",
+   "category": "raquete",
+   "subcategory": "hybrid",
+   "rarity": "epico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 5242,
+   "listPrice": 6290,
+   "priceNoEventsDay1": 6415,
+   "priceWithDay1Events": 5774,
+   "priceWithSponsor": 5453,
+   "dailySwingPct": 8,
+   "bonus": {
+    "forehand": 3,
+    "backhand": 3
+   },
+   "bonusTotal": 6,
+   "attributesTouched": 2,
+   "pricePerPoint": 1048,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "label": "Circuito nacional"
+   },
+   "monthlyAvailabilityPct": 73,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "head",
+   "sponsorTier": "Ouro",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 1572,
+   "sellPctOfList": 25,
+   "durability": 94,
+   "catalogOrder": 18,
+   "extra": {
+    "shape": "lagrima",
+    "balance": "medio",
+    "weight": 380,
+    "collection": "Head Flash Motion",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117504204-jf9j0k",
+   "name": "Head Flash Motion Mythic",
+   "manufacturer": "Head",
+   "category": "raquete",
+   "subcategory": "hybrid",
+   "rarity": "mitico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 35000,
+   "listPrice": 42000,
+   "priceNoEventsDay1": 42698,
+   "priceWithDay1Events": 38429,
+   "priceWithSponsor": 36294,
+   "dailySwingPct": 18,
+   "bonus": {
+    "forehand": 5,
+    "backhand": 5
+   },
+   "bonusTotal": 10,
+   "attributesTouched": 2,
+   "pricePerPoint": 4200,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 35,
+    "maxRanking": 40,
+    "minReputation": 65,
+    "label": "Elite mundial"
+   },
+   "monthlyAvailabilityPct": 41,
+   "alwaysInRotation": false,
+   "releaseYear": 2026,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "head",
+   "sponsorTier": "Ouro",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 10500,
+   "sellPctOfList": 25,
+   "durability": 105,
+   "catalogOrder": 19,
+   "extra": {
+    "shape": "lagrima",
+    "balance": "medio",
+    "weight": 350,
+    "collection": "Head Flash Motion",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117505204-eu2842",
+   "name": "Nox Equation Club",
+   "manufacturer": "Nox",
+   "category": "raquete",
+   "subcategory": "control",
+   "rarity": "comum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 696,
+   "listPrice": 835,
+   "priceNoEventsDay1": 835,
+   "priceWithDay1Events": 752,
+   "priceWithSponsor": 710,
+   "dailySwingPct": 0,
+   "bonus": {
+    "volley": 1,
+    "defense": 1
+   },
+   "bonusTotal": 2,
+   "attributesTouched": 2,
+   "pricePerPoint": 418,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 1,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Início da carreira"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2021,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "nox",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 208,
+   "sellPctOfList": 24.9,
+   "durability": 72,
+   "catalogOrder": 20,
+   "extra": {
+    "shape": "redonda",
+    "balance": "baixo",
+    "weight": 378,
+    "collection": "Nox Equation",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117506204-yhtcgx",
+   "name": "Nox Equation Sport",
+   "manufacturer": "Nox",
+   "category": "raquete",
+   "subcategory": "control",
+   "rarity": "incomum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 1253,
+   "listPrice": 1504,
+   "priceNoEventsDay1": 1513,
+   "priceWithDay1Events": 1361,
+   "priceWithSponsor": 1286,
+   "dailySwingPct": 2,
+   "bonus": {
+    "volley": 1,
+    "defense": 1
+   },
+   "bonusTotal": 2,
+   "attributesTouched": 2,
+   "pricePerPoint": 752,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 3,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Circuito amador"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2022,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "nox",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 375,
+   "sellPctOfList": 24.9,
+   "durability": 80,
+   "catalogOrder": 21,
+   "extra": {
+    "shape": "redonda",
+    "balance": "baixo",
+    "weight": 381,
+    "collection": "Nox Equation",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117507204-mqykep",
+   "name": "Nox Equation Pro",
+   "manufacturer": "Nox",
+   "category": "raquete",
+   "subcategory": "control",
+   "rarity": "raro",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 2784,
+   "listPrice": 3341,
+   "priceNoEventsDay1": 3267,
+   "priceWithDay1Events": 2940,
+   "priceWithSponsor": 2777,
+   "dailySwingPct": 5,
+   "bonus": {
+    "volley": 2,
+    "defense": 2
+   },
+   "bonusTotal": 4,
+   "attributesTouched": 2,
+   "pricePerPoint": 835,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 8,
+    "maxRanking": 500,
+    "minReputation": 8,
+    "label": "Circuito regional"
+   },
+   "monthlyAvailabilityPct": 84,
+   "alwaysInRotation": false,
+   "releaseYear": 2023,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "nox",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 835,
+   "sellPctOfList": 25,
+   "durability": 88,
+   "catalogOrder": 22,
+   "extra": {
+    "shape": "redonda",
+    "balance": "baixo",
+    "weight": 384,
+    "collection": "Nox Equation",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117508204-fchhaw",
+   "name": "Nox Equation Elite",
+   "manufacturer": "Nox",
+   "category": "raquete",
+   "subcategory": "control",
+   "rarity": "epico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 6264,
+   "listPrice": 7517,
+   "priceNoEventsDay1": 7405,
+   "priceWithDay1Events": 6665,
+   "priceWithSponsor": 6295,
+   "dailySwingPct": 7.9,
+   "bonus": {
+    "volley": 3,
+    "defense": 3
+   },
+   "bonusTotal": 6,
+   "attributesTouched": 2,
+   "pricePerPoint": 1253,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "label": "Circuito nacional"
+   },
+   "monthlyAvailabilityPct": 74,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "nox",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 1879,
+   "sellPctOfList": 25,
+   "durability": 94,
+   "catalogOrder": 23,
+   "extra": {
+    "shape": "redonda",
+    "balance": "baixo",
+    "weight": 351,
+    "collection": "Nox Equation",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117509204-1dzirv",
+   "name": "Nox Equation Legend",
+   "manufacturer": "Nox",
+   "category": "raquete",
+   "subcategory": "control",
+   "rarity": "lendario",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 16000,
+   "listPrice": 19200,
+   "priceNoEventsDay1": 18069,
+   "priceWithDay1Events": 16262,
+   "priceWithSponsor": 15358,
+   "dailySwingPct": 11.9,
+   "bonus": {
+    "volley": 4,
+    "defense": 4
+   },
+   "bonusTotal": 8,
+   "attributesTouched": 2,
+   "pricePerPoint": 2400,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 25,
+    "maxRanking": 100,
+    "minReputation": 40,
+    "label": "Circuito internacional"
+   },
+   "monthlyAvailabilityPct": 54,
+   "alwaysInRotation": false,
+   "releaseYear": 2025,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "nox",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 4800,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": 24,
+   "extra": {
+    "shape": "redonda",
+    "balance": "baixo",
+    "weight": 354,
+    "collection": "Nox Equation",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117510204-sfeaex",
+   "name": "Adidas Drive Club",
+   "manufacturer": "Adidas",
+   "category": "raquete",
+   "subcategory": "hybrid",
+   "rarity": "comum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 792,
+   "listPrice": 950,
+   "priceNoEventsDay1": 950,
+   "priceWithDay1Events": 855,
+   "priceWithSponsor": 808,
+   "dailySwingPct": 0,
+   "bonus": {
+    "forehand": 1,
+    "agility": 1
+   },
+   "bonusTotal": 2,
+   "attributesTouched": 2,
+   "pricePerPoint": 475,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 1,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Início da carreira"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2021,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "adidas",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "vestuario",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 237,
+   "sellPctOfList": 24.9,
+   "durability": 72,
+   "catalogOrder": 25,
+   "extra": {
+    "shape": "lagrima",
+    "balance": "medio",
+    "weight": 385,
+    "collection": "Adidas Drive",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117511204-yom8oj",
+   "name": "Adidas Drive Sport",
+   "manufacturer": "Adidas",
+   "category": "raquete",
+   "subcategory": "hybrid",
+   "rarity": "incomum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 1426,
+   "listPrice": 1711,
+   "priceNoEventsDay1": 1699,
+   "priceWithDay1Events": 1529,
+   "priceWithSponsor": 1444,
+   "dailySwingPct": 2,
+   "bonus": {
+    "forehand": 1,
+    "agility": 1
+   },
+   "bonusTotal": 2,
+   "attributesTouched": 2,
+   "pricePerPoint": 856,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 3,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Circuito amador"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2022,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "adidas",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "vestuario",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 427,
+   "sellPctOfList": 25,
+   "durability": 80,
+   "catalogOrder": 26,
+   "extra": {
+    "shape": "lagrima",
+    "balance": "medio",
+    "weight": 352,
+    "collection": "Adidas Drive",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117512204-5zf1fo",
+   "name": "Adidas Drive Pro",
+   "manufacturer": "Adidas",
+   "category": "raquete",
+   "subcategory": "hybrid",
+   "rarity": "raro",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 3168,
+   "listPrice": 3802,
+   "priceNoEventsDay1": 3720,
+   "priceWithDay1Events": 3348,
+   "priceWithSponsor": 3162,
+   "dailySwingPct": 4.4,
+   "bonus": {
+    "forehand": 2,
+    "agility": 2
+   },
+   "bonusTotal": 4,
+   "attributesTouched": 2,
+   "pricePerPoint": 951,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 8,
+    "maxRanking": 500,
+    "minReputation": 8,
+    "label": "Circuito regional"
+   },
+   "monthlyAvailabilityPct": 88,
+   "alwaysInRotation": false,
+   "releaseYear": 2023,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "adidas",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "vestuario",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 950,
+   "sellPctOfList": 25,
+   "durability": 88,
+   "catalogOrder": 27,
+   "extra": {
+    "shape": "lagrima",
+    "balance": "medio",
+    "weight": 355,
+    "collection": "Adidas Drive",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117513204-1vrpdc",
+   "name": "Adidas Drive Elite",
+   "manufacturer": "Adidas",
+   "category": "raquete",
+   "subcategory": "hybrid",
+   "rarity": "epico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 7128,
+   "listPrice": 8554,
+   "priceNoEventsDay1": 8212,
+   "priceWithDay1Events": 7391,
+   "priceWithSponsor": 6980,
+   "dailySwingPct": 8,
+   "bonus": {
+    "forehand": 3,
+    "agility": 3
+   },
+   "bonusTotal": 6,
+   "attributesTouched": 2,
+   "pricePerPoint": 1426,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "label": "Circuito nacional"
+   },
+   "monthlyAvailabilityPct": 73,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "adidas",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "vestuario",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 2138,
+   "sellPctOfList": 25,
+   "durability": 94,
+   "catalogOrder": 28,
+   "extra": {
+    "shape": "lagrima",
+    "balance": "medio",
+    "weight": 358,
+    "collection": "Adidas Drive",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117514204-p4qs0y",
+   "name": "Adidas Drive Mythic",
+   "manufacturer": "Adidas",
+   "category": "raquete",
+   "subcategory": "hybrid",
+   "rarity": "mitico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 35000,
+   "listPrice": 42000,
+   "priceNoEventsDay1": 45776,
+   "priceWithDay1Events": 41198,
+   "priceWithSponsor": 38909,
+   "dailySwingPct": 17.9,
+   "bonus": {
+    "forehand": 5,
+    "agility": 5
+   },
+   "bonusTotal": 10,
+   "attributesTouched": 2,
+   "pricePerPoint": 4200,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 35,
+    "maxRanking": 40,
+    "minReputation": 65,
+    "label": "Elite mundial"
+   },
+   "monthlyAvailabilityPct": 28,
+   "alwaysInRotation": false,
+   "releaseYear": 2026,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "adidas",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "vestuario",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 10500,
+   "sellPctOfList": 25,
+   "durability": 105,
+   "catalogOrder": 29,
+   "extra": {
+    "shape": "lagrima",
+    "balance": "medio",
+    "weight": 364,
+    "collection": "Adidas Drive",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117515204-zf1l2d",
+   "name": "Bullpadel Vertex Club",
+   "manufacturer": "Bullpadel",
+   "category": "raquete",
+   "subcategory": "power",
+   "rarity": "comum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 942,
+   "listPrice": 1130,
+   "priceNoEventsDay1": 1130,
+   "priceWithDay1Events": 1017,
+   "priceWithSponsor": 961,
+   "dailySwingPct": 0,
+   "bonus": {
+    "smash": 1,
+    "bandeja": 1
+   },
+   "bonusTotal": 2,
+   "attributesTouched": 2,
+   "pricePerPoint": 565,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 1,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Início da carreira"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2021,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "bullpadel",
+   "sponsorTier": "Ouro",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 282,
+   "sellPctOfList": 25,
+   "durability": 72,
+   "catalogOrder": 30,
+   "extra": {
+    "shape": "diamante",
+    "balance": "alto",
+    "weight": 356,
+    "collection": "Bullpadel Vertex",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117516204-wwp66l",
+   "name": "Bullpadel Vertex Sport",
+   "manufacturer": "Bullpadel",
+   "category": "raquete",
+   "subcategory": "power",
+   "rarity": "incomum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 1696,
+   "listPrice": 2035,
+   "priceNoEventsDay1": 2054,
+   "priceWithDay1Events": 1848,
+   "priceWithSponsor": 1746,
+   "dailySwingPct": 2,
+   "bonus": {
+    "smash": 1,
+    "bandeja": 1
+   },
+   "bonusTotal": 2,
+   "attributesTouched": 2,
+   "pricePerPoint": 1018,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 3,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Circuito amador"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2022,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "bullpadel",
+   "sponsorTier": "Ouro",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 508,
+   "sellPctOfList": 25,
+   "durability": 80,
+   "catalogOrder": 31,
+   "extra": {
+    "shape": "diamante",
+    "balance": "alto",
+    "weight": 359,
+    "collection": "Bullpadel Vertex",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117517204-vdayqe",
+   "name": "Bullpadel Vertex Pro",
+   "manufacturer": "Bullpadel",
+   "category": "raquete",
+   "subcategory": "power",
+   "rarity": "raro",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 3770,
+   "listPrice": 4524,
+   "priceNoEventsDay1": 4575,
+   "priceWithDay1Events": 4118,
+   "priceWithSponsor": 3889,
+   "dailySwingPct": 5,
+   "bonus": {
+    "smash": 2,
+    "bandeja": 2
+   },
+   "bonusTotal": 4,
+   "attributesTouched": 2,
+   "pricePerPoint": 1131,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 8,
+    "maxRanking": 500,
+    "minReputation": 8,
+    "label": "Circuito regional"
+   },
+   "monthlyAvailabilityPct": 89,
+   "alwaysInRotation": false,
+   "releaseYear": 2023,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "bullpadel",
+   "sponsorTier": "Ouro",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 1131,
+   "sellPctOfList": 25,
+   "durability": 88,
+   "catalogOrder": 32,
+   "extra": {
+    "shape": "diamante",
+    "balance": "alto",
+    "weight": 362,
+    "collection": "Bullpadel Vertex",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117518204-t21bog",
+   "name": "Bullpadel Vertex Elite",
+   "manufacturer": "Bullpadel",
+   "category": "raquete",
+   "subcategory": "power",
+   "rarity": "epico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 8482,
+   "listPrice": 10178,
+   "priceNoEventsDay1": 10432,
+   "priceWithDay1Events": 9388,
+   "priceWithSponsor": 8867,
+   "dailySwingPct": 8,
+   "bonus": {
+    "smash": 3,
+    "bandeja": 3
+   },
+   "bonusTotal": 6,
+   "attributesTouched": 2,
+   "pricePerPoint": 1696,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "label": "Circuito nacional"
+   },
+   "monthlyAvailabilityPct": 73,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "bullpadel",
+   "sponsorTier": "Ouro",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 2544,
+   "sellPctOfList": 25,
+   "durability": 94,
+   "catalogOrder": 33,
+   "extra": {
+    "shape": "diamante",
+    "balance": "alto",
+    "weight": 365,
+    "collection": "Bullpadel Vertex",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117519204-keqv65",
+   "name": "Bullpadel Vertex Legend",
+   "manufacturer": "Bullpadel",
+   "category": "raquete",
+   "subcategory": "power",
+   "rarity": "lendario",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 16963,
+   "listPrice": 20356,
+   "priceNoEventsDay1": 20840,
+   "priceWithDay1Events": 18756,
+   "priceWithSponsor": 17714,
+   "dailySwingPct": 12,
+   "bonus": {
+    "smash": 4,
+    "bandeja": 4
+   },
+   "bonusTotal": 8,
+   "attributesTouched": 2,
+   "pricePerPoint": 2545,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 25,
+    "maxRanking": 100,
+    "minReputation": 40,
+    "label": "Circuito internacional"
+   },
+   "monthlyAvailabilityPct": 53,
+   "alwaysInRotation": false,
+   "releaseYear": 2025,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "bullpadel",
+   "sponsorTier": "Ouro",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 5088,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": 34,
+   "extra": {
+    "shape": "diamante",
+    "balance": "alto",
+    "weight": 368,
+    "collection": "Bullpadel Vertex",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117520204-xoodb6",
+   "name": "Babolat Counter Club",
+   "manufacturer": "Babolat",
+   "category": "raquete",
+   "subcategory": "hybrid",
+   "rarity": "comum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 1050,
+   "listPrice": 1260,
+   "priceNoEventsDay1": 1260,
+   "priceWithDay1Events": 1134,
+   "priceWithSponsor": 1071,
+   "dailySwingPct": 0,
+   "bonus": {
+    "defense": 1,
+    "smash": 1
+   },
+   "bonusTotal": 2,
+   "attributesTouched": 2,
+   "pricePerPoint": 630,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 1,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Início da carreira"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2021,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "babolat",
+   "sponsorTier": "Bronze",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 315,
+   "sellPctOfList": 25,
+   "durability": 72,
+   "catalogOrder": 35,
+   "extra": {
+    "shape": "lagrima",
+    "balance": "medio",
+    "weight": 363,
+    "collection": "Babolat Counter",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117521204-szi0fz",
+   "name": "Babolat Counter Sport",
+   "manufacturer": "Babolat",
+   "category": "raquete",
+   "subcategory": "hybrid",
+   "rarity": "incomum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 1889,
+   "listPrice": 2267,
+   "priceNoEventsDay1": 2278,
+   "priceWithDay1Events": 2050,
+   "priceWithSponsor": 1937,
+   "dailySwingPct": 2,
+   "bonus": {
+    "defense": 1,
+    "smash": 1
+   },
+   "bonusTotal": 2,
+   "attributesTouched": 2,
+   "pricePerPoint": 1134,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 3,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Circuito amador"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2022,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "babolat",
+   "sponsorTier": "Bronze",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 566,
+   "sellPctOfList": 25,
+   "durability": 80,
+   "catalogOrder": 36,
+   "extra": {
+    "shape": "lagrima",
+    "balance": "medio",
+    "weight": 366,
+    "collection": "Babolat Counter",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117522204-e4t2mw",
+   "name": "Babolat Counter Pro",
+   "manufacturer": "Babolat",
+   "category": "raquete",
+   "subcategory": "hybrid",
+   "rarity": "raro",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 4198,
+   "listPrice": 5038,
+   "priceNoEventsDay1": 4991,
+   "priceWithDay1Events": 4492,
+   "priceWithSponsor": 4243,
+   "dailySwingPct": 5,
+   "bonus": {
+    "defense": 2,
+    "smash": 2
+   },
+   "bonusTotal": 4,
+   "attributesTouched": 2,
+   "pricePerPoint": 1260,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 8,
+    "maxRanking": 500,
+    "minReputation": 8,
+    "label": "Circuito regional"
+   },
+   "monthlyAvailabilityPct": 88,
+   "alwaysInRotation": false,
+   "releaseYear": 2023,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "babolat",
+   "sponsorTier": "Bronze",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 1259,
+   "sellPctOfList": 25,
+   "durability": 88,
+   "catalogOrder": 37,
+   "extra": {
+    "shape": "lagrima",
+    "balance": "medio",
+    "weight": 369,
+    "collection": "Babolat Counter",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117523204-qu2115",
+   "name": "Babolat Counter Elite",
+   "manufacturer": "Babolat",
+   "category": "raquete",
+   "subcategory": "hybrid",
+   "rarity": "epico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 9446,
+   "listPrice": 11335,
+   "priceNoEventsDay1": 11515,
+   "priceWithDay1Events": 10363,
+   "priceWithSponsor": 9787,
+   "dailySwingPct": 8,
+   "bonus": {
+    "defense": 3,
+    "smash": 3
+   },
+   "bonusTotal": 6,
+   "attributesTouched": 2,
+   "pricePerPoint": 1889,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "label": "Circuito nacional"
+   },
+   "monthlyAvailabilityPct": 73,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "babolat",
+   "sponsorTier": "Bronze",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 2833,
+   "sellPctOfList": 25,
+   "durability": 94,
+   "catalogOrder": 38,
+   "extra": {
+    "shape": "lagrima",
+    "balance": "medio",
+    "weight": 372,
+    "collection": "Babolat Counter",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117524204-7a44k2",
+   "name": "Babolat Counter Mythic",
+   "manufacturer": "Babolat",
+   "category": "raquete",
+   "subcategory": "hybrid",
+   "rarity": "mitico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 35000,
+   "listPrice": 42000,
+   "priceNoEventsDay1": 41008,
+   "priceWithDay1Events": 36907,
+   "priceWithSponsor": 34857,
+   "dailySwingPct": 18,
+   "bonus": {
+    "defense": 5,
+    "smash": 5
+   },
+   "bonusTotal": 10,
+   "attributesTouched": 2,
+   "pricePerPoint": 4200,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 35,
+    "maxRanking": 40,
+    "minReputation": 65,
+    "label": "Elite mundial"
+   },
+   "monthlyAvailabilityPct": 29,
+   "alwaysInRotation": false,
+   "releaseYear": 2026,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "babolat",
+   "sponsorTier": "Bronze",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 10500,
+   "sellPctOfList": 25,
+   "durability": 105,
+   "catalogOrder": 39,
+   "extra": {
+    "shape": "lagrima",
+    "balance": "medio",
+    "weight": 378,
+    "collection": "Babolat Counter",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117525204-epkvu1",
+   "name": "Wilson Pro Staff Club",
+   "manufacturer": "Wilson",
+   "category": "raquete",
+   "subcategory": "control",
+   "rarity": "comum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 1162,
+   "listPrice": 1394,
+   "priceNoEventsDay1": 1394,
+   "priceWithDay1Events": 1255,
+   "priceWithSponsor": 1185,
+   "dailySwingPct": 0,
+   "bonus": {
+    "volley": 1
+   },
+   "bonusTotal": 1,
+   "attributesTouched": 1,
+   "pricePerPoint": 1394,
+   "droppedSourceKeys": [
+    "positioning"
+   ],
+   "requirement": {
+    "minCareerLevel": 1,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Início da carreira"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2021,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "wilson",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 348,
+   "sellPctOfList": 25,
+   "durability": 72,
+   "catalogOrder": 40,
+   "extra": {
+    "shape": "redonda",
+    "balance": "baixo",
+    "weight": 370,
+    "collection": "Wilson Pro Staff",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117526204-hlean3",
+   "name": "Wilson Pro Staff Sport",
+   "manufacturer": "Wilson",
+   "category": "raquete",
+   "subcategory": "control",
+   "rarity": "incomum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 2091,
+   "listPrice": 2509,
+   "priceNoEventsDay1": 2526,
+   "priceWithDay1Events": 2273,
+   "priceWithSponsor": 2147,
+   "dailySwingPct": 2,
+   "bonus": {
+    "volley": 1
+   },
+   "bonusTotal": 1,
+   "attributesTouched": 1,
+   "pricePerPoint": 2509,
+   "droppedSourceKeys": [
+    "positioning"
+   ],
+   "requirement": {
+    "minCareerLevel": 3,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Circuito amador"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2022,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "wilson",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 627,
+   "sellPctOfList": 25,
+   "durability": 80,
+   "catalogOrder": 41,
+   "extra": {
+    "shape": "redonda",
+    "balance": "baixo",
+    "weight": 373,
+    "collection": "Wilson Pro Staff",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117527204-0yr6zl",
+   "name": "Wilson Pro Staff Pro",
+   "manufacturer": "Wilson",
+   "category": "raquete",
+   "subcategory": "control",
+   "rarity": "raro",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 4646,
+   "listPrice": 5575,
+   "priceNoEventsDay1": 5704,
+   "priceWithDay1Events": 5134,
+   "priceWithSponsor": 4849,
+   "dailySwingPct": 5,
+   "bonus": {
+    "volley": 2
+   },
+   "bonusTotal": 2,
+   "attributesTouched": 1,
+   "pricePerPoint": 2788,
+   "droppedSourceKeys": [
+    "positioning"
+   ],
+   "requirement": {
+    "minCareerLevel": 8,
+    "maxRanking": 500,
+    "minReputation": 8,
+    "label": "Circuito regional"
+   },
+   "monthlyAvailabilityPct": 92,
+   "alwaysInRotation": false,
+   "releaseYear": 2023,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "wilson",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 1393,
+   "sellPctOfList": 25,
+   "durability": 88,
+   "catalogOrder": 42,
+   "extra": {
+    "shape": "redonda",
+    "balance": "baixo",
+    "weight": 376,
+    "collection": "Wilson Pro Staff",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117528204-0c7h0p",
+   "name": "Wilson Pro Staff Elite",
+   "manufacturer": "Wilson",
+   "category": "raquete",
+   "subcategory": "control",
+   "rarity": "epico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 10454,
+   "listPrice": 12545,
+   "priceNoEventsDay1": 12098,
+   "priceWithDay1Events": 10889,
+   "priceWithSponsor": 10284,
+   "dailySwingPct": 8,
+   "bonus": {
+    "volley": 3
+   },
+   "bonusTotal": 3,
+   "attributesTouched": 1,
+   "pricePerPoint": 4182,
+   "droppedSourceKeys": [
+    "positioning"
+   ],
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "label": "Circuito nacional"
+   },
+   "monthlyAvailabilityPct": 66,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "wilson",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 3136,
+   "sellPctOfList": 25,
+   "durability": 94,
+   "catalogOrder": 43,
+   "extra": {
+    "shape": "redonda",
+    "balance": "baixo",
+    "weight": 379,
+    "collection": "Wilson Pro Staff",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117529204-jg31u8",
+   "name": "Wilson Pro Staff Legend",
+   "manufacturer": "Wilson",
+   "category": "raquete",
+   "subcategory": "control",
+   "rarity": "lendario",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 20909,
+   "listPrice": 25091,
+   "priceNoEventsDay1": 24306,
+   "priceWithDay1Events": 21875,
+   "priceWithSponsor": 20660,
+   "dailySwingPct": 12,
+   "bonus": {
+    "volley": 4
+   },
+   "bonusTotal": 4,
+   "attributesTouched": 1,
+   "pricePerPoint": 6273,
+   "droppedSourceKeys": [
+    "positioning"
+   ],
+   "requirement": {
+    "minCareerLevel": 25,
+    "maxRanking": 100,
+    "minReputation": 40,
+    "label": "Circuito internacional"
+   },
+   "monthlyAvailabilityPct": 48,
+   "alwaysInRotation": false,
+   "releaseYear": 2025,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "wilson",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 6272,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": 44,
+   "extra": {
+    "shape": "redonda",
+    "balance": "baixo",
+    "weight": 382,
+    "collection": "Wilson Pro Staff",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117530204-28swxd",
+   "name": "Siux Electra Club",
+   "manufacturer": "Siux",
+   "category": "raquete",
+   "subcategory": "power",
+   "rarity": "comum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 1278,
+   "listPrice": 1534,
+   "priceNoEventsDay1": 1534,
+   "priceWithDay1Events": 1381,
+   "priceWithSponsor": 1304,
+   "dailySwingPct": 0,
+   "bonus": {
+    "smash": 1,
+    "forehand": 1
+   },
+   "bonusTotal": 2,
+   "attributesTouched": 2,
+   "pricePerPoint": 767,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 1,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Início da carreira"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2021,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "siux",
+   "sponsorTier": "Bronze",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 383,
+   "sellPctOfList": 25,
+   "durability": 72,
+   "catalogOrder": 45,
+   "extra": {
+    "shape": "diamante",
+    "balance": "alto",
+    "weight": 377,
+    "collection": "Siux Electra",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117531204-wazk30",
+   "name": "Siux Electra Sport",
+   "manufacturer": "Siux",
+   "category": "raquete",
+   "subcategory": "power",
+   "rarity": "incomum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 2301,
+   "listPrice": 2761,
+   "priceNoEventsDay1": 2740,
+   "priceWithDay1Events": 2466,
+   "priceWithSponsor": 2329,
+   "dailySwingPct": 2,
+   "bonus": {
+    "smash": 1,
+    "forehand": 1
+   },
+   "bonusTotal": 2,
+   "attributesTouched": 2,
+   "pricePerPoint": 1381,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 3,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Circuito amador"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2022,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "siux",
+   "sponsorTier": "Bronze",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 690,
+   "sellPctOfList": 25,
+   "durability": 80,
+   "catalogOrder": 46,
+   "extra": {
+    "shape": "diamante",
+    "balance": "alto",
+    "weight": 380,
+    "collection": "Siux Electra",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117532204-oz2j6u",
+   "name": "Siux Electra Pro",
+   "manufacturer": "Siux",
+   "category": "raquete",
+   "subcategory": "power",
+   "rarity": "raro",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 5114,
+   "listPrice": 6137,
+   "priceNoEventsDay1": 6031,
+   "priceWithDay1Events": 5428,
+   "priceWithSponsor": 5127,
+   "dailySwingPct": 5,
+   "bonus": {
+    "smash": 2,
+    "forehand": 2
+   },
+   "bonusTotal": 4,
+   "attributesTouched": 2,
+   "pricePerPoint": 1534,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 8,
+    "maxRanking": 500,
+    "minReputation": 8,
+    "label": "Circuito regional"
+   },
+   "monthlyAvailabilityPct": 86,
+   "alwaysInRotation": false,
+   "releaseYear": 2023,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "siux",
+   "sponsorTier": "Bronze",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 1534,
+   "sellPctOfList": 25,
+   "durability": 88,
+   "catalogOrder": 47,
+   "extra": {
+    "shape": "diamante",
+    "balance": "alto",
+    "weight": 383,
+    "collection": "Siux Electra",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117533204-43m40y",
+   "name": "Siux Electra Elite",
+   "manufacturer": "Siux",
+   "category": "raquete",
+   "subcategory": "power",
+   "rarity": "epico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 11506,
+   "listPrice": 13807,
+   "priceNoEventsDay1": 14359,
+   "priceWithDay1Events": 12923,
+   "priceWithSponsor": 12205,
+   "dailySwingPct": 8,
+   "bonus": {
+    "smash": 3,
+    "forehand": 3
+   },
+   "bonusTotal": 6,
+   "attributesTouched": 2,
+   "pricePerPoint": 2301,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "label": "Circuito nacional"
+   },
+   "monthlyAvailabilityPct": 72,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "siux",
+   "sponsorTier": "Bronze",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 3451,
+   "sellPctOfList": 25,
+   "durability": 94,
+   "catalogOrder": 48,
+   "extra": {
+    "shape": "diamante",
+    "balance": "alto",
+    "weight": 350,
+    "collection": "Siux Electra",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117534204-8ltjw0",
+   "name": "Siux Electra Mythic",
+   "manufacturer": "Siux",
+   "category": "raquete",
+   "subcategory": "power",
+   "rarity": "mitico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 40909,
+   "listPrice": 49091,
+   "priceNoEventsDay1": 45697,
+   "priceWithDay1Events": 41127,
+   "priceWithSponsor": 38842,
+   "dailySwingPct": 18,
+   "bonus": {
+    "smash": 5,
+    "forehand": 5
+   },
+   "bonusTotal": 10,
+   "attributesTouched": 2,
+   "pricePerPoint": 4909,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 35,
+    "maxRanking": 40,
+    "minReputation": 65,
+    "label": "Elite mundial"
+   },
+   "monthlyAvailabilityPct": 33,
+   "alwaysInRotation": false,
+   "releaseYear": 2026,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "siux",
+   "sponsorTier": "Bronze",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 12272,
+   "sellPctOfList": 25,
+   "durability": 105,
+   "catalogOrder": 49,
+   "extra": {
+    "shape": "diamante",
+    "balance": "alto",
+    "weight": 356,
+    "collection": "Siux Electra",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117535204-5vbfoq",
+   "name": "Tour Grip Dry Start",
+   "manufacturer": "Tour Grip",
+   "category": "grip",
+   "subcategory": "dry",
+   "rarity": "comum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 55,
+   "listPrice": 66,
+   "priceNoEventsDay1": 66,
+   "priceWithDay1Events": 59,
+   "priceWithSponsor": null,
+   "dailySwingPct": 0,
+   "bonus": {
+    "forehand": 1
+   },
+   "bonusTotal": 1,
+   "attributesTouched": 1,
+   "pricePerPoint": 66,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 1,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Início da carreira"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2021,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "grip",
+   "sellPrice": 16,
+   "sellPctOfList": 24.2,
+   "durability": 72,
+   "catalogOrder": 50,
+   "extra": {
+    "collection": "Tour Grip Início da carreira",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117536204-952xvn",
+   "name": "Head Comfort Sport",
+   "manufacturer": "Head",
+   "category": "grip",
+   "subcategory": "overgrip",
+   "rarity": "incomum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 250,
+   "listPrice": 300,
+   "priceNoEventsDay1": 300,
+   "priceWithDay1Events": 270,
+   "priceWithSponsor": 255,
+   "dailySwingPct": 2,
+   "bonus": {
+    "backhand": 1
+   },
+   "bonusTotal": 1,
+   "attributesTouched": 1,
+   "pricePerPoint": 300,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 3,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Circuito amador"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2022,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "head",
+   "sponsorTier": "Ouro",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "grip",
+   "sellPrice": 75,
+   "sellPctOfList": 25,
+   "durability": 80,
+   "catalogOrder": 51,
+   "extra": {
+    "collection": "Head Circuito amador",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117537204-6cpovy",
+   "name": "Wilson Tacky Pro",
+   "manufacturer": "Wilson",
+   "category": "grip",
+   "subcategory": "tacky",
+   "rarity": "raro",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 1200,
+   "listPrice": 1440,
+   "priceNoEventsDay1": 1476,
+   "priceWithDay1Events": 1328,
+   "priceWithSponsor": 1255,
+   "dailySwingPct": 5,
+   "bonus": {
+    "forehand": 2,
+    "backhand": 2
+   },
+   "bonusTotal": 4,
+   "attributesTouched": 2,
+   "pricePerPoint": 360,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 8,
+    "maxRanking": 500,
+    "minReputation": 8,
+    "label": "Circuito regional"
+   },
+   "monthlyAvailabilityPct": 87,
+   "alwaysInRotation": false,
+   "releaseYear": 2023,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "wilson",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "grip",
+   "sellPrice": 360,
+   "sellPctOfList": 25,
+   "durability": 88,
+   "catalogOrder": 52,
+   "extra": {
+    "collection": "Wilson Circuito regional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117538204-eanx2n",
+   "name": "Bullpadel Hesacore Elite",
+   "manufacturer": "Bullpadel",
+   "category": "grip",
+   "subcategory": "replacement",
+   "rarity": "epico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 5000,
+   "listPrice": 6000,
+   "priceNoEventsDay1": 5989,
+   "priceWithDay1Events": 5390,
+   "priceWithSponsor": 5091,
+   "dailySwingPct": 7.5,
+   "bonus": {
+    "volley": 3
+   },
+   "bonusTotal": 3,
+   "attributesTouched": 1,
+   "pricePerPoint": 2000,
+   "droppedSourceKeys": [
+    "control"
+   ],
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "label": "Circuito nacional"
+   },
+   "monthlyAvailabilityPct": 72,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "bullpadel",
+   "sponsorTier": "Ouro",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "grip",
+   "sellPrice": 1500,
+   "sellPctOfList": 25,
+   "durability": 94,
+   "catalogOrder": 53,
+   "extra": {
+    "collection": "Bullpadel Circuito nacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117539204-cs83ir",
+   "name": "Nox Custom Legend",
+   "manufacturer": "Nox",
+   "category": "grip",
+   "subcategory": "replacement",
+   "rarity": "lendario",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 16000,
+   "listPrice": 19200,
+   "priceNoEventsDay1": 20104,
+   "priceWithDay1Events": 18094,
+   "priceWithSponsor": 17089,
+   "dailySwingPct": 11.8,
+   "bonus": {
+    "backhand": 4
+   },
+   "bonusTotal": 4,
+   "attributesTouched": 1,
+   "pricePerPoint": 4800,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 25,
+    "maxRanking": 100,
+    "minReputation": 40,
+    "label": "Circuito internacional"
+   },
+   "monthlyAvailabilityPct": 45,
+   "alwaysInRotation": false,
+   "releaseYear": 2025,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "nox",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "grip",
+   "sellPrice": 4800,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": 54,
+   "extra": {
+    "collection": "Nox Circuito internacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117540204-1akaf8",
+   "name": "Babolat Pro Touch Elite",
+   "manufacturer": "Babolat",
+   "category": "grip",
+   "subcategory": "tacky",
+   "rarity": "epico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 8500,
+   "listPrice": 10200,
+   "priceNoEventsDay1": 9987,
+   "priceWithDay1Events": 8988,
+   "priceWithSponsor": 8489,
+   "dailySwingPct": 8,
+   "bonus": {
+    "forehand": 3,
+    "volley": 3
+   },
+   "bonusTotal": 6,
+   "attributesTouched": 2,
+   "pricePerPoint": 1700,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "label": "Circuito nacional"
+   },
+   "monthlyAvailabilityPct": 68,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "babolat",
+   "sponsorTier": "Bronze",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "grip",
+   "sellPrice": 2550,
+   "sellPctOfList": 25,
+   "durability": 94,
+   "catalogOrder": 55,
+   "extra": {
+    "collection": "Babolat Circuito nacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117541204-at7cco",
+   "name": "Wilson Championship Grip",
+   "manufacturer": "Wilson",
+   "category": "grip",
+   "subcategory": "replacement",
+   "rarity": "lendario",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 26000,
+   "listPrice": 31200,
+   "priceNoEventsDay1": 29582,
+   "priceWithDay1Events": 26623,
+   "priceWithSponsor": 25144,
+   "dailySwingPct": 10.6,
+   "bonus": {
+    "backhand": 4,
+    "strategy": 4
+   },
+   "bonusTotal": 8,
+   "attributesTouched": 2,
+   "pricePerPoint": 3900,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 25,
+    "maxRanking": 100,
+    "minReputation": 40,
+    "label": "Circuito internacional"
+   },
+   "monthlyAvailabilityPct": 49,
+   "alwaysInRotation": false,
+   "releaseYear": 2025,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "wilson",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "grip",
+   "sellPrice": 7800,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": 56,
+   "extra": {
+    "collection": "Wilson Circuito internacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117542204-1bl5ol",
+   "name": "Bullpadel Master Grip Pro",
+   "manufacturer": "Bullpadel",
+   "category": "grip",
+   "subcategory": "replacement",
+   "rarity": "mitico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 58000,
+   "listPrice": 69600,
+   "priceNoEventsDay1": 75406,
+   "priceWithDay1Events": 67865,
+   "priceWithSponsor": 64095,
+   "dailySwingPct": 18,
+   "bonus": {
+    "volley": 5,
+    "strategy": 5
+   },
+   "bonusTotal": 10,
+   "attributesTouched": 2,
+   "pricePerPoint": 6960,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 35,
+    "maxRanking": 40,
+    "minReputation": 65,
+    "label": "Elite mundial"
+   },
+   "monthlyAvailabilityPct": 24,
+   "alwaysInRotation": false,
+   "releaseYear": 2026,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "bullpadel",
+   "sponsorTier": "Ouro",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "grip",
+   "sellPrice": 17400,
+   "sellPctOfList": 25,
+   "durability": 105,
+   "catalogOrder": 57,
+   "extra": {
+    "collection": "Bullpadel Elite mundial",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117543204-8f557d",
+   "name": "Padel Start Training x3",
+   "manufacturer": "Padel Start",
+   "category": "bola",
+   "subcategory": "training",
+   "rarity": "comum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 45,
+   "listPrice": 54,
+   "priceNoEventsDay1": 54,
+   "priceWithDay1Events": 49,
+   "priceWithSponsor": null,
+   "dailySwingPct": 0,
+   "bonus": {
+    "serve": 1
+   },
+   "bonusTotal": 1,
+   "attributesTouched": 1,
+   "pricePerPoint": 54,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 1,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Início da carreira"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2021,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "bola",
+   "sellPrice": 13,
+   "sellPctOfList": 24.1,
+   "durability": 72,
+   "catalogOrder": 58,
+   "extra": {
+    "collection": "Padel Start Início da carreira",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117544204-vvplcl",
+   "name": "Head Club Match x3",
+   "manufacturer": "Head",
+   "category": "bola",
+   "subcategory": "match",
+   "rarity": "incomum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 250,
+   "listPrice": 300,
+   "priceNoEventsDay1": 303,
+   "priceWithDay1Events": 273,
+   "priceWithSponsor": 257,
+   "dailySwingPct": 2,
+   "bonus": {
+    "strategy": 1
+   },
+   "bonusTotal": 1,
+   "attributesTouched": 1,
+   "pricePerPoint": 300,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 3,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Circuito amador"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2022,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "head",
+   "sponsorTier": "Ouro",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "bola",
+   "sellPrice": 75,
+   "sellPctOfList": 25,
+   "durability": 80,
+   "catalogOrder": 59,
+   "extra": {
+    "collection": "Head Circuito amador",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117545204-kh6bhc",
+   "name": "Wilson Pro Tour x3",
+   "manufacturer": "Wilson",
+   "category": "bola",
+   "subcategory": "match",
+   "rarity": "raro",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 1200,
+   "listPrice": 1440,
+   "priceNoEventsDay1": 1404,
+   "priceWithDay1Events": 1264,
+   "priceWithSponsor": 1193,
+   "dailySwingPct": 5,
+   "bonus": {
+    "serve": 2
+   },
+   "bonusTotal": 2,
+   "attributesTouched": 1,
+   "pricePerPoint": 720,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 8,
+    "maxRanking": 500,
+    "minReputation": 8,
+    "label": "Circuito regional"
+   },
+   "monthlyAvailabilityPct": 86,
+   "alwaysInRotation": false,
+   "releaseYear": 2023,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "wilson",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "bola",
+   "sellPrice": 360,
+   "sellPctOfList": 25,
+   "durability": 88,
+   "catalogOrder": 60,
+   "extra": {
+    "collection": "Wilson Circuito regional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117546204-og53km",
+   "name": "Bullpadel Premium Final x3",
+   "manufacturer": "Bullpadel",
+   "category": "bola",
+   "subcategory": "premium",
+   "rarity": "epico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 5000,
+   "listPrice": 6000,
+   "priceNoEventsDay1": 6196,
+   "priceWithDay1Events": 5576,
+   "priceWithSponsor": 5267,
+   "dailySwingPct": 8,
+   "bonus": {
+    "strategy": 3
+   },
+   "bonusTotal": 3,
+   "attributesTouched": 1,
+   "pricePerPoint": 2000,
+   "droppedSourceKeys": [
+    "reflexes"
+   ],
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "label": "Circuito nacional"
+   },
+   "monthlyAvailabilityPct": 71,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "bullpadel",
+   "sponsorTier": "Ouro",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "bola",
+   "sellPrice": 1500,
+   "sellPctOfList": 25,
+   "durability": 94,
+   "catalogOrder": 61,
+   "extra": {
+    "collection": "Bullpadel Circuito nacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117547204-20ughw",
+   "name": "Premier Championship Case",
+   "manufacturer": "Premier Labs",
+   "category": "bola",
+   "subcategory": "premium",
+   "rarity": "lendario",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 16000,
+   "listPrice": 19200,
+   "priceNoEventsDay1": 18772,
+   "priceWithDay1Events": 16895,
+   "priceWithSponsor": null,
+   "dailySwingPct": 11.9,
+   "bonus": {
+    "agility": 4
+   },
+   "bonusTotal": 4,
+   "attributesTouched": 1,
+   "pricePerPoint": 4800,
+   "droppedSourceKeys": [
+    "reflexes"
+   ],
+   "requirement": {
+    "minCareerLevel": 25,
+    "maxRanking": 100,
+    "minReputation": 40,
+    "label": "Circuito internacional"
+   },
+   "monthlyAvailabilityPct": 48,
+   "alwaysInRotation": false,
+   "releaseYear": 2025,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "bola",
+   "sellPrice": 4800,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": 62,
+   "extra": {
+    "collection": "Premier Labs Circuito internacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117548204-puaofk",
+   "name": "Joma Training Tee",
+   "manufacturer": "Joma",
+   "category": "roupa",
+   "subcategory": "camisa",
+   "rarity": "comum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 220,
+   "listPrice": 264,
+   "priceNoEventsDay1": 264,
+   "priceWithDay1Events": 238,
+   "priceWithSponsor": 224,
+   "dailySwingPct": 0,
+   "bonus": {
+    "agility": 1
+   },
+   "bonusTotal": 1,
+   "attributesTouched": 1,
+   "pricePerPoint": 264,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 1,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Início da carreira"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2021,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "joma",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "vestuario",
+   "equippable": true,
+   "slot": "roupa",
+   "sellPrice": 66,
+   "sellPctOfList": 25,
+   "durability": 72,
+   "catalogOrder": 63,
+   "extra": {
+    "collection": "Joma Início da carreira",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117549204-eqjgh9",
+   "name": "Adidas Match Shorts",
+   "manufacturer": "Adidas",
+   "category": "roupa",
+   "subcategory": "shorts",
+   "rarity": "incomum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 420,
+   "listPrice": 504,
+   "priceNoEventsDay1": 506,
+   "priceWithDay1Events": 456,
+   "priceWithSponsor": 430,
+   "dailySwingPct": 2,
+   "bonus": {
+    "agility": 1
+   },
+   "bonusTotal": 1,
+   "attributesTouched": 1,
+   "pricePerPoint": 504,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 3,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Circuito amador"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2022,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "adidas",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "vestuario",
+   "equippable": true,
+   "slot": "roupa",
+   "sellPrice": 126,
+   "sellPctOfList": 25,
+   "durability": 80,
+   "catalogOrder": 64,
+   "extra": {
+    "collection": "Adidas Circuito amador",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117550204-0ai83p",
+   "name": "Bullpadel Competition Set",
+   "manufacturer": "Bullpadel",
+   "category": "roupa",
+   "subcategory": "conjunto",
+   "rarity": "raro",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 1200,
+   "listPrice": 1440,
+   "priceNoEventsDay1": 1408,
+   "priceWithDay1Events": 1267,
+   "priceWithSponsor": 1197,
+   "dailySwingPct": 5,
+   "bonus": {
+    "agility": 2
+   },
+   "bonusTotal": 2,
+   "attributesTouched": 1,
+   "pricePerPoint": 720,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 8,
+    "maxRanking": 500,
+    "minReputation": 8,
+    "label": "Circuito regional"
+   },
+   "monthlyAvailabilityPct": 94,
+   "alwaysInRotation": false,
+   "releaseYear": 2023,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "bullpadel",
+   "sponsorTier": "Ouro",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "roupa",
+   "sellPrice": 360,
+   "sellPctOfList": 25,
+   "durability": 88,
+   "catalogOrder": 65,
+   "extra": {
+    "collection": "Bullpadel Circuito regional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117551204-a8mfz2",
+   "name": "Nox Travel Team",
+   "manufacturer": "Nox",
+   "category": "roupa",
+   "subcategory": "jaqueta",
+   "rarity": "epico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 5000,
+   "listPrice": 6000,
+   "priceNoEventsDay1": 5937,
+   "priceWithDay1Events": 5343,
+   "priceWithSponsor": 5046,
+   "dailySwingPct": 8,
+   "bonus": {
+    "emotional_control": 3
+   },
+   "bonusTotal": 3,
+   "attributesTouched": 1,
+   "pricePerPoint": 2000,
+   "droppedSourceKeys": [
+    "reputation"
+   ],
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "label": "Circuito nacional"
+   },
+   "monthlyAvailabilityPct": 68,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "nox",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "roupa",
+   "sellPrice": 1500,
+   "sellPctOfList": 25,
+   "durability": 94,
+   "catalogOrder": 66,
+   "extra": {
+    "collection": "Nox Circuito nacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117552204-vl1yzz",
+   "name": "Wilson Signature Tour",
+   "manufacturer": "Wilson",
+   "category": "roupa",
+   "subcategory": "agasalho",
+   "rarity": "lendario",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 16000,
+   "listPrice": 19200,
+   "priceNoEventsDay1": 19775,
+   "priceWithDay1Events": 17797,
+   "priceWithSponsor": 16808,
+   "dailySwingPct": 12,
+   "bonus": {
+    "emotional_control": 4
+   },
+   "bonusTotal": 4,
+   "attributesTouched": 1,
+   "pricePerPoint": 4800,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 25,
+    "maxRanking": 100,
+    "minReputation": 40,
+    "label": "Circuito internacional"
+   },
+   "monthlyAvailabilityPct": 51,
+   "alwaysInRotation": false,
+   "releaseYear": 2025,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "wilson",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "roupa",
+   "sellPrice": 4800,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": 67,
+   "extra": {
+    "collection": "Wilson Circuito internacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117553204-ckwj4c",
+   "name": "Nox Pro Competition Kit",
+   "manufacturer": "Nox",
+   "category": "roupa",
+   "subcategory": "conjunto",
+   "rarity": "epico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 9500,
+   "listPrice": 11400,
+   "priceNoEventsDay1": 10944,
+   "priceWithDay1Events": 9850,
+   "priceWithSponsor": 9303,
+   "dailySwingPct": 8,
+   "bonus": {
+    "emotional_control": 3,
+    "agility": 3
+   },
+   "bonusTotal": 6,
+   "attributesTouched": 2,
+   "pricePerPoint": 1900,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "label": "Circuito nacional"
+   },
+   "monthlyAvailabilityPct": 70,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "nox",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "roupa",
+   "sellPrice": 2850,
+   "sellPctOfList": 25,
+   "durability": 94,
+   "catalogOrder": 68,
+   "extra": {
+    "collection": "Nox Circuito nacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117554204-9fravx",
+   "name": "Adidas Elite Tour Jacket",
+   "manufacturer": "Adidas",
+   "category": "roupa",
+   "subcategory": "jaqueta",
+   "rarity": "lendario",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 28000,
+   "listPrice": 33600,
+   "priceNoEventsDay1": 34771,
+   "priceWithDay1Events": 31293,
+   "priceWithSponsor": 29555,
+   "dailySwingPct": 12,
+   "bonus": {
+    "emotional_control": 4,
+    "strategy": 4
+   },
+   "bonusTotal": 8,
+   "attributesTouched": 2,
+   "pricePerPoint": 4200,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 25,
+    "maxRanking": 100,
+    "minReputation": 40,
+    "label": "Circuito internacional"
+   },
+   "monthlyAvailabilityPct": 43,
+   "alwaysInRotation": false,
+   "releaseYear": 2025,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "adidas",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "vestuario",
+   "equippable": true,
+   "slot": "roupa",
+   "sellPrice": 8400,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": 69,
+   "extra": {
+    "collection": "Adidas Circuito internacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117555204-hytmuq",
+   "name": "Bullpadel Champion Series",
+   "manufacturer": "Bullpadel",
+   "category": "roupa",
+   "subcategory": "agasalho",
+   "rarity": "mitico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 60000,
+   "listPrice": 72000,
+   "priceNoEventsDay1": 71370,
+   "priceWithDay1Events": 64233,
+   "priceWithSponsor": 60665,
+   "dailySwingPct": 8.1,
+   "bonus": {
+    "emotional_control": 5,
+    "agility": 5
+   },
+   "bonusTotal": 10,
+   "attributesTouched": 2,
+   "pricePerPoint": 7200,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 35,
+    "maxRanking": 40,
+    "minReputation": 65,
+    "label": "Elite mundial"
+   },
+   "monthlyAvailabilityPct": 33,
+   "alwaysInRotation": false,
+   "releaseYear": 2026,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "bullpadel",
+   "sponsorTier": "Ouro",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "roupa",
+   "sellPrice": 18000,
+   "sellPctOfList": 25,
+   "durability": 105,
+   "catalogOrder": 70,
+   "extra": {
+    "collection": "Bullpadel Elite mundial",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117556204-vyg0yl",
+   "name": "Joma Court Basic",
+   "manufacturer": "Joma",
+   "category": "tenis",
+   "subcategory": "all_court",
+   "rarity": "comum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 480,
+   "listPrice": 576,
+   "priceNoEventsDay1": 576,
+   "priceWithDay1Events": 518,
+   "priceWithSponsor": 490,
+   "dailySwingPct": 0,
+   "bonus": {
+    "agility": 1
+   },
+   "bonusTotal": 1,
+   "attributesTouched": 1,
+   "pricePerPoint": 576,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 1,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Início da carreira"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2021,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "joma",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "vestuario",
+   "equippable": true,
+   "slot": "tenis",
+   "sellPrice": 144,
+   "sellPctOfList": 25,
+   "durability": 72,
+   "catalogOrder": 71,
+   "extra": {
+    "collection": "Joma Início da carreira",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117557204-f7qsp9",
+   "name": "Asics Clay Motion",
+   "manufacturer": "Asics",
+   "category": "tenis",
+   "subcategory": "clay",
+   "rarity": "incomum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 850,
+   "listPrice": 1020,
+   "priceNoEventsDay1": 1024,
+   "priceWithDay1Events": 922,
+   "priceWithSponsor": 871,
+   "dailySwingPct": 2,
+   "bonus": {
+    "agility": 1
+   },
+   "bonusTotal": 1,
+   "attributesTouched": 1,
+   "pricePerPoint": 1020,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 3,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Circuito amador"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2022,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "asics",
+   "sponsorTier": "Bronze",
+   "sponsorSlot": "calcado",
+   "equippable": true,
+   "slot": "tenis",
+   "sellPrice": 255,
+   "sellPctOfList": 25,
+   "durability": 80,
+   "catalogOrder": 72,
+   "extra": {
+    "collection": "Asics Circuito amador",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117558204-gix1bu",
+   "name": "Mizuno Indoor Flash",
+   "manufacturer": "Mizuno",
+   "category": "tenis",
+   "subcategory": "indoor",
+   "rarity": "raro",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 1800,
+   "listPrice": 2160,
+   "priceNoEventsDay1": 2123,
+   "priceWithDay1Events": 1910,
+   "priceWithSponsor": null,
+   "dailySwingPct": 5,
+   "bonus": {
+    "agility": 2
+   },
+   "bonusTotal": 2,
+   "attributesTouched": 1,
+   "pricePerPoint": 1080,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 8,
+    "maxRanking": 500,
+    "minReputation": 8,
+    "label": "Circuito regional"
+   },
+   "monthlyAvailabilityPct": 90,
+   "alwaysInRotation": false,
+   "releaseYear": 2023,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "tenis",
+   "sellPrice": 540,
+   "sellPctOfList": 25,
+   "durability": 88,
+   "catalogOrder": 73,
+   "extra": {
+    "collection": "Mizuno Circuito regional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117559204-kkcv36",
+   "name": "Adidas Pro Stability",
+   "manufacturer": "Adidas",
+   "category": "tenis",
+   "subcategory": "all_court",
+   "rarity": "epico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 5000,
+   "listPrice": 6000,
+   "priceNoEventsDay1": 5866,
+   "priceWithDay1Events": 5279,
+   "priceWithSponsor": 4986,
+   "dailySwingPct": 8,
+   "bonus": {
+    "agility": 3
+   },
+   "bonusTotal": 3,
+   "attributesTouched": 1,
+   "pricePerPoint": 2000,
+   "droppedSourceKeys": [
+    "stamina"
+   ],
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "label": "Circuito nacional"
+   },
+   "monthlyAvailabilityPct": 73,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "adidas",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "vestuario",
+   "equippable": true,
+   "slot": "tenis",
+   "sellPrice": 1500,
+   "sellPctOfList": 25,
+   "durability": 94,
+   "catalogOrder": 74,
+   "extra": {
+    "collection": "Adidas Circuito nacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117560204-2adwum",
+   "name": "Babolat Jet Legend",
+   "manufacturer": "Babolat",
+   "category": "tenis",
+   "subcategory": "all_court",
+   "rarity": "lendario",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 16000,
+   "listPrice": 19200,
+   "priceNoEventsDay1": 20141,
+   "priceWithDay1Events": 18127,
+   "priceWithSponsor": 17120,
+   "dailySwingPct": 12,
+   "bonus": {
+    "agility": 4
+   },
+   "bonusTotal": 4,
+   "attributesTouched": 1,
+   "pricePerPoint": 4800,
+   "droppedSourceKeys": [
+    "speed"
+   ],
+   "requirement": {
+    "minCareerLevel": 25,
+    "maxRanking": 100,
+    "minReputation": 40,
+    "label": "Circuito internacional"
+   },
+   "monthlyAvailabilityPct": 49,
+   "alwaysInRotation": false,
+   "releaseYear": 2025,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "babolat",
+   "sponsorTier": "Bronze",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "tenis",
+   "sellPrice": 4800,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": 75,
+   "extra": {
+    "collection": "Babolat Circuito internacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117561204-6a1ts8",
+   "name": "Joma Elite Court",
+   "manufacturer": "Joma",
+   "category": "tenis",
+   "subcategory": "all_court",
+   "rarity": "epico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 9000,
+   "listPrice": 10800,
+   "priceNoEventsDay1": 10575,
+   "priceWithDay1Events": 9517,
+   "priceWithSponsor": 8988,
+   "dailySwingPct": 8,
+   "bonus": {
+    "agility": 3,
+    "defense": 3
+   },
+   "bonusTotal": 6,
+   "attributesTouched": 2,
+   "pricePerPoint": 1800,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "label": "Circuito nacional"
+   },
+   "monthlyAvailabilityPct": 68,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "joma",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "vestuario",
+   "equippable": true,
+   "slot": "tenis",
+   "sellPrice": 2700,
+   "sellPctOfList": 25,
+   "durability": 94,
+   "catalogOrder": 76,
+   "extra": {
+    "collection": "Joma Circuito nacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117562204-hlas7o",
+   "name": "Asics Pro Tour Legend",
+   "manufacturer": "Asics",
+   "category": "tenis",
+   "subcategory": "clay",
+   "rarity": "lendario",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 30000,
+   "listPrice": 36000,
+   "priceNoEventsDay1": 34133,
+   "priceWithDay1Events": 30719,
+   "priceWithSponsor": 29013,
+   "dailySwingPct": 10.6,
+   "bonus": {
+    "agility": 4,
+    "smash": 4
+   },
+   "bonusTotal": 8,
+   "attributesTouched": 2,
+   "pricePerPoint": 4500,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 25,
+    "maxRanking": 100,
+    "minReputation": 40,
+    "label": "Circuito internacional"
+   },
+   "monthlyAvailabilityPct": 48,
+   "alwaysInRotation": false,
+   "releaseYear": 2025,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "asics",
+   "sponsorTier": "Bronze",
+   "sponsorSlot": "calcado",
+   "equippable": true,
+   "slot": "tenis",
+   "sellPrice": 9000,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": 77,
+   "extra": {
+    "collection": "Asics Circuito internacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117563204-xmw397",
+   "name": "Adidas Master Series",
+   "manufacturer": "Adidas",
+   "category": "tenis",
+   "subcategory": "all_court",
+   "rarity": "mitico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 55000,
+   "listPrice": 66000,
+   "priceNoEventsDay1": 60061,
+   "priceWithDay1Events": 54055,
+   "priceWithSponsor": 51052,
+   "dailySwingPct": 18,
+   "bonus": {
+    "agility": 5,
+    "smash": 5
+   },
+   "bonusTotal": 10,
+   "attributesTouched": 2,
+   "pricePerPoint": 6600,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 35,
+    "maxRanking": 40,
+    "minReputation": 65,
+    "label": "Elite mundial"
+   },
+   "monthlyAvailabilityPct": 27,
+   "alwaysInRotation": false,
+   "releaseYear": 2026,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "adidas",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "vestuario",
+   "equippable": true,
+   "slot": "tenis",
+   "sellPrice": 16500,
+   "sellPctOfList": 25,
+   "durability": 105,
+   "catalogOrder": 78,
+   "extra": {
+    "collection": "Adidas Elite mundial",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117564204-vtlku1",
+   "name": "Padel Start Compact",
+   "manufacturer": "Padel Start",
+   "category": "mochila",
+   "subcategory": "compact",
+   "rarity": "comum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 260,
+   "listPrice": 312,
+   "priceNoEventsDay1": 312,
+   "priceWithDay1Events": 281,
+   "priceWithSponsor": null,
+   "dailySwingPct": 0,
+   "bonus": {
+    "strategy": 1
+   },
+   "bonusTotal": 1,
+   "attributesTouched": 1,
+   "pricePerPoint": 312,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 1,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Início da carreira"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2021,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "mochila",
+   "sellPrice": 78,
+   "sellPctOfList": 25,
+   "durability": 72,
+   "catalogOrder": 79,
+   "extra": {
+    "collection": "Padel Start Início da carreira",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117565204-f3pcsl",
+   "name": "Head Team Backpack",
+   "manufacturer": "Head",
+   "category": "mochila",
+   "subcategory": "compact",
+   "rarity": "incomum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 620,
+   "listPrice": 744,
+   "priceNoEventsDay1": 751,
+   "priceWithDay1Events": 676,
+   "priceWithSponsor": 638,
+   "dailySwingPct": 1.9,
+   "bonus": {
+    "strategy": 1
+   },
+   "bonusTotal": 1,
+   "attributesTouched": 1,
+   "pricePerPoint": 744,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 3,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Circuito amador"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2022,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "head",
+   "sponsorTier": "Ouro",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "mochila",
+   "sellPrice": 186,
+   "sellPctOfList": 25,
+   "durability": 80,
+   "catalogOrder": 80,
+   "extra": {
+    "collection": "Head Circuito amador",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117566204-kmhtqy",
+   "name": "Nox Thermal Duo",
+   "manufacturer": "Nox",
+   "category": "mochila",
+   "subcategory": "thermal",
+   "rarity": "raro",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 1400,
+   "listPrice": 1680,
+   "priceNoEventsDay1": 1722,
+   "priceWithDay1Events": 1550,
+   "priceWithSponsor": 1464,
+   "dailySwingPct": 5,
+   "bonus": {
+    "strategy": 2
+   },
+   "bonusTotal": 2,
+   "attributesTouched": 1,
+   "pricePerPoint": 840,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 8,
+    "maxRanking": 500,
+    "minReputation": 8,
+    "label": "Circuito regional"
+   },
+   "monthlyAvailabilityPct": 89,
+   "alwaysInRotation": false,
+   "releaseYear": 2023,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "nox",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "mochila",
+   "sellPrice": 420,
+   "sellPctOfList": 25,
+   "durability": 88,
+   "catalogOrder": 81,
+   "extra": {
+    "collection": "Nox Circuito regional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117567204-hca7hv",
+   "name": "Bullpadel Pro 12",
+   "manufacturer": "Bullpadel",
+   "category": "mochila",
+   "subcategory": "pro",
+   "rarity": "epico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 5000,
+   "listPrice": 6000,
+   "priceNoEventsDay1": 5764,
+   "priceWithDay1Events": 5188,
+   "priceWithSponsor": 4900,
+   "dailySwingPct": 8,
+   "bonus": {
+    "emotional_control": 3
+   },
+   "bonusTotal": 3,
+   "attributesTouched": 1,
+   "pricePerPoint": 2000,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "label": "Circuito nacional"
+   },
+   "monthlyAvailabilityPct": 66,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "bullpadel",
+   "sponsorTier": "Ouro",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "mochila",
+   "sellPrice": 1500,
+   "sellPctOfList": 25,
+   "durability": 94,
+   "catalogOrder": 82,
+   "extra": {
+    "collection": "Bullpadel Circuito nacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117568204-bz2861",
+   "name": "Wilson Tour Vault",
+   "manufacturer": "Wilson",
+   "category": "mochila",
+   "subcategory": "thermal",
+   "rarity": "lendario",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 16000,
+   "listPrice": 19200,
+   "priceNoEventsDay1": 18101,
+   "priceWithDay1Events": 16291,
+   "priceWithSponsor": 15386,
+   "dailySwingPct": 11.6,
+   "bonus": {
+    "emotional_control": 4
+   },
+   "bonusTotal": 4,
+   "attributesTouched": 1,
+   "pricePerPoint": 4800,
+   "droppedSourceKeys": [
+    "reputation"
+   ],
+   "requirement": {
+    "minCareerLevel": 25,
+    "maxRanking": 100,
+    "minReputation": 40,
+    "label": "Circuito internacional"
+   },
+   "monthlyAvailabilityPct": 49,
+   "alwaysInRotation": false,
+   "releaseYear": 2025,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "wilson",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "mochila",
+   "sellPrice": 4800,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": 83,
+   "extra": {
+    "collection": "Wilson Circuito internacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117569204-ghrzi3",
+   "name": "Head Tour Elite Bag",
+   "manufacturer": "Head",
+   "category": "mochila",
+   "subcategory": "pro",
+   "rarity": "epico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 8800,
+   "listPrice": 10560,
+   "priceNoEventsDay1": 10843,
+   "priceWithDay1Events": 9759,
+   "priceWithSponsor": 9217,
+   "dailySwingPct": 8,
+   "bonus": {
+    "emotional_control": 3,
+    "strategy": 3
+   },
+   "bonusTotal": 6,
+   "attributesTouched": 2,
+   "pricePerPoint": 1760,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "label": "Circuito nacional"
+   },
+   "monthlyAvailabilityPct": 76,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "head",
+   "sponsorTier": "Ouro",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "mochila",
+   "sellPrice": 2640,
+   "sellPctOfList": 25,
+   "durability": 94,
+   "catalogOrder": 84,
+   "extra": {
+    "collection": "Head Circuito nacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117570204-3zp7yz",
+   "name": "Wilson Champion Vault",
+   "manufacturer": "Wilson",
+   "category": "mochila",
+   "subcategory": "thermal",
+   "rarity": "lendario",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 25000,
+   "listPrice": 30000,
+   "priceNoEventsDay1": 30898,
+   "priceWithDay1Events": 27808,
+   "priceWithSponsor": 26263,
+   "dailySwingPct": 12,
+   "bonus": {
+    "emotional_control": 4,
+    "strategy": 4
+   },
+   "bonusTotal": 8,
+   "attributesTouched": 2,
+   "pricePerPoint": 3750,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 25,
+    "maxRanking": 100,
+    "minReputation": 40,
+    "label": "Circuito internacional"
+   },
+   "monthlyAvailabilityPct": 47,
+   "alwaysInRotation": false,
+   "releaseYear": 2025,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "wilson",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "mochila",
+   "sellPrice": 7500,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": 85,
+   "extra": {
+    "collection": "Wilson Circuito internacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117571204-vwcgkd",
+   "name": "Bullpadel Master Pro 20",
+   "manufacturer": "Bullpadel",
+   "category": "mochila",
+   "subcategory": "pro",
+   "rarity": "mitico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 52000,
+   "listPrice": 62400,
+   "priceNoEventsDay1": 59556,
+   "priceWithDay1Events": 53601,
+   "priceWithSponsor": 50623,
+   "dailySwingPct": 18,
+   "bonus": {
+    "strategy": 5,
+    "emotional_control": 5
+   },
+   "bonusTotal": 10,
+   "attributesTouched": 2,
+   "pricePerPoint": 6240,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 35,
+    "maxRanking": 40,
+    "minReputation": 65,
+    "label": "Elite mundial"
+   },
+   "monthlyAvailabilityPct": 32,
+   "alwaysInRotation": false,
+   "releaseYear": 2026,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "bullpadel",
+   "sponsorTier": "Ouro",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "mochila",
+   "sellPrice": 15600,
+   "sellPctOfList": 25,
+   "durability": 105,
+   "catalogOrder": 86,
+   "extra": {
+    "collection": "Bullpadel Elite mundial",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117572204-cx36u3",
+   "name": "Pulse Training Band",
+   "manufacturer": "Pulse",
+   "category": "acessorio_tec",
+   "subcategory": "smartwatch",
+   "rarity": "incomum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 900,
+   "listPrice": 1080,
+   "priceNoEventsDay1": 1087,
+   "priceWithDay1Events": 979,
+   "priceWithSponsor": null,
+   "dailySwingPct": 2,
+   "bonus": {
+    "emotional_control": 1
+   },
+   "bonusTotal": 1,
+   "attributesTouched": 1,
+   "pricePerPoint": 1080,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 3,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Circuito amador"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2022,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "acessorio_tec",
+   "sellPrice": 270,
+   "sellPctOfList": 25,
+   "durability": 80,
+   "catalogOrder": 87,
+   "extra": {
+    "collection": "Pulse Circuito amador",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117573204-chctj6",
+   "name": "PlaySight Shot Sensor",
+   "manufacturer": "PlaySight",
+   "category": "acessorio_tec",
+   "subcategory": "sensor",
+   "rarity": "raro",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 2600,
+   "listPrice": 3120,
+   "priceNoEventsDay1": 3076,
+   "priceWithDay1Events": 2769,
+   "priceWithSponsor": null,
+   "dailySwingPct": 5,
+   "bonus": {
+    "strategy": 2
+   },
+   "bonusTotal": 2,
+   "attributesTouched": 1,
+   "pricePerPoint": 1560,
+   "droppedSourceKeys": [
+    "concentration"
+   ],
+   "requirement": {
+    "minCareerLevel": 8,
+    "maxRanking": 500,
+    "minReputation": 8,
+    "label": "Circuito regional"
+   },
+   "monthlyAvailabilityPct": 88,
+   "alwaysInRotation": false,
+   "releaseYear": 2023,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "acessorio_tec",
+   "sellPrice": 780,
+   "sellPctOfList": 25,
+   "durability": 88,
+   "catalogOrder": 88,
+   "extra": {
+    "collection": "PlaySight Circuito regional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117574204-2w52xx",
+   "name": "Garmin Athlete Pro",
+   "manufacturer": "Garmin",
+   "category": "acessorio_tec",
+   "subcategory": "smartwatch",
+   "rarity": "epico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 5200,
+   "listPrice": 6240,
+   "priceNoEventsDay1": 6385,
+   "priceWithDay1Events": 5746,
+   "priceWithSponsor": 5427,
+   "dailySwingPct": 8,
+   "bonus": {
+    "emotional_control": 3
+   },
+   "bonusTotal": 3,
+   "attributesTouched": 1,
+   "pricePerPoint": 2080,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "label": "Circuito nacional"
+   },
+   "monthlyAvailabilityPct": 77,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "garmin",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "comercial",
+   "equippable": true,
+   "slot": "acessorio_tec",
+   "sellPrice": 1560,
+   "sellPctOfList": 25,
+   "durability": 94,
+   "catalogOrder": 89,
+   "extra": {
+    "collection": "Garmin Circuito nacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117575204-3nun55",
+   "name": "PlaySight Match Vision",
+   "manufacturer": "PlaySight",
+   "category": "acessorio_tec",
+   "subcategory": "camera",
+   "rarity": "lendario",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 16000,
+   "listPrice": 19200,
+   "priceNoEventsDay1": 19656,
+   "priceWithDay1Events": 17690,
+   "priceWithSponsor": null,
+   "dailySwingPct": 12,
+   "bonus": {
+    "strategy": 4
+   },
+   "bonusTotal": 4,
+   "attributesTouched": 1,
+   "pricePerPoint": 4800,
+   "droppedSourceKeys": [
+    "tactics"
+   ],
+   "requirement": {
+    "minCareerLevel": 25,
+    "maxRanking": 100,
+    "minReputation": 40,
+    "label": "Circuito internacional"
+   },
+   "monthlyAvailabilityPct": 49,
+   "alwaysInRotation": false,
+   "releaseYear": 2025,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "acessorio_tec",
+   "sellPrice": 4800,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": 90,
+   "extra": {
+    "collection": "PlaySight Circuito internacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117576204-9h3n4m",
+   "name": "NeuroCourt Tactical Lab",
+   "manufacturer": "NeuroCourt",
+   "category": "acessorio_tec",
+   "subcategory": "sensor",
+   "rarity": "mitico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 35000,
+   "listPrice": 42000,
+   "priceNoEventsDay1": 45087,
+   "priceWithDay1Events": 40579,
+   "priceWithSponsor": null,
+   "dailySwingPct": 18,
+   "bonus": {
+    "strategy": 5
+   },
+   "bonusTotal": 5,
+   "attributesTouched": 1,
+   "pricePerPoint": 8400,
+   "droppedSourceKeys": [
+    "concentration",
+    "tactics"
+   ],
+   "requirement": {
+    "minCareerLevel": 35,
+    "maxRanking": 40,
+    "minReputation": 65,
+    "label": "Elite mundial"
+   },
+   "monthlyAvailabilityPct": 30,
+   "alwaysInRotation": false,
+   "releaseYear": 2026,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "acessorio_tec",
+   "sellPrice": 10500,
+   "sellPctOfList": 25,
+   "durability": 105,
+   "catalogOrder": 91,
+   "extra": {
+    "collection": "NeuroCourt Elite mundial",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117577204-kst8oz",
+   "name": "Garmin Padel Elite",
+   "manufacturer": "Garmin",
+   "category": "acessorio_tec",
+   "subcategory": "smartwatch",
+   "rarity": "epico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 11000,
+   "listPrice": 13200,
+   "priceNoEventsDay1": 13463,
+   "priceWithDay1Events": 12117,
+   "priceWithSponsor": 11444,
+   "dailySwingPct": 8,
+   "bonus": {
+    "strategy": 3,
+    "agility": 3
+   },
+   "bonusTotal": 6,
+   "attributesTouched": 2,
+   "pricePerPoint": 2200,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "label": "Circuito nacional"
+   },
+   "monthlyAvailabilityPct": 73,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "garmin",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "comercial",
+   "equippable": true,
+   "slot": "acessorio_tec",
+   "sellPrice": 3300,
+   "sellPctOfList": 25,
+   "durability": 94,
+   "catalogOrder": 92,
+   "extra": {
+    "collection": "Garmin Circuito nacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117578204-z1dwq0",
+   "name": "Playtomic Court Vision",
+   "manufacturer": "Playtomic",
+   "category": "acessorio_tec",
+   "subcategory": "sensor",
+   "rarity": "lendario",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 32000,
+   "listPrice": 38400,
+   "priceNoEventsDay1": 36630,
+   "priceWithDay1Events": 32967,
+   "priceWithSponsor": 31135,
+   "dailySwingPct": 12,
+   "bonus": {
+    "strategy": 4,
+    "defense": 4
+   },
+   "bonusTotal": 8,
+   "attributesTouched": 2,
+   "pricePerPoint": 4800,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 25,
+    "maxRanking": 100,
+    "minReputation": 40,
+    "label": "Circuito internacional"
+   },
+   "monthlyAvailabilityPct": 47,
+   "alwaysInRotation": false,
+   "releaseYear": 2025,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "playtomic",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "comercial",
+   "equippable": true,
+   "slot": "acessorio_tec",
+   "sellPrice": 9600,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": 93,
+   "extra": {
+    "collection": "Playtomic Circuito internacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117579204-4yfyzj",
+   "name": "Movistar Smart Analytics Pro",
+   "manufacturer": "Movistar",
+   "category": "acessorio_tec",
+   "subcategory": "camera",
+   "rarity": "mitico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 54000,
+   "listPrice": 64800,
+   "priceNoEventsDay1": 60559,
+   "priceWithDay1Events": 54503,
+   "priceWithSponsor": 51475,
+   "dailySwingPct": 17.9,
+   "bonus": {
+    "strategy": 5,
+    "agility": 5
+   },
+   "bonusTotal": 10,
+   "attributesTouched": 2,
+   "pricePerPoint": 6480,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 35,
+    "maxRanking": 40,
+    "minReputation": 65,
+    "label": "Elite mundial"
+   },
+   "monthlyAvailabilityPct": 38,
+   "alwaysInRotation": false,
+   "releaseYear": 2026,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "movistar",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "comercial",
+   "equippable": true,
+   "slot": "acessorio_tec",
+   "sellPrice": 16200,
+   "sellPctOfList": 25,
+   "durability": 105,
+   "catalogOrder": 94,
+   "extra": {
+    "collection": "Movistar Elite mundial",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117580204-evpjtz",
+   "name": "Joma Wristband Base",
+   "manufacturer": "Joma",
+   "category": "acessorio",
+   "subcategory": "wristband",
+   "rarity": "comum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 60,
+   "listPrice": 72,
+   "priceNoEventsDay1": 72,
+   "priceWithDay1Events": 65,
+   "priceWithSponsor": 61,
+   "dailySwingPct": 0,
+   "bonus": {
+    "emotional_control": 1
+   },
+   "bonusTotal": 1,
+   "attributesTouched": 1,
+   "pricePerPoint": 72,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 1,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Início da carreira"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2021,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "joma",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "vestuario",
+   "equippable": true,
+   "slot": "acessorio",
+   "sellPrice": 18,
+   "sellPctOfList": 25,
+   "durability": 72,
+   "catalogOrder": 95,
+   "extra": {
+    "collection": "Joma Início da carreira",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117581204-qf70vb",
+   "name": "Adidas Focus Headband",
+   "manufacturer": "Adidas",
+   "category": "acessorio",
+   "subcategory": "headband",
+   "rarity": "incomum",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 250,
+   "listPrice": 300,
+   "priceNoEventsDay1": 298,
+   "priceWithDay1Events": 268,
+   "priceWithSponsor": 254,
+   "dailySwingPct": 2,
+   "bonus": {
+    "emotional_control": 1
+   },
+   "bonusTotal": 1,
+   "attributesTouched": 1,
+   "pricePerPoint": 300,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 3,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Circuito amador"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": 2022,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "adidas",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "vestuario",
+   "equippable": true,
+   "slot": "acessorio",
+   "sellPrice": 75,
+   "sellPctOfList": 25,
+   "durability": 80,
+   "catalogOrder": 96,
+   "extra": {
+    "collection": "Adidas Circuito amador",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117582204-mpfzjv",
+   "name": "Nox Racket Protector",
+   "manufacturer": "Nox",
+   "category": "acessorio",
+   "subcategory": "protetor",
+   "rarity": "raro",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 1200,
+   "listPrice": 1440,
+   "priceNoEventsDay1": 1405,
+   "priceWithDay1Events": 1264,
+   "priceWithSponsor": 1194,
+   "dailySwingPct": 5,
+   "bonus": {
+    "defense": 2
+   },
+   "bonusTotal": 2,
+   "attributesTouched": 1,
+   "pricePerPoint": 720,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 8,
+    "maxRanking": 500,
+    "minReputation": 8,
+    "label": "Circuito regional"
+   },
+   "monthlyAvailabilityPct": 88,
+   "alwaysInRotation": false,
+   "releaseYear": 2023,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "nox",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "acessorio",
+   "sellPrice": 360,
+   "sellPctOfList": 25,
+   "durability": 88,
+   "catalogOrder": 97,
+   "extra": {
+    "collection": "Nox Circuito regional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117583204-sk3rld",
+   "name": "HydroSport Thermal Pro",
+   "manufacturer": "HydroSport",
+   "category": "acessorio",
+   "subcategory": "garrafa",
+   "rarity": "epico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 5000,
+   "listPrice": 6000,
+   "priceNoEventsDay1": 5878,
+   "priceWithDay1Events": 5291,
+   "priceWithSponsor": null,
+   "dailySwingPct": 8,
+   "bonus": {
+    "emotional_control": 3
+   },
+   "bonusTotal": 3,
+   "attributesTouched": 1,
+   "pricePerPoint": 2000,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "label": "Circuito nacional"
+   },
+   "monthlyAvailabilityPct": 67,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "acessorio",
+   "sellPrice": 1500,
+   "sellPctOfList": 25,
+   "durability": 94,
+   "catalogOrder": 98,
+   "extra": {
+    "collection": "HydroSport Circuito nacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117584204-c85eaw",
+   "name": "Therabody Recovery Kit",
+   "manufacturer": "Therabody",
+   "category": "acessorio",
+   "subcategory": "recovery",
+   "rarity": "lendario",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 16000,
+   "listPrice": 19200,
+   "priceNoEventsDay1": 18772,
+   "priceWithDay1Events": 16895,
+   "priceWithSponsor": 15956,
+   "dailySwingPct": 11.9,
+   "bonus": {
+    "agility": 4
+   },
+   "bonusTotal": 4,
+   "attributesTouched": 1,
+   "pricePerPoint": 4800,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 25,
+    "maxRanking": 100,
+    "minReputation": 40,
+    "label": "Circuito internacional"
+   },
+   "monthlyAvailabilityPct": 54,
+   "alwaysInRotation": false,
+   "releaseYear": 2025,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "therabody",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "comercial",
+   "equippable": true,
+   "slot": "acessorio",
+   "sellPrice": 4800,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": 99,
+   "extra": {
+    "collection": "Therabody Circuito internacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117585204-uq5run",
+   "name": "Nox Elite Wristband",
+   "manufacturer": "Nox",
+   "category": "acessorio",
+   "subcategory": "wristband",
+   "rarity": "epico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 7200,
+   "listPrice": 8640,
+   "priceNoEventsDay1": 8625,
+   "priceWithDay1Events": 7762,
+   "priceWithSponsor": 7331,
+   "dailySwingPct": 7.5,
+   "bonus": {
+    "agility": 3
+   },
+   "bonusTotal": 3,
+   "attributesTouched": 1,
+   "pricePerPoint": 2880,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "label": "Circuito nacional"
+   },
+   "monthlyAvailabilityPct": 79,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "nox",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "acessorio",
+   "sellPrice": 2160,
+   "sellPctOfList": 25,
+   "durability": 94,
+   "catalogOrder": 100,
+   "extra": {
+    "collection": "Nox Circuito nacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117586204-n1kepp",
+   "name": "Adidas Focus Master",
+   "manufacturer": "Adidas",
+   "category": "acessorio",
+   "subcategory": "headband",
+   "rarity": "lendario",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 22000,
+   "listPrice": 26400,
+   "priceNoEventsDay1": 24990,
+   "priceWithDay1Events": 22491,
+   "priceWithSponsor": 21242,
+   "dailySwingPct": 12,
+   "bonus": {
+    "emotional_control": 4,
+    "strategy": 4
+   },
+   "bonusTotal": 8,
+   "attributesTouched": 2,
+   "pricePerPoint": 3300,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 25,
+    "maxRanking": 100,
+    "minReputation": 40,
+    "label": "Circuito internacional"
+   },
+   "monthlyAvailabilityPct": 38,
+   "alwaysInRotation": false,
+   "releaseYear": 2025,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "adidas",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "vestuario",
+   "equippable": true,
+   "slot": "acessorio",
+   "sellPrice": 6600,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": 101,
+   "extra": {
+    "collection": "Adidas Circuito internacional",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117587204-z5mv2c",
+   "name": "Therabody Recovery Master",
+   "manufacturer": "Therabody",
+   "category": "acessorio",
+   "subcategory": "recovery",
+   "rarity": "mitico",
+   "source": "storeCatalog",
+   "itemClass": "normal",
+   "storedPrice": 48000,
+   "listPrice": 57600,
+   "priceNoEventsDay1": 52420,
+   "priceWithDay1Events": 47178,
+   "priceWithSponsor": 44557,
+   "dailySwingPct": 17.9,
+   "bonus": {
+    "emotional_control": 5,
+    "defense": 5
+   },
+   "bonusTotal": 10,
+   "attributesTouched": 2,
+   "pricePerPoint": 5760,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 35,
+    "maxRanking": 40,
+    "minReputation": 65,
+    "label": "Elite mundial"
+   },
+   "monthlyAvailabilityPct": 30,
+   "alwaysInRotation": false,
+   "releaseYear": 2026,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": "therabody",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "comercial",
+   "equippable": true,
+   "slot": "acessorio",
+   "sellPrice": 14400,
+   "sellPctOfList": 25,
+   "durability": 105,
+   "catalogOrder": 102,
+   "extra": {
+    "collection": "Therabody Elite mundial",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117588204-2jw688",
+   "name": "Medalha Circuito Local",
+   "manufacturer": "Padel Heritage",
+   "category": "colecionavel",
+   "subcategory": "medalha",
+   "rarity": "raro",
+   "source": "storeCatalog",
+   "itemClass": "colecionavel",
+   "storedPrice": 1200,
+   "listPrice": 1440,
+   "priceNoEventsDay1": 1421,
+   "priceWithDay1Events": 1279,
+   "priceWithSponsor": null,
+   "dailySwingPct": 5,
+   "bonus": {
+    "emotional_control": 2
+   },
+   "bonusTotal": 2,
+   "attributesTouched": 1,
+   "pricePerPoint": 720,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 8,
+    "maxRanking": 500,
+    "minReputation": 8,
+    "label": "Circuito regional"
+   },
+   "monthlyAvailabilityPct": 89,
+   "alwaysInRotation": false,
+   "releaseYear": 2023,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "colecionavel",
+   "sellPrice": 360,
+   "sellPctOfList": 25,
+   "durability": 88,
+   "catalogOrder": 103,
+   "extra": {
+    "collection": "Padel Heritage",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117589204-c0w7v3",
+   "name": "Réplica Troféu Major",
+   "manufacturer": "Padel Heritage",
+   "category": "colecionavel",
+   "subcategory": "replica",
+   "rarity": "epico",
+   "source": "storeCatalog",
+   "itemClass": "colecionavel",
+   "storedPrice": 5000,
+   "listPrice": 6000,
+   "priceNoEventsDay1": 6161,
+   "priceWithDay1Events": 5545,
+   "priceWithSponsor": null,
+   "dailySwingPct": 8,
+   "bonus": {
+    "emotional_control": 3
+   },
+   "bonusTotal": 3,
+   "attributesTouched": 1,
+   "pricePerPoint": 2000,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "label": "Circuito nacional"
+   },
+   "monthlyAvailabilityPct": 68,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "colecionavel",
+   "sellPrice": 1500,
+   "sellPctOfList": 25,
+   "durability": 94,
+   "catalogOrder": 104,
+   "extra": {
+    "collection": "Padel Heritage",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117590204-c70lag",
+   "name": "Raquete Vintage 1995",
+   "manufacturer": "Padel Heritage",
+   "category": "colecionavel",
+   "subcategory": "replica",
+   "rarity": "lendario",
+   "source": "storeCatalog",
+   "itemClass": "colecionavel",
+   "storedPrice": 16000,
+   "listPrice": 19200,
+   "priceNoEventsDay1": 19918,
+   "priceWithDay1Events": 17926,
+   "priceWithSponsor": null,
+   "dailySwingPct": 12,
+   "bonus": {
+    "emotional_control": 4
+   },
+   "bonusTotal": 4,
+   "attributesTouched": 1,
+   "pricePerPoint": 4800,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 25,
+    "maxRanking": 100,
+    "minReputation": 40,
+    "label": "Circuito internacional"
+   },
+   "monthlyAvailabilityPct": 48,
+   "alwaysInRotation": false,
+   "releaseYear": 2025,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "colecionavel",
+   "sellPrice": 4800,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": 105,
+   "extra": {
+    "collection": "Padel Heritage",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117591204-iaznvo",
+   "name": "Troféu Fundadores",
+   "manufacturer": "Padel Heritage",
+   "category": "colecionavel",
+   "subcategory": "trofeu",
+   "rarity": "mitico",
+   "source": "storeCatalog",
+   "itemClass": "colecionavel",
+   "storedPrice": 35000,
+   "listPrice": 42000,
+   "priceNoEventsDay1": 38732,
+   "priceWithDay1Events": 34859,
+   "priceWithSponsor": null,
+   "dailySwingPct": 15.9,
+   "bonus": {
+    "emotional_control": 5,
+    "strategy": 5
+   },
+   "bonusTotal": 10,
+   "attributesTouched": 2,
+   "pricePerPoint": 4200,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 35,
+    "maxRanking": 40,
+    "minReputation": 65,
+    "label": "Elite mundial"
+   },
+   "monthlyAvailabilityPct": 29,
+   "alwaysInRotation": false,
+   "releaseYear": 2026,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "colecionavel",
+   "sellPrice": 10500,
+   "sellPctOfList": 25,
+   "durability": 105,
+   "catalogOrder": 106,
+   "extra": {
+    "collection": "Padel Heritage",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117592204-msh7xo",
+   "name": "Coroa do Grand Slam",
+   "manufacturer": "Padel Heritage",
+   "category": "colecionavel",
+   "subcategory": "trofeu",
+   "rarity": "exclusivo",
+   "source": "storeCatalog",
+   "itemClass": "colecionavel",
+   "storedPrice": 65000,
+   "listPrice": 78000,
+   "priceNoEventsDay1": 69571,
+   "priceWithDay1Events": 62614,
+   "priceWithSponsor": null,
+   "dailySwingPct": 22.1,
+   "bonus": {
+    "emotional_control": 6,
+    "strategy": 6
+   },
+   "bonusTotal": 12,
+   "attributesTouched": 2,
+   "pricePerPoint": 6500,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 45,
+    "maxRanking": 10,
+    "minReputation": 85,
+    "label": "Lendas do circuito"
+   },
+   "monthlyAvailabilityPct": 19,
+   "alwaysInRotation": false,
+   "releaseYear": 2026,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": true,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "colecionavel",
+   "sellPrice": 19500,
+   "sellPctOfList": 25,
+   "durability": 110,
+   "catalogOrder": 107,
+   "extra": {
+    "collection": "Padel Heritage",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117593204-3w8s2f",
+   "name": "Bullpadel Legacy Crown",
+   "manufacturer": "Bullpadel",
+   "category": "raquete",
+   "subcategory": "power",
+   "rarity": "exclusivo",
+   "source": "storeCatalog",
+   "itemClass": "exclusivo",
+   "storedPrice": 65000,
+   "listPrice": 78000,
+   "priceNoEventsDay1": 87700,
+   "priceWithDay1Events": 78930,
+   "priceWithSponsor": 74545,
+   "dailySwingPct": 24.9,
+   "bonus": {
+    "smash": 6,
+    "bandeja": 6
+   },
+   "bonusTotal": 12,
+   "attributesTouched": 2,
+   "pricePerPoint": 6500,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 45,
+    "maxRanking": 10,
+    "minReputation": 85,
+    "label": "Lendas do circuito"
+   },
+   "monthlyAvailabilityPct": 18,
+   "alwaysInRotation": false,
+   "releaseYear": 2026,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": true,
+   "isAvailableFlag": true,
+   "sponsorId": "bullpadel",
+   "sponsorTier": "Ouro",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 19500,
+   "sellPctOfList": 25,
+   "durability": 110,
+   "catalogOrder": 108,
+   "extra": {
+    "shape": "diamante",
+    "balance": "alto",
+    "weight": 372,
+    "collection": "Legacy Crown",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117594204-yfuplw",
+   "name": "Nox Maestro One of One",
+   "manufacturer": "Nox",
+   "category": "raquete",
+   "subcategory": "hybrid",
+   "rarity": "exclusivo",
+   "source": "storeCatalog",
+   "itemClass": "exclusivo",
+   "storedPrice": 65000,
+   "listPrice": 78000,
+   "priceNoEventsDay1": 74379,
+   "priceWithDay1Events": 66941,
+   "priceWithSponsor": 63222,
+   "dailySwingPct": 24.9,
+   "bonus": {
+    "volley": 6,
+    "strategy": 6
+   },
+   "bonusTotal": 12,
+   "attributesTouched": 2,
+   "pricePerPoint": 6500,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 45,
+    "maxRanking": 10,
+    "minReputation": 85,
+    "label": "Lendas do circuito"
+   },
+   "monthlyAvailabilityPct": 20,
+   "alwaysInRotation": false,
+   "releaseYear": 2026,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": true,
+   "isAvailableFlag": true,
+   "sponsorId": "nox",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 19500,
+   "sellPctOfList": 25,
+   "durability": 110,
+   "catalogOrder": 109,
+   "extra": {
+    "shape": "lagrima",
+    "balance": "medio",
+    "weight": 365,
+    "collection": "Maestro",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shopitem-1791117595204-0j545r",
+   "name": "Wilson Heritage Control",
+   "manufacturer": "Wilson",
+   "category": "raquete",
+   "subcategory": "control",
+   "rarity": "exclusivo",
+   "source": "storeCatalog",
+   "itemClass": "exclusivo",
+   "storedPrice": 65000,
+   "listPrice": 78000,
+   "priceNoEventsDay1": 85654,
+   "priceWithDay1Events": 77088,
+   "priceWithSponsor": 72806,
+   "dailySwingPct": 24.6,
+   "bonus": {
+    "defense": 6
+   },
+   "bonusTotal": 6,
+   "attributesTouched": 1,
+   "pricePerPoint": 13000,
+   "droppedSourceKeys": [
+    "positioning"
+   ],
+   "requirement": {
+    "minCareerLevel": 45,
+    "maxRanking": 10,
+    "minReputation": 85,
+    "label": "Lendas do circuito"
+   },
+   "monthlyAvailabilityPct": 19,
+   "alwaysInRotation": false,
+   "releaseYear": 2026,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": true,
+   "isAvailableFlag": true,
+   "sponsorId": "wilson",
+   "sponsorTier": "Prata",
+   "sponsorSlot": "raquete",
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 19500,
+   "sellPctOfList": 25,
+   "durability": 110,
+   "catalogOrder": 110,
+   "extra": {
+    "shape": "redonda",
+    "balance": "baixo",
+    "weight": 360,
+    "collection": "Heritage",
+    "country": "Global"
+   }
+  },
+  {
+   "id": "shop-001",
+   "name": "Raquete Starter Control",
+   "manufacturer": "Padel Legacy",
+   "category": "raquete",
+   "subcategory": "geral",
+   "rarity": "comum",
+   "source": "localSeed",
+   "itemClass": "demonstracao",
+   "storedPrice": 500,
+   "listPrice": 600,
+   "priceNoEventsDay1": 600,
+   "priceWithDay1Events": 540,
+   "priceWithSponsor": null,
+   "dailySwingPct": 0,
+   "bonus": {
+    "strategy": 1
+   },
+   "bonusTotal": 1,
+   "attributesTouched": 1,
+   "pricePerPoint": 600,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 1,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Início da carreira"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": null,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 150,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": null,
+   "extra": {}
+  },
+  {
+   "id": "shop-002",
+   "name": "Tênis Court Pro",
+   "manufacturer": "Court Labs",
+   "category": "tenis",
+   "subcategory": "geral",
+   "rarity": "comum",
+   "source": "localSeed",
+   "itemClass": "demonstracao",
+   "storedPrice": 350,
+   "listPrice": 420,
+   "priceNoEventsDay1": 420,
+   "priceWithDay1Events": 378,
+   "priceWithSponsor": null,
+   "dailySwingPct": 0,
+   "bonus": {},
+   "bonusTotal": 0,
+   "attributesTouched": 0,
+   "pricePerPoint": null,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 1,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Início da carreira"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": null,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "tenis",
+   "sellPrice": 105,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": null,
+   "extra": {}
+  },
+  {
+   "id": "shop-003",
+   "name": "Grip Performance",
+   "manufacturer": "Court Labs",
+   "category": "grip",
+   "subcategory": "geral",
+   "rarity": "comum",
+   "source": "localSeed",
+   "itemClass": "demonstracao",
+   "storedPrice": 80,
+   "listPrice": 96,
+   "priceNoEventsDay1": 96,
+   "priceWithDay1Events": 86,
+   "priceWithSponsor": null,
+   "dailySwingPct": 0,
+   "bonus": {},
+   "bonusTotal": 0,
+   "attributesTouched": 0,
+   "pricePerPoint": null,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 1,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Início da carreira"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": null,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "grip",
+   "sellPrice": 24,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": null,
+   "extra": {}
+  },
+  {
+   "id": "shop-004",
+   "name": "Mochila Tour",
+   "manufacturer": "Court Labs",
+   "category": "mochila",
+   "subcategory": "geral",
+   "rarity": "comum",
+   "source": "localSeed",
+   "itemClass": "demonstracao",
+   "storedPrice": 220,
+   "listPrice": 264,
+   "priceNoEventsDay1": 264,
+   "priceWithDay1Events": 238,
+   "priceWithSponsor": null,
+   "dailySwingPct": 0,
+   "bonus": {},
+   "bonusTotal": 0,
+   "attributesTouched": 0,
+   "pricePerPoint": null,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 1,
+    "maxRanking": null,
+    "minReputation": 0,
+    "label": "Início da carreira"
+   },
+   "monthlyAvailabilityPct": 100,
+   "alwaysInRotation": true,
+   "releaseYear": null,
+   "limitedStock": false,
+   "stockRemaining": null,
+   "isExclusiveFlag": false,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "mochila",
+   "sellPrice": 66,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": null,
+   "extra": {}
+  },
+  {
+   "id": "historical-relic-1969-raquete",
+   "name": "Raquete de Madeira Original (1969)",
+   "manufacturer": "Padel Heritage",
+   "category": "raquete",
+   "subcategory": "power",
+   "rarity": "exclusivo",
+   "source": "reliquia",
+   "itemClass": "reliquia",
+   "storedPrice": 84000,
+   "listPrice": 100800,
+   "priceNoEventsDay1": 171661,
+   "priceWithDay1Events": 154495,
+   "priceWithSponsor": null,
+   "dailySwingPct": 40.1,
+   "bonus": {
+    "emotional_control": 15,
+    "strategy": 5,
+    "forehand": 3
+   },
+   "bonusTotal": 23,
+   "attributesTouched": 3,
+   "pricePerPoint": 4383,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 45,
+    "maxRanking": 10,
+    "minReputation": 85,
+    "label": "Lendas do circuito"
+   },
+   "monthlyAvailabilityPct": 19,
+   "alwaysInRotation": false,
+   "releaseYear": 1969,
+   "limitedStock": true,
+   "stockRemaining": 5,
+   "isExclusiveFlag": true,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 25200,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": null,
+   "extra": {
+    "shape": "redonda",
+    "balance": "alto",
+    "weight": 420,
+    "collection": "Padel Origins",
+    "country": "México"
+   }
+  },
+  {
+   "id": "historical-relic-1975-raquete",
+   "name": "Raquete Vintage Marplatense (1975)",
+   "manufacturer": "Padel Heritage",
+   "category": "raquete",
+   "subcategory": "control",
+   "rarity": "exclusivo",
+   "source": "reliquia",
+   "itemClass": "reliquia",
+   "storedPrice": 76000,
+   "listPrice": 91200,
+   "priceNoEventsDay1": 155675,
+   "priceWithDay1Events": 140107,
+   "priceWithSponsor": null,
+   "dailySwingPct": 40.2,
+   "bonus": {
+    "emotional_control": 12,
+    "strategy": 8,
+    "defense": 3
+   },
+   "bonusTotal": 23,
+   "attributesTouched": 3,
+   "pricePerPoint": 3965,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 45,
+    "maxRanking": 10,
+    "minReputation": 85,
+    "label": "Lendas do circuito"
+   },
+   "monthlyAvailabilityPct": 14,
+   "alwaysInRotation": false,
+   "releaseYear": 1975,
+   "limitedStock": true,
+   "stockRemaining": 4,
+   "isExclusiveFlag": true,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 22800,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": null,
+   "extra": {
+    "shape": "redonda",
+    "balance": "medio",
+    "weight": 400,
+    "collection": "Padel Origins",
+    "country": "Argentina"
+   }
+  },
+  {
+   "id": "historical-relic-1980-raquete",
+   "name": "Raquete Espanhola Clássica (1980)",
+   "manufacturer": "Padel Heritage",
+   "category": "raquete",
+   "subcategory": "hybrid",
+   "rarity": "exclusivo",
+   "source": "reliquia",
+   "itemClass": "reliquia",
+   "storedPrice": 73000,
+   "listPrice": 87600,
+   "priceNoEventsDay1": 149181,
+   "priceWithDay1Events": 134263,
+   "priceWithSponsor": null,
+   "dailySwingPct": 40.1,
+   "bonus": {
+    "emotional_control": 10,
+    "strategy": 6,
+    "volley": 3
+   },
+   "bonusTotal": 19,
+   "attributesTouched": 3,
+   "pricePerPoint": 4611,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 45,
+    "maxRanking": 10,
+    "minReputation": 85,
+    "label": "Lendas do circuito"
+   },
+   "monthlyAvailabilityPct": 15,
+   "alwaysInRotation": false,
+   "releaseYear": 1980,
+   "limitedStock": true,
+   "stockRemaining": 5,
+   "isExclusiveFlag": true,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 21900,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": null,
+   "extra": {
+    "shape": "lagrima",
+    "balance": "medio",
+    "weight": 380,
+    "collection": "Padel Origins",
+    "country": "Espanha"
+   }
+  },
+  {
+   "id": "historical-relic-1970-bola",
+   "name": "Bola de Padel Original (1970)",
+   "manufacturer": "Padel Heritage",
+   "category": "bola",
+   "subcategory": "premium",
+   "rarity": "exclusivo",
+   "source": "reliquia",
+   "itemClass": "reliquia",
+   "storedPrice": 65000,
+   "listPrice": 78000,
+   "priceNoEventsDay1": 131694,
+   "priceWithDay1Events": 118525,
+   "priceWithSponsor": null,
+   "dailySwingPct": 40.3,
+   "bonus": {
+    "emotional_control": 8,
+    "strategy": 4
+   },
+   "bonusTotal": 12,
+   "attributesTouched": 2,
+   "pricePerPoint": 6500,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 45,
+    "maxRanking": 10,
+    "minReputation": 85,
+    "label": "Lendas do circuito"
+   },
+   "monthlyAvailabilityPct": 17,
+   "alwaysInRotation": false,
+   "releaseYear": 1970,
+   "limitedStock": true,
+   "stockRemaining": 5,
+   "isExclusiveFlag": true,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "bola",
+   "sellPrice": 19500,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": null,
+   "extra": {
+    "shape": "redonda",
+    "balance": "medio",
+    "weight": 56,
+    "collection": "Padel Origins",
+    "country": "México"
+   }
+  },
+  {
+   "id": "historical-relic-1995-raquete",
+   "name": "Raquete Carbono Pioneer (1995)",
+   "manufacturer": "Padel Heritage",
+   "category": "raquete",
+   "subcategory": "power",
+   "rarity": "exclusivo",
+   "source": "reliquia",
+   "itemClass": "reliquia",
+   "storedPrice": 70000,
+   "listPrice": 84000,
+   "priceNoEventsDay1": 144052,
+   "priceWithDay1Events": 129647,
+   "priceWithSponsor": null,
+   "dailySwingPct": 40.4,
+   "bonus": {
+    "smash": 10,
+    "forehand": 8,
+    "emotional_control": 5
+   },
+   "bonusTotal": 23,
+   "attributesTouched": 3,
+   "pricePerPoint": 3652,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 45,
+    "maxRanking": 10,
+    "minReputation": 85,
+    "label": "Lendas do circuito"
+   },
+   "monthlyAvailabilityPct": 18,
+   "alwaysInRotation": false,
+   "releaseYear": 1995,
+   "limitedStock": true,
+   "stockRemaining": 2,
+   "isExclusiveFlag": true,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 21000,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": null,
+   "extra": {
+    "shape": "diamante",
+    "balance": "alto",
+    "weight": 360,
+    "collection": "Padel Origins",
+    "country": "Espanha"
+   }
+  },
+  {
+   "id": "historical-relic-2013-raquete",
+   "name": "Raquete WPT First Edition (2013)",
+   "manufacturer": "Padel Heritage",
+   "category": "raquete",
+   "subcategory": "hybrid",
+   "rarity": "exclusivo",
+   "source": "reliquia",
+   "itemClass": "reliquia",
+   "storedPrice": 66000,
+   "listPrice": 79200,
+   "priceNoEventsDay1": 135191,
+   "priceWithDay1Events": 121672,
+   "priceWithSponsor": null,
+   "dailySwingPct": 40.2,
+   "bonus": {
+    "strategy": 8,
+    "emotional_control": 8,
+    "volley": 5
+   },
+   "bonusTotal": 21,
+   "attributesTouched": 3,
+   "pricePerPoint": 3771,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 45,
+    "maxRanking": 10,
+    "minReputation": 85,
+    "label": "Lendas do circuito"
+   },
+   "monthlyAvailabilityPct": 22,
+   "alwaysInRotation": false,
+   "releaseYear": 2013,
+   "limitedStock": true,
+   "stockRemaining": 4,
+   "isExclusiveFlag": true,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 19800,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": null,
+   "extra": {
+    "shape": "lagrima",
+    "balance": "medio",
+    "weight": 365,
+    "collection": "Padel Origins",
+    "country": "Espanha"
+   }
+  },
+  {
+   "id": "historical-relic-1992-colecionavel",
+   "name": "Troféu Primeiro Campeão Mundial (1992)",
+   "manufacturer": "Padel Heritage",
+   "category": "colecionavel",
+   "subcategory": "trofeu",
+   "rarity": "exclusivo",
+   "source": "reliquia",
+   "itemClass": "reliquia",
+   "storedPrice": 90000,
+   "listPrice": 108000,
+   "priceNoEventsDay1": 194254,
+   "priceWithDay1Events": 174828,
+   "priceWithSponsor": null,
+   "dailySwingPct": 40.2,
+   "bonus": {
+    "emotional_control": 20,
+    "strategy": 8
+   },
+   "bonusTotal": 28,
+   "attributesTouched": 2,
+   "pricePerPoint": 3857,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 45,
+    "maxRanking": 10,
+    "minReputation": 85,
+    "label": "Lendas do circuito"
+   },
+   "monthlyAvailabilityPct": 20,
+   "alwaysInRotation": false,
+   "releaseYear": 1992,
+   "limitedStock": true,
+   "stockRemaining": 5,
+   "isExclusiveFlag": true,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "colecionavel",
+   "sellPrice": 27000,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": null,
+   "extra": {
+    "shape": "redonda",
+    "balance": "medio",
+    "weight": 1000,
+    "collection": "Padel Origins",
+    "country": "Internacional"
+   }
+  },
+  {
+   "id": "historical-relic-2024-raquete",
+   "name": "Raquete Olímpica Paris 2024",
+   "manufacturer": "Padel Heritage",
+   "category": "raquete",
+   "subcategory": "power",
+   "rarity": "exclusivo",
+   "source": "reliquia",
+   "itemClass": "reliquia",
+   "storedPrice": 79000,
+   "listPrice": 94800,
+   "priceNoEventsDay1": 161443,
+   "priceWithDay1Events": 145298,
+   "priceWithSponsor": null,
+   "dailySwingPct": 40.1,
+   "bonus": {
+    "smash": 12,
+    "forehand": 8,
+    "emotional_control": 15,
+    "strategy": 5
+   },
+   "bonusTotal": 40,
+   "attributesTouched": 4,
+   "pricePerPoint": 2370,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 45,
+    "maxRanking": 10,
+    "minReputation": 85,
+    "label": "Lendas do circuito"
+   },
+   "monthlyAvailabilityPct": 23,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": true,
+   "stockRemaining": 5,
+   "isExclusiveFlag": true,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "raquete",
+   "sellPrice": 23700,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": null,
+   "extra": {
+    "shape": "diamante",
+    "balance": "alto",
+    "weight": 355,
+    "collection": "Olympic Edition",
+    "country": "França"
+   }
+  },
+  {
+   "id": "historical-relic-2023-colecionavel",
+   "name": "Bola Dourada WPT Final (2023)",
+   "manufacturer": "Padel Heritage",
+   "category": "colecionavel",
+   "subcategory": "replica",
+   "rarity": "exclusivo",
+   "source": "reliquia",
+   "itemClass": "reliquia",
+   "storedPrice": 73000,
+   "listPrice": 87600,
+   "priceNoEventsDay1": 158297,
+   "priceWithDay1Events": 142467,
+   "priceWithSponsor": null,
+   "dailySwingPct": 40.4,
+   "bonus": {
+    "emotional_control": 15,
+    "strategy": 5,
+    "forehand": 3
+   },
+   "bonusTotal": 23,
+   "attributesTouched": 3,
+   "pricePerPoint": 3809,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 45,
+    "maxRanking": 10,
+    "minReputation": 85,
+    "label": "Lendas do circuito"
+   },
+   "monthlyAvailabilityPct": 19,
+   "alwaysInRotation": false,
+   "releaseYear": 2023,
+   "limitedStock": true,
+   "stockRemaining": 3,
+   "isExclusiveFlag": true,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "colecionavel",
+   "sellPrice": 21900,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": null,
+   "extra": {
+    "shape": "redonda",
+    "balance": "medio",
+    "weight": 100,
+    "collection": "Golden Moments",
+    "country": "Espanha"
+   }
+  },
+  {
+   "id": "historical-relic-2024-colecionavel",
+   "name": "Raquete Dourada do Circuito (2024)",
+   "manufacturer": "Padel Heritage",
+   "category": "colecionavel",
+   "subcategory": "replica",
+   "rarity": "exclusivo",
+   "source": "reliquia",
+   "itemClass": "reliquia",
+   "storedPrice": 81000,
+   "listPrice": 97200,
+   "priceNoEventsDay1": 175645,
+   "priceWithDay1Events": 158080,
+   "priceWithSponsor": null,
+   "dailySwingPct": 40.4,
+   "bonus": {
+    "smash": 15,
+    "forehand": 10,
+    "emotional_control": 10,
+    "strategy": 8
+   },
+   "bonusTotal": 43,
+   "attributesTouched": 4,
+   "pricePerPoint": 2260,
+   "droppedSourceKeys": [],
+   "requirement": {
+    "minCareerLevel": 45,
+    "maxRanking": 10,
+    "minReputation": 85,
+    "label": "Lendas do circuito"
+   },
+   "monthlyAvailabilityPct": 18,
+   "alwaysInRotation": false,
+   "releaseYear": 2024,
+   "limitedStock": true,
+   "stockRemaining": 3,
+   "isExclusiveFlag": true,
+   "isAvailableFlag": true,
+   "sponsorId": null,
+   "sponsorTier": null,
+   "sponsorSlot": null,
+   "equippable": true,
+   "slot": "colecionavel",
+   "sellPrice": 24300,
+   "sellPctOfList": 25,
+   "durability": 100,
+   "catalogOrder": null,
+   "extra": {
+    "shape": "diamante",
+    "balance": "alto",
+    "weight": 370,
+    "collection": "Golden Legends",
+    "country": "Espanha"
+   }
+  }
+ ]
+}

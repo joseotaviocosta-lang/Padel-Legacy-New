@@ -1,0 +1,238 @@
+{
+ "generatedBy": "tools/live-market-audit.mjs",
+ "seconds": 495,
+ "passed": 15,
+ "total": 15,
+ "tests": [
+  {
+   "name": "catálogo: 125 itens, 9 categorias, 24 marcas",
+   "ok": true,
+   "detail": {
+    "items": 125,
+    "bySource": {
+     "storeCatalog": 111,
+     "reliquia": 10,
+     "localSeed": 4,
+     "outro": 0
+    },
+    "byClass": {
+     "normal": 103,
+     "colecionavel": 5,
+     "exclusivo": 3,
+     "demonstracao": 4,
+     "reliquia": 10
+    },
+    "categories": 9,
+    "byCategory": {
+     "raquete": 60,
+     "grip": 9,
+     "bola": 6,
+     "roupa": 8,
+     "tenis": 9,
+     "mochila": 9,
+     "acessorio_tec": 8,
+     "acessorio": 8,
+     "colecionavel": 8
+    },
+    "byRarity": {
+     "comum": 20,
+     "incomum": 17,
+     "raro": 18,
+     "epico": 24,
+     "lendario": 19,
+     "mitico": 13,
+     "exclusivo": 14
+    },
+    "brands": 24,
+    "attributeUsage": {
+     "serve": {
+      "items": 2,
+      "points": 3
+     },
+     "forehand": {
+      "items": 23,
+      "points": 74
+     },
+     "backhand": {
+      "items": 9,
+      "points": 23
+     },
+     "volley": {
+      "items": 21,
+      "points": 58
+     },
+     "bandeja": {
+      "items": 6,
+      "points": 17
+     },
+     "smash": {
+      "items": 26,
+      "points": 99
+     },
+     "defense": {
+      "items": 21,
+      "points": 57
+     },
+     "agility": {
+      "items": 23,
+      "points": 66
+     },
+     "strategy": {
+      "items": 31,
+      "points": 135
+     },
+     "emotional_control": {
+      "items": 32,
+      "points": 194
+     }
+    },
+    "activeEventsDay1": [
+     {
+      "title": "Semana de lançamento",
+      "modifier": 0.9,
+      "end": "2026-01-07"
+     }
+    ],
+    "pricePreset": {
+     "shopPriceMultiplier": 1.2,
+     "floors": {
+      "comum": 40,
+      "incomum": 250,
+      "raro": 1200,
+      "epico": 5000,
+      "lendario": 16000,
+      "mitico": 35000,
+      "exclusivo": 65000
+     }
+    }
+   }
+  },
+  {
+   "name": "catálogo: nenhum bônus fora dos 10 atributos chega ao attribute_bonus",
+   "ok": true
+  },
+  {
+   "name": "catálogo: getExpandedCatalogSummary bate com os itens do storeCatalog",
+   "ok": true
+  },
+  {
+   "name": "catálogo: todo item tem categoria de slot equipável",
+   "ok": true
+  },
+  {
+   "name": "disponibilidade: no dia 0 a Loja lista os 125 itens, mas só os comuns estão liberados (incomum pede nível 3)",
+   "ok": true,
+   "detail": {
+    "stage": "inicio (dia 0)",
+    "career_level": 1,
+    "ranking_position": 1001,
+    "reputation": 0,
+    "coins": 900,
+    "economyStage": "beginner",
+    "unlocked": 20,
+    "availableAndUnlocked": 20,
+    "affordable": 15,
+    "inRotationAll": 84.2,
+    "unlockedRarities": [
+     "comum"
+    ]
+   }
+  },
+  {
+   "name": "compra A: dois cliques antes do re-render → 2 itens entregues e só 1 débito (saldo absoluto do perfil em memória)",
+   "ok": true,
+   "detail": {
+    "results": [
+     true,
+     true
+    ],
+    "price": 346,
+    "rowsCreated": 2,
+    "coinsDebited": 346,
+    "expectedDebitIfBothPaid": 692
+   }
+  },
+  {
+   "name": "compra B: comprar de novo um item já possuído é aceito pela lógica (só a interface esconde)",
+   "ok": true,
+   "detail": {
+    "ok": true,
+    "rowsForItem": 3
+   }
+  },
+  {
+   "name": "compra C: relíquia com estoque 0 é vendida (buy não lê o estoque)",
+   "ok": true,
+   "detail": {
+    "stockBefore": 0,
+    "monthUsed": "2026-07-15",
+    "ok": true,
+    "price": 160576,
+    "stockAfter": 0
+   }
+  },
+  {
+   "name": "compra D: falha entre criar o item e debitar → item entregue sem pagamento",
+   "ok": true,
+   "detail": {
+    "error": "falha simulada entre a entrega e o débito",
+    "rowsCreated": 1,
+    "coinsDebited": 0
+   }
+  },
+  {
+   "name": "compra E: item já possuído fora da rotação pode ser comprado de novo",
+   "ok": true,
+   "detail": {
+    "monthOut": "2026-02-15",
+    "ok": true,
+    "copies": 2
+   }
+  },
+  {
+   "name": "venda F: crédito concorrente sobrescrito pelo saldo absoluto da venda",
+   "ok": true,
+   "detail": {
+    "sellPrice": 16,
+    "concurrentCredit": 500,
+    "coinsAfter": 766060,
+    "expected": 766560,
+    "lost": 500
+   }
+  },
+  {
+   "name": "9B: comprar e equipar o melhor kit não altera o atributo-base; efetivo = base + modificador (≤ 100)",
+   "ok": true,
+   "detail": {
+    "items": 9,
+    "baseUnchanged": true,
+    "baseOvr": 50,
+    "effectiveOvr": 53,
+    "declared": 30,
+    "applied": 30,
+    "equippedRows": 3
+   }
+  },
+  {
+   "name": "persistência: save → load preserva inventário, flags de equipado, base, saldo e efetivo",
+   "ok": true,
+   "detail": {
+    "inventoryIdentical": true,
+    "baseIdentical": true,
+    "coinsIdentical": true,
+    "effectiveOvrAfter": 53
+   }
+  },
+  {
+   "name": "motor: +5 em agilidade não muda nenhum ponto em nenhum nível (agility)",
+   "ok": true,
+   "detail": [
+    "agility"
+   ]
+  },
+  {
+   "name": "motor: mesmas seeds → resultados idênticos (determinismo)",
+   "ok": true
+  }
+ ]
+}

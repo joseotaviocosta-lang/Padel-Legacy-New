@@ -1,0 +1,608 @@
+{
+ "generatedBy": "tools/live-market-audit.mjs",
+ "rarities": [
+  {
+   "rarity": "comum",
+   "requirement": {
+    "minCareerLevel": 1,
+    "maxRanking": null,
+    "minReputation": 0,
+    "priceFloor": 40,
+    "label": "Início da carreira"
+   },
+   "bonusMultiplier": 1,
+   "items": 16,
+   "price": {
+    "min": 54,
+    "median": 567,
+    "max": 1534
+   },
+   "bonus": {
+    "min": 1,
+    "median": 1,
+    "max": 2
+   },
+   "pricePerPoint": {
+    "min": 54,
+    "median": 446,
+    "max": 1394
+   },
+   "monthlyAvailabilityPct": {
+    "min": 100,
+    "median": 100,
+    "max": 100
+   },
+   "kit": {
+    "items": 7,
+    "categories": [
+     "raquete",
+     "grip",
+     "bola",
+     "roupa",
+     "tenis",
+     "mochila",
+     "acessorio"
+    ],
+    "cost": 2042,
+    "declaredBonus": 8,
+    "declaredOvr": 0.8,
+    "names": [
+     "Head Flash Motion Club",
+     "Tour Grip Dry Start",
+     "Padel Start Training x3",
+     "Joma Training Tee",
+     "Joma Court Basic",
+     "Padel Start Compact",
+     "Joma Wristband Base"
+    ]
+   },
+   "kitCostPerPoint": 255
+  },
+  {
+   "rarity": "incomum",
+   "requirement": {
+    "minCareerLevel": 3,
+    "maxRanking": null,
+    "minReputation": 0,
+    "priceFloor": 250,
+    "label": "Circuito amador"
+   },
+   "bonusMultiplier": 1,
+   "items": 17,
+   "price": {
+    "min": 300,
+    "median": 1020,
+    "max": 2761
+   },
+   "bonus": {
+    "min": 1,
+    "median": 1,
+    "max": 2
+   },
+   "pricePerPoint": {
+    "min": 300,
+    "median": 853,
+    "max": 2509
+   },
+   "monthlyAvailabilityPct": {
+    "min": 100,
+    "median": 100,
+    "max": 100
+   },
+   "kit": {
+    "items": 8,
+    "categories": [
+     "raquete",
+     "grip",
+     "bola",
+     "roupa",
+     "tenis",
+     "mochila",
+     "acessorio_tec",
+     "acessorio"
+    ],
+    "cost": 5506,
+    "declaredBonus": 9,
+    "declaredOvr": 0.9,
+    "names": [
+     "Head Flash Motion Sport",
+     "Head Comfort Sport",
+     "Head Club Match x3",
+     "Adidas Match Shorts",
+     "Asics Clay Motion",
+     "Head Team Backpack",
+     "Pulse Training Band",
+     "Adidas Focus Headband"
+    ]
+   },
+   "kitCostPerPoint": 612,
+   "kitCostVsPrevious": 2.7,
+   "kitBonusVsPrevious": 1.1
+  },
+  {
+   "rarity": "raro",
+   "requirement": {
+    "minCareerLevel": 8,
+    "maxRanking": 500,
+    "minReputation": 8,
+    "priceFloor": 1200,
+    "label": "Circuito regional"
+   },
+   "bonusMultiplier": 2,
+   "items": 18,
+   "price": {
+    "min": 1440,
+    "median": 2195,
+    "max": 6137
+   },
+   "bonus": {
+    "min": 2,
+    "median": 2,
+    "max": 4
+   },
+   "pricePerPoint": {
+    "min": 360,
+    "median": 895,
+    "max": 2788
+   },
+   "monthlyAvailabilityPct": {
+    "min": 83,
+    "median": 88,
+    "max": 94
+   },
+   "kit": {
+    "items": 9,
+    "categories": [
+     "raquete",
+     "grip",
+     "bola",
+     "roupa",
+     "tenis",
+     "mochila",
+     "acessorio_tec",
+     "acessorio",
+     "colecionavel"
+    ],
+    "cost": 16956,
+    "declaredBonus": 22,
+    "declaredOvr": 2.2,
+    "names": [
+     "Head Flash Motion Pro",
+     "Wilson Tacky Pro",
+     "Wilson Pro Tour x3",
+     "Bullpadel Competition Set",
+     "Mizuno Indoor Flash",
+     "Nox Thermal Duo",
+     "PlaySight Shot Sensor",
+     "Nox Racket Protector",
+     "Medalha Circuito Local"
+    ]
+   },
+   "kitCostPerPoint": 771,
+   "kitCostVsPrevious": 3.1,
+   "kitBonusVsPrevious": 2.4
+  },
+  {
+   "rarity": "epico",
+   "requirement": {
+    "minCareerLevel": 15,
+    "maxRanking": 200,
+    "minReputation": 20,
+    "priceFloor": 5000,
+    "label": "Circuito nacional"
+   },
+   "bonusMultiplier": 3,
+   "items": 24,
+   "price": {
+    "min": 6000,
+    "median": 6904,
+    "max": 13807
+   },
+   "bonus": {
+    "min": 3,
+    "median": 3,
+    "max": 6
+   },
+   "pricePerPoint": {
+    "min": 1048,
+    "median": 2000,
+    "max": 4182
+   },
+   "monthlyAvailabilityPct": {
+    "min": 66,
+    "median": 73,
+    "max": 79
+   },
+   "kit": {
+    "items": 9,
+    "categories": [
+     "raquete",
+     "grip",
+     "bola",
+     "roupa",
+     "tenis",
+     "mochila",
+     "acessorio_tec",
+     "acessorio",
+     "colecionavel"
+    ],
+    "cost": 80450,
+    "declaredBonus": 45,
+    "declaredOvr": 4.5,
+    "names": [
+     "Head Flash Motion Elite",
+     "Babolat Pro Touch Elite",
+     "Bullpadel Premium Final x3",
+     "Nox Pro Competition Kit",
+     "Joma Elite Court",
+     "Head Tour Elite Bag",
+     "Garmin Padel Elite",
+     "HydroSport Thermal Pro",
+     "Réplica Troféu Major"
+    ]
+   },
+   "kitCostPerPoint": 1788,
+   "kitCostVsPrevious": 4.7,
+   "kitBonusVsPrevious": 2
+  },
+  {
+   "rarity": "lendario",
+   "requirement": {
+    "minCareerLevel": 25,
+    "maxRanking": 100,
+    "minReputation": 40,
+    "priceFloor": 16000,
+    "label": "Circuito internacional"
+   },
+   "bonusMultiplier": 4,
+   "items": 19,
+   "price": {
+    "min": 19200,
+    "median": 19200,
+    "max": 38400
+   },
+   "bonus": {
+    "min": 4,
+    "median": 4,
+    "max": 8
+   },
+   "pricePerPoint": {
+    "min": 2400,
+    "median": 4800,
+    "max": 6273
+   },
+   "monthlyAvailabilityPct": {
+    "min": 38,
+    "median": 48,
+    "max": 54
+   },
+   "kit": {
+    "items": 9,
+    "categories": [
+     "raquete",
+     "grip",
+     "bola",
+     "roupa",
+     "tenis",
+     "mochila",
+     "acessorio_tec",
+     "acessorio",
+     "colecionavel"
+    ],
+    "cost": 253200,
+    "declaredBonus": 64,
+    "declaredOvr": 6.4,
+    "names": [
+     "Nox Equation Legend",
+     "Wilson Championship Grip",
+     "Premier Championship Case",
+     "Adidas Elite Tour Jacket",
+     "Asics Pro Tour Legend",
+     "Wilson Champion Vault",
+     "Playtomic Court Vision",
+     "Adidas Focus Master",
+     "Raquete Vintage 1995"
+    ]
+   },
+   "kitCostPerPoint": 3956,
+   "kitCostVsPrevious": 3.1,
+   "kitBonusVsPrevious": 1.4
+  },
+  {
+   "rarity": "mitico",
+   "requirement": {
+    "minCareerLevel": 35,
+    "maxRanking": 40,
+    "minReputation": 65,
+    "priceFloor": 35000,
+    "label": "Elite mundial"
+   },
+   "bonusMultiplier": 5,
+   "items": 13,
+   "price": {
+    "min": 42000,
+    "median": 49091,
+    "max": 72000
+   },
+   "bonus": {
+    "min": 5,
+    "median": 10,
+    "max": 10
+   },
+   "pricePerPoint": {
+    "min": 4200,
+    "median": 6240,
+    "max": 8400
+   },
+   "monthlyAvailabilityPct": {
+    "min": 24,
+    "median": 30,
+    "max": 41
+   },
+   "kit": {
+    "items": 8,
+    "categories": [
+     "raquete",
+     "grip",
+     "roupa",
+     "tenis",
+     "mochila",
+     "acessorio_tec",
+     "acessorio",
+     "colecionavel"
+    ],
+    "cost": 476400,
+    "declaredBonus": 80,
+    "declaredOvr": 8,
+    "names": [
+     "Head Flash Motion Mythic",
+     "Bullpadel Master Grip Pro",
+     "Bullpadel Champion Series",
+     "Adidas Master Series",
+     "Bullpadel Master Pro 20",
+     "Movistar Smart Analytics Pro",
+     "Therabody Recovery Master",
+     "Troféu Fundadores"
+    ]
+   },
+   "kitCostPerPoint": 5955,
+   "kitCostVsPrevious": 1.9,
+   "kitBonusVsPrevious": 1.3
+  },
+  {
+   "rarity": "exclusivo",
+   "requirement": {
+    "minCareerLevel": 45,
+    "maxRanking": 10,
+    "minReputation": 85,
+    "priceFloor": 65000,
+    "label": "Lendas do circuito"
+   },
+   "bonusMultiplier": 6,
+   "items": 4,
+   "price": {
+    "min": 78000,
+    "median": 78000,
+    "max": 78000
+   },
+   "bonus": {
+    "min": 6,
+    "median": 12,
+    "max": 12
+   },
+   "pricePerPoint": {
+    "min": 6500,
+    "median": 6500,
+    "max": 13000
+   },
+   "monthlyAvailabilityPct": {
+    "min": 18,
+    "median": 19,
+    "max": 20
+   },
+   "kit": {
+    "items": 2,
+    "categories": [
+     "raquete",
+     "colecionavel"
+    ],
+    "cost": 156000,
+    "declaredBonus": 24,
+    "declaredOvr": 2.4,
+    "names": [
+     "Bullpadel Legacy Crown",
+     "Coroa do Grand Slam"
+    ]
+   },
+   "kitCostPerPoint": 6500,
+   "kitCostVsPrevious": 0.3,
+   "kitBonusVsPrevious": 0.3
+  }
+ ],
+ "decomposition": {
+  "observed9E1": {
+   "economico": 58,
+   "equilibrado": 189,
+   "competitivo365": 676,
+   "competitivo730": 815,
+   "note": "moedas gastas / pontos efetivos aplicados (9E.1, simulador, pré-H1)"
+  },
+  "cheapestCommonKit": {
+   "items": [
+    {
+     "name": "Padel Start Control One Club",
+     "price": 384,
+     "bonus": 1
+    },
+    {
+     "name": "Tour Grip Dry Start",
+     "price": 66,
+     "bonus": 1
+    },
+    {
+     "name": "Padel Start Training x3",
+     "price": 54,
+     "bonus": 1
+    },
+    {
+     "name": "Joma Training Tee",
+     "price": 264,
+     "bonus": 1
+    },
+    {
+     "name": "Joma Court Basic",
+     "price": 576,
+     "bonus": 1
+    },
+    {
+     "name": "Padel Start Compact",
+     "price": 312,
+     "bonus": 1
+    },
+    {
+     "name": "Joma Wristband Base",
+     "price": 72,
+     "bonus": 1
+    }
+   ],
+   "costPerPoint": 168
+  },
+  "floorRatioRaroVsComum": 30,
+  "bonusRatioRaroVsComum": 2,
+  "nominalPricePerPointRaro": {
+   "min": 360,
+   "median": 895,
+   "max": 2788
+  },
+  "upgradeComumToRaro": [
+   {
+    "category": "raquete",
+    "from": "Head Flash Motion Club",
+    "to": "Head Flash Motion Pro",
+    "raroPrice": 2796,
+    "raroBonus": 4,
+    "marginalGainOverComum": 2,
+    "costPerMarginalPoint": 1398,
+    "costPerNominalPoint": 699
+   },
+   {
+    "category": "grip",
+    "from": "Tour Grip Dry Start",
+    "to": "Wilson Tacky Pro",
+    "raroPrice": 1440,
+    "raroBonus": 4,
+    "marginalGainOverComum": 3,
+    "costPerMarginalPoint": 480,
+    "costPerNominalPoint": 360
+   },
+   {
+    "category": "bola",
+    "from": "Padel Start Training x3",
+    "to": "Wilson Pro Tour x3",
+    "raroPrice": 1440,
+    "raroBonus": 2,
+    "marginalGainOverComum": 1,
+    "costPerMarginalPoint": 1440,
+    "costPerNominalPoint": 720
+   },
+   {
+    "category": "roupa",
+    "from": "Joma Training Tee",
+    "to": "Bullpadel Competition Set",
+    "raroPrice": 1440,
+    "raroBonus": 2,
+    "marginalGainOverComum": 1,
+    "costPerMarginalPoint": 1440,
+    "costPerNominalPoint": 720
+   },
+   {
+    "category": "tenis",
+    "from": "Joma Court Basic",
+    "to": "Mizuno Indoor Flash",
+    "raroPrice": 2160,
+    "raroBonus": 2,
+    "marginalGainOverComum": 1,
+    "costPerMarginalPoint": 2160,
+    "costPerNominalPoint": 1080
+   },
+   {
+    "category": "mochila",
+    "from": "Padel Start Compact",
+    "to": "Nox Thermal Duo",
+    "raroPrice": 1680,
+    "raroBonus": 2,
+    "marginalGainOverComum": 1,
+    "costPerMarginalPoint": 1680,
+    "costPerNominalPoint": 840
+   },
+   {
+    "category": "acessorio_tec",
+    "from": null,
+    "to": "PlaySight Shot Sensor",
+    "raroPrice": 3120,
+    "raroBonus": 2,
+    "marginalGainOverComum": 2,
+    "costPerMarginalPoint": 1560,
+    "costPerNominalPoint": 1560
+   },
+   {
+    "category": "acessorio",
+    "from": "Joma Wristband Base",
+    "to": "Nox Racket Protector",
+    "raroPrice": 1440,
+    "raroBonus": 2,
+    "marginalGainOverComum": 1,
+    "costPerMarginalPoint": 1440,
+    "costPerNominalPoint": 720
+   },
+   {
+    "category": "colecionavel",
+    "from": null,
+    "to": "Medalha Circuito Local",
+    "raroPrice": 1440,
+    "raroBonus": 2,
+    "marginalGainOverComum": 2,
+    "costPerMarginalPoint": 720,
+    "costPerNominalPoint": 720
+   }
+  ],
+  "medianMarginalCostComumToRaro": 1440
+ },
+ "volatilityDailySwingPct": {
+  "comum": {
+   "min": 0,
+   "median": 0,
+   "max": 0
+  },
+  "incomum": {
+   "min": 1.9,
+   "median": 2,
+   "max": 2.1
+  },
+  "raro": {
+   "min": 4.4,
+   "median": 5,
+   "max": 5
+  },
+  "epico": {
+   "min": 7.5,
+   "median": 8,
+   "max": 8
+  },
+  "lendario": {
+   "min": 10.6,
+   "median": 12,
+   "max": 12
+  },
+  "mitico": {
+   "min": 8.1,
+   "median": 18,
+   "max": 18
+  },
+  "exclusivo": {
+   "min": 22.1,
+   "median": 40,
+   "max": 40.4
+  }
+ }
+}

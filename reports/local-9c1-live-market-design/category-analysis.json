@@ -1,0 +1,1480 @@
+{
+ "generatedBy": "tools/live-market-audit.mjs",
+ "note": "pricePerPoint = preço de lista (×shopPriceMultiplier) / soma do bônus declarado. ladder = melhor item de cada raridade da categoria (só storeCatalog).",
+ "totalTopKitBonusShopOnly": 88,
+ "categories": [
+  {
+   "category": "raquete",
+   "items": 60,
+   "brands": 11,
+   "brandList": [
+    "Padel Start",
+    "Joma",
+    "Head",
+    "Nox",
+    "Adidas",
+    "Bullpadel",
+    "Babolat",
+    "Wilson",
+    "Siux",
+    "Padel Legacy",
+    "Padel Heritage"
+   ],
+   "byRarity": {
+    "comum": 11,
+    "incomum": 10,
+    "raro": 10,
+    "epico": 10,
+    "lendario": 5,
+    "mitico": 5,
+    "exclusivo": 9
+   },
+   "price": {
+    "min": 384,
+    "median": 5788,
+    "max": 100800
+   },
+   "bonus": {
+    "min": 1,
+    "median": 4,
+    "max": 40
+   },
+   "pricePerPoint": {
+    "min": 349,
+    "median": 1260,
+    "max": 13000
+   },
+   "attributes": {
+    "volley": 47,
+    "smash": 75,
+    "defense": 43,
+    "forehand": 55,
+    "backhand": 12,
+    "agility": 12,
+    "bandeja": 17,
+    "strategy": 39,
+    "emotional_control": 65
+   },
+   "bestValue": {
+    "name": "Head Flash Motion Club",
+    "rarity": "comum",
+    "pricePerPoint": 349
+   },
+   "worstValue": {
+    "name": "Wilson Heritage Control",
+    "rarity": "exclusivo",
+    "pricePerPoint": 13000
+   },
+   "maxBonusShop": 12,
+   "maxBonusWithRelics": 40,
+   "ladder": [
+    {
+     "rarity": "comum",
+     "best": "Head Flash Motion Club",
+     "bonus": 2,
+     "listPrice": 698,
+     "pricePerPoint": 349
+    },
+    {
+     "rarity": "incomum",
+     "best": "Head Flash Motion Sport",
+     "bonus": 2,
+     "listPrice": 1258,
+     "pricePerPoint": 629
+    },
+    {
+     "rarity": "raro",
+     "best": "Head Flash Motion Pro",
+     "bonus": 4,
+     "listPrice": 2796,
+     "pricePerPoint": 699
+    },
+    {
+     "rarity": "epico",
+     "best": "Head Flash Motion Elite",
+     "bonus": 6,
+     "listPrice": 6290,
+     "pricePerPoint": 1048
+    },
+    {
+     "rarity": "lendario",
+     "best": "Nox Equation Legend",
+     "bonus": 8,
+     "listPrice": 19200,
+     "pricePerPoint": 2400
+    },
+    {
+     "rarity": "mitico",
+     "best": "Head Flash Motion Mythic",
+     "bonus": 10,
+     "listPrice": 42000,
+     "pricePerPoint": 4200
+    },
+    {
+     "rarity": "exclusivo",
+     "best": "Bullpadel Legacy Crown",
+     "bonus": 12,
+     "listPrice": 78000,
+     "pricePerPoint": 6500
+    }
+   ],
+   "ladderSteps": [
+    {
+     "from": "comum",
+     "to": "incomum",
+     "deltaBonus": 0,
+     "deltaPrice": 560,
+     "marginalCostPerPoint": null
+    },
+    {
+     "from": "incomum",
+     "to": "raro",
+     "deltaBonus": 2,
+     "deltaPrice": 1538,
+     "marginalCostPerPoint": 769
+    },
+    {
+     "from": "raro",
+     "to": "epico",
+     "deltaBonus": 2,
+     "deltaPrice": 3494,
+     "marginalCostPerPoint": 1747
+    },
+    {
+     "from": "epico",
+     "to": "lendario",
+     "deltaBonus": 2,
+     "deltaPrice": 12910,
+     "marginalCostPerPoint": 6455
+    },
+    {
+     "from": "lendario",
+     "to": "mitico",
+     "deltaBonus": 2,
+     "deltaPrice": 22800,
+     "marginalCostPerPoint": 11400
+    },
+    {
+     "from": "mitico",
+     "to": "exclusivo",
+     "deltaBonus": 2,
+     "deltaPrice": 36000,
+     "marginalCostPerPoint": 18000
+    }
+   ],
+   "equivalentOptionsSameRarity": [
+    {
+     "rarity": "comum",
+     "options": 10,
+     "brands": 9
+    },
+    {
+     "rarity": "incomum",
+     "options": 10,
+     "brands": 9
+    },
+    {
+     "rarity": "raro",
+     "options": 10,
+     "brands": 9
+    },
+    {
+     "rarity": "epico",
+     "options": 10,
+     "brands": 9
+    },
+    {
+     "rarity": "lendario",
+     "options": 5,
+     "brands": 5
+    },
+    {
+     "rarity": "mitico",
+     "options": 5,
+     "brands": 5
+    },
+    {
+     "rarity": "exclusivo",
+     "options": 3,
+     "brands": 3
+    }
+   ],
+   "shareOfTopKitBonus": 14
+  },
+  {
+   "category": "grip",
+   "items": 9,
+   "brands": 7,
+   "brandList": [
+    "Tour Grip",
+    "Head",
+    "Wilson",
+    "Bullpadel",
+    "Nox",
+    "Babolat",
+    "Court Labs"
+   ],
+   "byRarity": {
+    "comum": 2,
+    "incomum": 1,
+    "raro": 1,
+    "epico": 2,
+    "lendario": 2,
+    "mitico": 1
+   },
+   "price": {
+    "min": 66,
+    "median": 6000,
+    "max": 69600
+   },
+   "bonus": {
+    "min": 0,
+    "median": 4,
+    "max": 10
+   },
+   "pricePerPoint": {
+    "min": 66,
+    "median": 1850,
+    "max": 6960
+   },
+   "attributes": {
+    "forehand": 6,
+    "backhand": 11,
+    "volley": 11,
+    "strategy": 9
+   },
+   "bestValue": {
+    "name": "Tour Grip Dry Start",
+    "rarity": "comum",
+    "pricePerPoint": 66
+   },
+   "worstValue": {
+    "name": "Bullpadel Master Grip Pro",
+    "rarity": "mitico",
+    "pricePerPoint": 6960
+   },
+   "maxBonusShop": 10,
+   "maxBonusWithRelics": 10,
+   "ladder": [
+    {
+     "rarity": "comum",
+     "best": "Tour Grip Dry Start",
+     "bonus": 1,
+     "listPrice": 66,
+     "pricePerPoint": 66
+    },
+    {
+     "rarity": "incomum",
+     "best": "Head Comfort Sport",
+     "bonus": 1,
+     "listPrice": 300,
+     "pricePerPoint": 300
+    },
+    {
+     "rarity": "raro",
+     "best": "Wilson Tacky Pro",
+     "bonus": 4,
+     "listPrice": 1440,
+     "pricePerPoint": 360
+    },
+    {
+     "rarity": "epico",
+     "best": "Babolat Pro Touch Elite",
+     "bonus": 6,
+     "listPrice": 10200,
+     "pricePerPoint": 1700
+    },
+    {
+     "rarity": "lendario",
+     "best": "Wilson Championship Grip",
+     "bonus": 8,
+     "listPrice": 31200,
+     "pricePerPoint": 3900
+    },
+    {
+     "rarity": "mitico",
+     "best": "Bullpadel Master Grip Pro",
+     "bonus": 10,
+     "listPrice": 69600,
+     "pricePerPoint": 6960
+    }
+   ],
+   "ladderSteps": [
+    {
+     "from": "comum",
+     "to": "incomum",
+     "deltaBonus": 0,
+     "deltaPrice": 234,
+     "marginalCostPerPoint": null
+    },
+    {
+     "from": "incomum",
+     "to": "raro",
+     "deltaBonus": 3,
+     "deltaPrice": 1140,
+     "marginalCostPerPoint": 380
+    },
+    {
+     "from": "raro",
+     "to": "epico",
+     "deltaBonus": 2,
+     "deltaPrice": 8760,
+     "marginalCostPerPoint": 4380
+    },
+    {
+     "from": "epico",
+     "to": "lendario",
+     "deltaBonus": 2,
+     "deltaPrice": 21000,
+     "marginalCostPerPoint": 10500
+    },
+    {
+     "from": "lendario",
+     "to": "mitico",
+     "deltaBonus": 2,
+     "deltaPrice": 38400,
+     "marginalCostPerPoint": 19200
+    }
+   ],
+   "equivalentOptionsSameRarity": [
+    {
+     "rarity": "comum",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "incomum",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "raro",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "epico",
+     "options": 2,
+     "brands": 2
+    },
+    {
+     "rarity": "lendario",
+     "options": 2,
+     "brands": 2
+    },
+    {
+     "rarity": "mitico",
+     "options": 1,
+     "brands": 1
+    }
+   ],
+   "shareOfTopKitBonus": 11
+  },
+  {
+   "category": "bola",
+   "items": 6,
+   "brands": 6,
+   "brandList": [
+    "Padel Start",
+    "Head",
+    "Wilson",
+    "Bullpadel",
+    "Premier Labs",
+    "Padel Heritage"
+   ],
+   "byRarity": {
+    "comum": 1,
+    "incomum": 1,
+    "raro": 1,
+    "epico": 1,
+    "lendario": 1,
+    "exclusivo": 1
+   },
+   "price": {
+    "min": 54,
+    "median": 3720,
+    "max": 78000
+   },
+   "bonus": {
+    "min": 1,
+    "median": 3,
+    "max": 12
+   },
+   "pricePerPoint": {
+    "min": 54,
+    "median": 720,
+    "max": 4800
+   },
+   "attributes": {
+    "serve": 3,
+    "strategy": 8,
+    "agility": 4,
+    "emotional_control": 8
+   },
+   "bestValue": {
+    "name": "Padel Start Training x3",
+    "rarity": "comum",
+    "pricePerPoint": 54
+   },
+   "worstValue": {
+    "name": "Premier Championship Case",
+    "rarity": "lendario",
+    "pricePerPoint": 4800
+   },
+   "maxBonusShop": 4,
+   "maxBonusWithRelics": 12,
+   "ladder": [
+    {
+     "rarity": "comum",
+     "best": "Padel Start Training x3",
+     "bonus": 1,
+     "listPrice": 54,
+     "pricePerPoint": 54
+    },
+    {
+     "rarity": "incomum",
+     "best": "Head Club Match x3",
+     "bonus": 1,
+     "listPrice": 300,
+     "pricePerPoint": 300
+    },
+    {
+     "rarity": "raro",
+     "best": "Wilson Pro Tour x3",
+     "bonus": 2,
+     "listPrice": 1440,
+     "pricePerPoint": 720
+    },
+    {
+     "rarity": "epico",
+     "best": "Bullpadel Premium Final x3",
+     "bonus": 3,
+     "listPrice": 6000,
+     "pricePerPoint": 2000
+    },
+    {
+     "rarity": "lendario",
+     "best": "Premier Championship Case",
+     "bonus": 4,
+     "listPrice": 19200,
+     "pricePerPoint": 4800
+    }
+   ],
+   "ladderSteps": [
+    {
+     "from": "comum",
+     "to": "incomum",
+     "deltaBonus": 0,
+     "deltaPrice": 246,
+     "marginalCostPerPoint": null
+    },
+    {
+     "from": "incomum",
+     "to": "raro",
+     "deltaBonus": 1,
+     "deltaPrice": 1140,
+     "marginalCostPerPoint": 1140
+    },
+    {
+     "from": "raro",
+     "to": "epico",
+     "deltaBonus": 1,
+     "deltaPrice": 4560,
+     "marginalCostPerPoint": 4560
+    },
+    {
+     "from": "epico",
+     "to": "lendario",
+     "deltaBonus": 1,
+     "deltaPrice": 13200,
+     "marginalCostPerPoint": 13200
+    }
+   ],
+   "equivalentOptionsSameRarity": [
+    {
+     "rarity": "comum",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "incomum",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "raro",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "epico",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "lendario",
+     "options": 1,
+     "brands": 1
+    }
+   ],
+   "shareOfTopKitBonus": 5
+  },
+  {
+   "category": "roupa",
+   "items": 8,
+   "brands": 5,
+   "brandList": [
+    "Joma",
+    "Adidas",
+    "Bullpadel",
+    "Nox",
+    "Wilson"
+   ],
+   "byRarity": {
+    "comum": 1,
+    "incomum": 1,
+    "raro": 1,
+    "epico": 2,
+    "lendario": 2,
+    "mitico": 1
+   },
+   "price": {
+    "min": 264,
+    "median": 8700,
+    "max": 72000
+   },
+   "bonus": {
+    "min": 1,
+    "median": 4,
+    "max": 10
+   },
+   "pricePerPoint": {
+    "min": 264,
+    "median": 1950,
+    "max": 7200
+   },
+   "attributes": {
+    "agility": 12,
+    "emotional_control": 19,
+    "strategy": 4
+   },
+   "bestValue": {
+    "name": "Joma Training Tee",
+    "rarity": "comum",
+    "pricePerPoint": 264
+   },
+   "worstValue": {
+    "name": "Bullpadel Champion Series",
+    "rarity": "mitico",
+    "pricePerPoint": 7200
+   },
+   "maxBonusShop": 10,
+   "maxBonusWithRelics": 10,
+   "ladder": [
+    {
+     "rarity": "comum",
+     "best": "Joma Training Tee",
+     "bonus": 1,
+     "listPrice": 264,
+     "pricePerPoint": 264
+    },
+    {
+     "rarity": "incomum",
+     "best": "Adidas Match Shorts",
+     "bonus": 1,
+     "listPrice": 504,
+     "pricePerPoint": 504
+    },
+    {
+     "rarity": "raro",
+     "best": "Bullpadel Competition Set",
+     "bonus": 2,
+     "listPrice": 1440,
+     "pricePerPoint": 720
+    },
+    {
+     "rarity": "epico",
+     "best": "Nox Pro Competition Kit",
+     "bonus": 6,
+     "listPrice": 11400,
+     "pricePerPoint": 1900
+    },
+    {
+     "rarity": "lendario",
+     "best": "Adidas Elite Tour Jacket",
+     "bonus": 8,
+     "listPrice": 33600,
+     "pricePerPoint": 4200
+    },
+    {
+     "rarity": "mitico",
+     "best": "Bullpadel Champion Series",
+     "bonus": 10,
+     "listPrice": 72000,
+     "pricePerPoint": 7200
+    }
+   ],
+   "ladderSteps": [
+    {
+     "from": "comum",
+     "to": "incomum",
+     "deltaBonus": 0,
+     "deltaPrice": 240,
+     "marginalCostPerPoint": null
+    },
+    {
+     "from": "incomum",
+     "to": "raro",
+     "deltaBonus": 1,
+     "deltaPrice": 936,
+     "marginalCostPerPoint": 936
+    },
+    {
+     "from": "raro",
+     "to": "epico",
+     "deltaBonus": 4,
+     "deltaPrice": 9960,
+     "marginalCostPerPoint": 2490
+    },
+    {
+     "from": "epico",
+     "to": "lendario",
+     "deltaBonus": 2,
+     "deltaPrice": 22200,
+     "marginalCostPerPoint": 11100
+    },
+    {
+     "from": "lendario",
+     "to": "mitico",
+     "deltaBonus": 2,
+     "deltaPrice": 38400,
+     "marginalCostPerPoint": 19200
+    }
+   ],
+   "equivalentOptionsSameRarity": [
+    {
+     "rarity": "comum",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "incomum",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "raro",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "epico",
+     "options": 2,
+     "brands": 1
+    },
+    {
+     "rarity": "lendario",
+     "options": 2,
+     "brands": 2
+    },
+    {
+     "rarity": "mitico",
+     "options": 1,
+     "brands": 1
+    }
+   ],
+   "shareOfTopKitBonus": 11
+  },
+  {
+   "category": "tenis",
+   "items": 9,
+   "brands": 6,
+   "brandList": [
+    "Joma",
+    "Asics",
+    "Mizuno",
+    "Adidas",
+    "Babolat",
+    "Court Labs"
+   ],
+   "byRarity": {
+    "comum": 2,
+    "incomum": 1,
+    "raro": 1,
+    "epico": 2,
+    "lendario": 2,
+    "mitico": 1
+   },
+   "price": {
+    "min": 420,
+    "median": 6000,
+    "max": 66000
+   },
+   "bonus": {
+    "min": 0,
+    "median": 3,
+    "max": 10
+   },
+   "pricePerPoint": {
+    "min": 576,
+    "median": 1900,
+    "max": 6600
+   },
+   "attributes": {
+    "agility": 23,
+    "defense": 3,
+    "smash": 9
+   },
+   "bestValue": {
+    "name": "Joma Court Basic",
+    "rarity": "comum",
+    "pricePerPoint": 576
+   },
+   "worstValue": {
+    "name": "Adidas Master Series",
+    "rarity": "mitico",
+    "pricePerPoint": 6600
+   },
+   "maxBonusShop": 10,
+   "maxBonusWithRelics": 10,
+   "ladder": [
+    {
+     "rarity": "comum",
+     "best": "Joma Court Basic",
+     "bonus": 1,
+     "listPrice": 576,
+     "pricePerPoint": 576
+    },
+    {
+     "rarity": "incomum",
+     "best": "Asics Clay Motion",
+     "bonus": 1,
+     "listPrice": 1020,
+     "pricePerPoint": 1020
+    },
+    {
+     "rarity": "raro",
+     "best": "Mizuno Indoor Flash",
+     "bonus": 2,
+     "listPrice": 2160,
+     "pricePerPoint": 1080
+    },
+    {
+     "rarity": "epico",
+     "best": "Joma Elite Court",
+     "bonus": 6,
+     "listPrice": 10800,
+     "pricePerPoint": 1800
+    },
+    {
+     "rarity": "lendario",
+     "best": "Asics Pro Tour Legend",
+     "bonus": 8,
+     "listPrice": 36000,
+     "pricePerPoint": 4500
+    },
+    {
+     "rarity": "mitico",
+     "best": "Adidas Master Series",
+     "bonus": 10,
+     "listPrice": 66000,
+     "pricePerPoint": 6600
+    }
+   ],
+   "ladderSteps": [
+    {
+     "from": "comum",
+     "to": "incomum",
+     "deltaBonus": 0,
+     "deltaPrice": 444,
+     "marginalCostPerPoint": null
+    },
+    {
+     "from": "incomum",
+     "to": "raro",
+     "deltaBonus": 1,
+     "deltaPrice": 1140,
+     "marginalCostPerPoint": 1140
+    },
+    {
+     "from": "raro",
+     "to": "epico",
+     "deltaBonus": 4,
+     "deltaPrice": 8640,
+     "marginalCostPerPoint": 2160
+    },
+    {
+     "from": "epico",
+     "to": "lendario",
+     "deltaBonus": 2,
+     "deltaPrice": 25200,
+     "marginalCostPerPoint": 12600
+    },
+    {
+     "from": "lendario",
+     "to": "mitico",
+     "deltaBonus": 2,
+     "deltaPrice": 30000,
+     "marginalCostPerPoint": 15000
+    }
+   ],
+   "equivalentOptionsSameRarity": [
+    {
+     "rarity": "comum",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "incomum",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "raro",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "epico",
+     "options": 2,
+     "brands": 2
+    },
+    {
+     "rarity": "lendario",
+     "options": 2,
+     "brands": 2
+    },
+    {
+     "rarity": "mitico",
+     "options": 1,
+     "brands": 1
+    }
+   ],
+   "shareOfTopKitBonus": 11
+  },
+  {
+   "category": "mochila",
+   "items": 9,
+   "brands": 6,
+   "brandList": [
+    "Padel Start",
+    "Head",
+    "Nox",
+    "Bullpadel",
+    "Wilson",
+    "Court Labs"
+   ],
+   "byRarity": {
+    "comum": 2,
+    "incomum": 1,
+    "raro": 1,
+    "epico": 2,
+    "lendario": 2,
+    "mitico": 1
+   },
+   "price": {
+    "min": 264,
+    "median": 6000,
+    "max": 62400
+   },
+   "bonus": {
+    "min": 0,
+    "median": 3,
+    "max": 10
+   },
+   "pricePerPoint": {
+    "min": 312,
+    "median": 1880,
+    "max": 6240
+   },
+   "attributes": {
+    "strategy": 16,
+    "emotional_control": 19
+   },
+   "bestValue": {
+    "name": "Padel Start Compact",
+    "rarity": "comum",
+    "pricePerPoint": 312
+   },
+   "worstValue": {
+    "name": "Bullpadel Master Pro 20",
+    "rarity": "mitico",
+    "pricePerPoint": 6240
+   },
+   "maxBonusShop": 10,
+   "maxBonusWithRelics": 10,
+   "ladder": [
+    {
+     "rarity": "comum",
+     "best": "Padel Start Compact",
+     "bonus": 1,
+     "listPrice": 312,
+     "pricePerPoint": 312
+    },
+    {
+     "rarity": "incomum",
+     "best": "Head Team Backpack",
+     "bonus": 1,
+     "listPrice": 744,
+     "pricePerPoint": 744
+    },
+    {
+     "rarity": "raro",
+     "best": "Nox Thermal Duo",
+     "bonus": 2,
+     "listPrice": 1680,
+     "pricePerPoint": 840
+    },
+    {
+     "rarity": "epico",
+     "best": "Head Tour Elite Bag",
+     "bonus": 6,
+     "listPrice": 10560,
+     "pricePerPoint": 1760
+    },
+    {
+     "rarity": "lendario",
+     "best": "Wilson Champion Vault",
+     "bonus": 8,
+     "listPrice": 30000,
+     "pricePerPoint": 3750
+    },
+    {
+     "rarity": "mitico",
+     "best": "Bullpadel Master Pro 20",
+     "bonus": 10,
+     "listPrice": 62400,
+     "pricePerPoint": 6240
+    }
+   ],
+   "ladderSteps": [
+    {
+     "from": "comum",
+     "to": "incomum",
+     "deltaBonus": 0,
+     "deltaPrice": 432,
+     "marginalCostPerPoint": null
+    },
+    {
+     "from": "incomum",
+     "to": "raro",
+     "deltaBonus": 1,
+     "deltaPrice": 936,
+     "marginalCostPerPoint": 936
+    },
+    {
+     "from": "raro",
+     "to": "epico",
+     "deltaBonus": 4,
+     "deltaPrice": 8880,
+     "marginalCostPerPoint": 2220
+    },
+    {
+     "from": "epico",
+     "to": "lendario",
+     "deltaBonus": 2,
+     "deltaPrice": 19440,
+     "marginalCostPerPoint": 9720
+    },
+    {
+     "from": "lendario",
+     "to": "mitico",
+     "deltaBonus": 2,
+     "deltaPrice": 32400,
+     "marginalCostPerPoint": 16200
+    }
+   ],
+   "equivalentOptionsSameRarity": [
+    {
+     "rarity": "comum",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "incomum",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "raro",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "epico",
+     "options": 2,
+     "brands": 2
+    },
+    {
+     "rarity": "lendario",
+     "options": 2,
+     "brands": 1
+    },
+    {
+     "rarity": "mitico",
+     "options": 1,
+     "brands": 1
+    }
+   ],
+   "shareOfTopKitBonus": 11
+  },
+  {
+   "category": "acessorio_tec",
+   "items": 8,
+   "brands": 6,
+   "brandList": [
+    "Pulse",
+    "PlaySight",
+    "Garmin",
+    "NeuroCourt",
+    "Playtomic",
+    "Movistar"
+   ],
+   "byRarity": {
+    "incomum": 1,
+    "raro": 1,
+    "epico": 2,
+    "lendario": 2,
+    "mitico": 2
+   },
+   "price": {
+    "min": 1080,
+    "median": 16200,
+    "max": 64800
+   },
+   "bonus": {
+    "min": 1,
+    "median": 5,
+    "max": 10
+   },
+   "pricePerPoint": {
+    "min": 1080,
+    "median": 3500,
+    "max": 8400
+   },
+   "attributes": {
+    "emotional_control": 4,
+    "strategy": 23,
+    "agility": 8,
+    "defense": 4
+   },
+   "bestValue": {
+    "name": "Pulse Training Band",
+    "rarity": "incomum",
+    "pricePerPoint": 1080
+   },
+   "worstValue": {
+    "name": "NeuroCourt Tactical Lab",
+    "rarity": "mitico",
+    "pricePerPoint": 8400
+   },
+   "maxBonusShop": 10,
+   "maxBonusWithRelics": 10,
+   "ladder": [
+    {
+     "rarity": "incomum",
+     "best": "Pulse Training Band",
+     "bonus": 1,
+     "listPrice": 1080,
+     "pricePerPoint": 1080
+    },
+    {
+     "rarity": "raro",
+     "best": "PlaySight Shot Sensor",
+     "bonus": 2,
+     "listPrice": 3120,
+     "pricePerPoint": 1560
+    },
+    {
+     "rarity": "epico",
+     "best": "Garmin Padel Elite",
+     "bonus": 6,
+     "listPrice": 13200,
+     "pricePerPoint": 2200
+    },
+    {
+     "rarity": "lendario",
+     "best": "Playtomic Court Vision",
+     "bonus": 8,
+     "listPrice": 38400,
+     "pricePerPoint": 4800
+    },
+    {
+     "rarity": "mitico",
+     "best": "Movistar Smart Analytics Pro",
+     "bonus": 10,
+     "listPrice": 64800,
+     "pricePerPoint": 6480
+    }
+   ],
+   "ladderSteps": [
+    {
+     "from": "incomum",
+     "to": "raro",
+     "deltaBonus": 1,
+     "deltaPrice": 2040,
+     "marginalCostPerPoint": 2040
+    },
+    {
+     "from": "raro",
+     "to": "epico",
+     "deltaBonus": 4,
+     "deltaPrice": 10080,
+     "marginalCostPerPoint": 2520
+    },
+    {
+     "from": "epico",
+     "to": "lendario",
+     "deltaBonus": 2,
+     "deltaPrice": 25200,
+     "marginalCostPerPoint": 12600
+    },
+    {
+     "from": "lendario",
+     "to": "mitico",
+     "deltaBonus": 2,
+     "deltaPrice": 26400,
+     "marginalCostPerPoint": 13200
+    }
+   ],
+   "equivalentOptionsSameRarity": [
+    {
+     "rarity": "incomum",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "raro",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "epico",
+     "options": 2,
+     "brands": 1
+    },
+    {
+     "rarity": "lendario",
+     "options": 2,
+     "brands": 2
+    },
+    {
+     "rarity": "mitico",
+     "options": 2,
+     "brands": 2
+    }
+   ],
+   "shareOfTopKitBonus": 11
+  },
+  {
+   "category": "acessorio",
+   "items": 8,
+   "brands": 5,
+   "brandList": [
+    "Joma",
+    "Adidas",
+    "Nox",
+    "HydroSport",
+    "Therabody"
+   ],
+   "byRarity": {
+    "comum": 1,
+    "incomum": 1,
+    "raro": 1,
+    "epico": 2,
+    "lendario": 2,
+    "mitico": 1
+   },
+   "price": {
+    "min": 72,
+    "median": 7320,
+    "max": 57600
+   },
+   "bonus": {
+    "min": 1,
+    "median": 3,
+    "max": 10
+   },
+   "pricePerPoint": {
+    "min": 72,
+    "median": 2440,
+    "max": 5760
+   },
+   "attributes": {
+    "emotional_control": 14,
+    "defense": 7,
+    "agility": 7,
+    "strategy": 4
+   },
+   "bestValue": {
+    "name": "Joma Wristband Base",
+    "rarity": "comum",
+    "pricePerPoint": 72
+   },
+   "worstValue": {
+    "name": "Therabody Recovery Master",
+    "rarity": "mitico",
+    "pricePerPoint": 5760
+   },
+   "maxBonusShop": 10,
+   "maxBonusWithRelics": 10,
+   "ladder": [
+    {
+     "rarity": "comum",
+     "best": "Joma Wristband Base",
+     "bonus": 1,
+     "listPrice": 72,
+     "pricePerPoint": 72
+    },
+    {
+     "rarity": "incomum",
+     "best": "Adidas Focus Headband",
+     "bonus": 1,
+     "listPrice": 300,
+     "pricePerPoint": 300
+    },
+    {
+     "rarity": "raro",
+     "best": "Nox Racket Protector",
+     "bonus": 2,
+     "listPrice": 1440,
+     "pricePerPoint": 720
+    },
+    {
+     "rarity": "epico",
+     "best": "HydroSport Thermal Pro",
+     "bonus": 3,
+     "listPrice": 6000,
+     "pricePerPoint": 2000
+    },
+    {
+     "rarity": "lendario",
+     "best": "Adidas Focus Master",
+     "bonus": 8,
+     "listPrice": 26400,
+     "pricePerPoint": 3300
+    },
+    {
+     "rarity": "mitico",
+     "best": "Therabody Recovery Master",
+     "bonus": 10,
+     "listPrice": 57600,
+     "pricePerPoint": 5760
+    }
+   ],
+   "ladderSteps": [
+    {
+     "from": "comum",
+     "to": "incomum",
+     "deltaBonus": 0,
+     "deltaPrice": 228,
+     "marginalCostPerPoint": null
+    },
+    {
+     "from": "incomum",
+     "to": "raro",
+     "deltaBonus": 1,
+     "deltaPrice": 1140,
+     "marginalCostPerPoint": 1140
+    },
+    {
+     "from": "raro",
+     "to": "epico",
+     "deltaBonus": 1,
+     "deltaPrice": 4560,
+     "marginalCostPerPoint": 4560
+    },
+    {
+     "from": "epico",
+     "to": "lendario",
+     "deltaBonus": 5,
+     "deltaPrice": 20400,
+     "marginalCostPerPoint": 4080
+    },
+    {
+     "from": "lendario",
+     "to": "mitico",
+     "deltaBonus": 2,
+     "deltaPrice": 31200,
+     "marginalCostPerPoint": 15600
+    }
+   ],
+   "equivalentOptionsSameRarity": [
+    {
+     "rarity": "comum",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "incomum",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "raro",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "epico",
+     "options": 2,
+     "brands": 2
+    },
+    {
+     "rarity": "lendario",
+     "options": 2,
+     "brands": 2
+    },
+    {
+     "rarity": "mitico",
+     "options": 1,
+     "brands": 1
+    }
+   ],
+   "shareOfTopKitBonus": 11
+  },
+  {
+   "category": "colecionavel",
+   "items": 8,
+   "brands": 1,
+   "brandList": [
+    "Padel Heritage"
+   ],
+   "byRarity": {
+    "raro": 1,
+    "epico": 1,
+    "lendario": 1,
+    "mitico": 1,
+    "exclusivo": 4
+   },
+   "price": {
+    "min": 1440,
+    "median": 60000,
+    "max": 108000
+   },
+   "bonus": {
+    "min": 2,
+    "median": 11,
+    "max": 43
+   },
+   "pricePerPoint": {
+    "min": 720,
+    "median": 4200,
+    "max": 6500
+   },
+   "attributes": {
+    "emotional_control": 65,
+    "strategy": 32,
+    "forehand": 13,
+    "smash": 15
+   },
+   "bestValue": {
+    "name": "Medalha Circuito Local",
+    "rarity": "raro",
+    "pricePerPoint": 720
+   },
+   "worstValue": {
+    "name": "Coroa do Grand Slam",
+    "rarity": "exclusivo",
+    "pricePerPoint": 6500
+   },
+   "maxBonusShop": 12,
+   "maxBonusWithRelics": 43,
+   "ladder": [
+    {
+     "rarity": "raro",
+     "best": "Medalha Circuito Local",
+     "bonus": 2,
+     "listPrice": 1440,
+     "pricePerPoint": 720
+    },
+    {
+     "rarity": "epico",
+     "best": "Réplica Troféu Major",
+     "bonus": 3,
+     "listPrice": 6000,
+     "pricePerPoint": 2000
+    },
+    {
+     "rarity": "lendario",
+     "best": "Raquete Vintage 1995",
+     "bonus": 4,
+     "listPrice": 19200,
+     "pricePerPoint": 4800
+    },
+    {
+     "rarity": "mitico",
+     "best": "Troféu Fundadores",
+     "bonus": 10,
+     "listPrice": 42000,
+     "pricePerPoint": 4200
+    },
+    {
+     "rarity": "exclusivo",
+     "best": "Coroa do Grand Slam",
+     "bonus": 12,
+     "listPrice": 78000,
+     "pricePerPoint": 6500
+    }
+   ],
+   "ladderSteps": [
+    {
+     "from": "raro",
+     "to": "epico",
+     "deltaBonus": 1,
+     "deltaPrice": 4560,
+     "marginalCostPerPoint": 4560
+    },
+    {
+     "from": "epico",
+     "to": "lendario",
+     "deltaBonus": 1,
+     "deltaPrice": 13200,
+     "marginalCostPerPoint": 13200
+    },
+    {
+     "from": "lendario",
+     "to": "mitico",
+     "deltaBonus": 6,
+     "deltaPrice": 22800,
+     "marginalCostPerPoint": 3800
+    },
+    {
+     "from": "mitico",
+     "to": "exclusivo",
+     "deltaBonus": 2,
+     "deltaPrice": 36000,
+     "marginalCostPerPoint": 18000
+    }
+   ],
+   "equivalentOptionsSameRarity": [
+    {
+     "rarity": "raro",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "epico",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "lendario",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "mitico",
+     "options": 1,
+     "brands": 1
+    },
+    {
+     "rarity": "exclusivo",
+     "options": 1,
+     "brands": 1
+    }
+   ],
+   "shareOfTopKitBonus": 14
+  }
+ ]
+}

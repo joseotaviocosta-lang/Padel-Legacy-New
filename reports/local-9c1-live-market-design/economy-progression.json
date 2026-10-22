@@ -1,0 +1,868 @@
+{
+ "generatedBy": "tools/live-market-audit.mjs",
+ "source": [
+  "reports/local-9e1-decision-simulator/summary.json",
+  "reports/local-9e1-h1-sponsorship-renewal/economy-before-after.json"
+ ],
+ "comparability": {
+  "baseline": "9E.1 (633298b, pré-H1)",
+  "hotfix": "H1/H1-R1 (b24eef3): renovação de patrocínio limitada à janela de 30 dias, assinatura idempotente, carência de 90 dias após rescisão voluntária",
+  "verdict": "O simulador 9E.1 já só renovava nos últimos 30 dias e nunca rescindia: o exploit não entrou na baseline. 30 dias: hashes idênticos. 365 dias: renovações 69 → 67, luvas e salários iguais em ordem de grandeza; diferenças de ranking vêm do deslocamento do RNG (id determinístico), não da regra.",
+  "comparable": [
+   "receita por categoria (ordem de grandeza)",
+   "gasto com equipamento e moedas por ponto efetivo (a política de compra não mudou; 30 d idênticos)",
+   "participação do patrocínio na receita",
+   "raridades compradas por perfil"
+  ],
+  "notExactlyComparable": [
+   "hashes e números exatos de 365/730 d (RNG deslocado)",
+   "ranking final por seed (variação caótica)",
+   "patrimônio do equilibrado em 365 d (−2,4 mil, quase todo da seed 3)"
+  ],
+  "h1Profiles365": [
+   {
+    "k": "competitivo s1",
+    "sameHash": false,
+    "before": {
+     "final": 5208,
+     "rank": 234,
+     "inc": 45757,
+     "exp": 41449
+    },
+    "after": {
+     "final": 5108,
+     "rank": 230,
+     "inc": 45757,
+     "exp": 41549
+    }
+   },
+   {
+    "k": "competitivo s2",
+    "sameHash": false,
+    "before": {
+     "final": 4670,
+     "rank": 239,
+     "inc": 43111,
+     "exp": 39341
+    },
+    "after": {
+     "final": 4775,
+     "rank": 238,
+     "inc": 43141,
+     "exp": 39266
+    }
+   },
+   {
+    "k": "competitivo s3",
+    "sameHash": false,
+    "before": {
+     "final": 4121,
+     "rank": 272,
+     "inc": 42535,
+     "exp": 39314
+    },
+    "after": {
+     "final": 4231,
+     "rank": 269,
+     "inc": 42535,
+     "exp": 39204
+    }
+   },
+   {
+    "k": "economico s1",
+    "sameHash": false,
+    "before": {
+     "final": 8687,
+     "rank": 378,
+     "inc": 44952,
+     "exp": 8453
+    },
+    "after": {
+     "final": 9059,
+     "rank": 381,
+     "inc": 44708,
+     "exp": 8515
+    }
+   },
+   {
+    "k": "economico s2",
+    "sameHash": false,
+    "before": {
+     "final": 8686,
+     "rank": 371,
+     "inc": 43252,
+     "exp": 8412
+    },
+    "after": {
+     "final": 9242,
+     "rank": 392,
+     "inc": 45761,
+     "exp": 8603
+    }
+   },
+   {
+    "k": "economico s3",
+    "sameHash": false,
+    "before": {
+     "final": 9297,
+     "rank": 370,
+     "inc": 45138,
+     "exp": 8572
+    },
+    "after": {
+     "final": 9035,
+     "rank": 365,
+     "inc": 45290,
+     "exp": 8551
+    }
+   },
+   {
+    "k": "equilibrado s1",
+    "sameHash": false,
+    "before": {
+     "final": 14316,
+     "rank": 276,
+     "inc": 44700,
+     "exp": 24363
+    },
+    "after": {
+     "final": 11209,
+     "rank": 304,
+     "inc": 42703,
+     "exp": 19208
+    }
+   },
+   {
+    "k": "equilibrado s2",
+    "sameHash": false,
+    "before": {
+     "final": 11108,
+     "rank": 292,
+     "inc": 42190,
+     "exp": 19321
+    },
+    "after": {
+     "final": 13524,
+     "rank": 332,
+     "inc": 39899,
+     "exp": 20677
+    }
+   },
+   {
+    "k": "equilibrado s3",
+    "sameHash": false,
+    "before": {
+     "final": 18415,
+     "rank": 163,
+     "inc": 49468,
+     "exp": 18863
+    },
+    "after": {
+     "final": 13325,
+     "rank": 312,
+     "inc": 42368,
+     "exp": 18460
+    }
+   }
+  ]
+ },
+ "groups": [
+  {
+   "days": 365,
+   "profile": "economico",
+   "seeds": [
+    1,
+    2,
+    3
+   ],
+   "netWorth": 36868.3,
+   "finalCoins": 8890,
+   "totalIncome": 44447.3,
+   "totalExpense": 8479,
+   "income": {
+    "conquista": 18300,
+    "sponsor_monthly": 16248,
+    "torneio": 4432,
+    "patrocinio_renovacao": 2562,
+    "patrocinio_luvas": 1366,
+    "investment_income": 810,
+    "partida": 730
+   },
+   "expense": {
+    "treino": 4514,
+    "folha_mensal": 1782,
+    "parceria": 1055,
+    "inscricao": 755,
+    "treinador_luvas": 200,
+    "equipamento": 173
+   },
+   "equipmentSpend": 173,
+   "purchases": 3,
+   "coinsPerEffectivePoint": 58,
+   "equipApplied": 3,
+   "ovrBaseEnd": 34,
+   "ovrEffectiveEnd": 34.3,
+   "rankEnd": 373,
+   "sponsorMonthlyEnd": 1446.7
+  },
+  {
+   "days": 365,
+   "profile": "equilibrado",
+   "seeds": [
+    1,
+    2,
+    3
+   ],
+   "netWorth": 25503.7,
+   "finalCoins": 14613,
+   "totalIncome": 45452.7,
+   "totalExpense": 20849,
+   "income": {
+    "sponsor_monthly": 16252,
+    "conquista": 14733,
+    "torneio": 9557,
+    "patrocinio_renovacao": 2570,
+    "patrocinio_luvas": 1366,
+    "partida": 753,
+    "investment_income": 222
+   },
+   "expense": {
+    "treino": 13513,
+    "folha_mensal": 3621,
+    "equipamento": 1320,
+    "inscricao": 1273,
+    "parceria": 922,
+    "treinador_luvas": 200
+   },
+   "equipmentSpend": 1320,
+   "purchases": 6,
+   "coinsPerEffectivePoint": 189,
+   "equipApplied": 7,
+   "ovrBaseEnd": 42.9,
+   "ovrEffectiveEnd": 43.6,
+   "rankEnd": 243.7,
+   "sponsorMonthlyEnd": 1465.7
+  },
+  {
+   "days": 365,
+   "profile": "competitivo",
+   "seeds": [
+    1,
+    2,
+    3
+   ],
+   "netWorth": 4666.3,
+   "finalCoins": 4666.3,
+   "totalIncome": 43801,
+   "totalExpense": 40034.7,
+   "income": {
+    "sponsor_monthly": 16398,
+    "conquista": 13000,
+    "torneio": 9962,
+    "patrocinio_renovacao": 2609,
+    "patrocinio_luvas": 1366,
+    "partida": 467
+   },
+   "expense": {
+    "equipamento": 13379,
+    "treino": 12758,
+    "folha_mensal": 9420,
+    "inscricao": 1952,
+    "treinador_luvas": 1467,
+    "parceria": 867,
+    "staff_rescisao": 192
+   },
+   "equipmentSpend": 13379,
+   "purchases": 14.7,
+   "coinsPerEffectivePoint": 676,
+   "equipApplied": 19.7,
+   "ovrBaseEnd": 41.2,
+   "ovrEffectiveEnd": 43.1,
+   "rankEnd": 248.3,
+   "sponsorMonthlyEnd": 1470
+  },
+  {
+   "days": 730,
+   "profile": "economico",
+   "seeds": [
+    1,
+    2
+   ],
+   "netWorth": 70711.5,
+   "finalCoins": 4757.5,
+   "totalIncome": 90803.5,
+   "totalExpense": 20992,
+   "income": {
+    "sponsor_monthly": 33697,
+    "conquista": 30300,
+    "torneio": 14844,
+    "patrocinio_renovacao": 5999,
+    "investment_income": 3499,
+    "patrocinio_luvas": 1396,
+    "partida": 1070
+   },
+   "expense": {
+    "treino": 10972,
+    "folha_mensal": 4739,
+    "inscricao": 2920,
+    "parceria": 1989,
+    "treinador_luvas": 200,
+    "equipamento": 173
+   },
+   "equipmentSpend": 173,
+   "purchases": 3,
+   "coinsPerEffectivePoint": 58,
+   "equipApplied": 3,
+   "ovrBaseEnd": 41.3,
+   "ovrEffectiveEnd": 41.6,
+   "rankEnd": 305.5,
+   "sponsorMonthlyEnd": 1380
+  },
+  {
+   "days": 730,
+   "profile": "equilibrado",
+   "seeds": [
+    1,
+    2
+   ],
+   "netWorth": 49325,
+   "finalCoins": 14631,
+   "totalIncome": 111109,
+   "totalExpense": 62684,
+   "income": {
+    "torneio": 33976,
+    "sponsor_monthly": 33959,
+    "conquista": 33250,
+    "patrocinio_renovacao": 6054,
+    "investment_income": 1421,
+    "patrocinio_luvas": 1396,
+    "partida": 1055
+   },
+   "expense": {
+    "treino": 36057,
+    "folha_mensal": 15382,
+    "inscricao": 6200,
+    "parceria": 3526,
+    "equipamento": 1320,
+    "treinador_luvas": 200
+   },
+   "equipmentSpend": 1320,
+   "purchases": 6,
+   "coinsPerEffectivePoint": 189,
+   "equipApplied": 7,
+   "ovrBaseEnd": 50,
+   "ovrEffectiveEnd": 50.7,
+   "rankEnd": 109,
+   "sponsorMonthlyEnd": 1396
+  },
+  {
+   "days": 730,
+   "profile": "competitivo",
+   "seeds": [
+    1,
+    2
+   ],
+   "netWorth": -1060,
+   "finalCoins": -1060,
+   "totalIncome": 97585,
+   "totalExpense": 99545,
+   "income": {
+    "torneio": 37031,
+    "sponsor_monthly": 34028,
+    "conquista": 18250,
+    "patrocinio_renovacao": 6081,
+    "patrocinio_luvas": 1396,
+    "partida": 800
+   },
+   "expense": {
+    "folha_mensal": 35565,
+    "treino": 34285,
+    "equipamento": 17505,
+    "inscricao": 6293,
+    "treinador_luvas": 4250,
+    "parceria": 1361,
+    "staff_rescisao": 288
+   },
+   "equipmentSpend": 17505,
+   "purchases": 16,
+   "coinsPerEffectivePoint": 815,
+   "equipApplied": 21,
+   "ovrBaseEnd": 49.9,
+   "ovrEffectiveEnd": 52,
+   "rankEnd": 101.5,
+   "sponsorMonthlyEnd": 1396.5
+  }
+ ],
+ "careers": [
+  {
+   "profile": "competitivo",
+   "seed": 1,
+   "days": 365,
+   "careerLevel": 17,
+   "rankEnd": 234,
+   "ovrBaseEnd": 39.9,
+   "purchasesByRarity": {
+    "comum": 7,
+    "incomum": 1,
+    "raro": 5
+   },
+   "minCoins": -1267,
+   "finalCoins": 5208
+  },
+  {
+   "profile": "competitivo",
+   "seed": 2,
+   "days": 365,
+   "careerLevel": 17,
+   "rankEnd": 239,
+   "ovrBaseEnd": 42.3,
+   "purchasesByRarity": {
+    "comum": 7,
+    "incomum": 1,
+    "raro": 7
+   },
+   "minCoins": 29,
+   "finalCoins": 4670
+  },
+  {
+   "profile": "competitivo",
+   "seed": 3,
+   "days": 365,
+   "careerLevel": 17,
+   "rankEnd": 272,
+   "ovrBaseEnd": 41.3,
+   "purchasesByRarity": {
+    "comum": 7,
+    "incomum": 1,
+    "raro": 8
+   },
+   "minCoins": 29,
+   "finalCoins": 4121
+  },
+  {
+   "profile": "competitivo",
+   "seed": 1,
+   "days": 730,
+   "careerLevel": 25,
+   "rankEnd": 120,
+   "ovrBaseEnd": 48.3,
+   "purchasesByRarity": {
+    "comum": 7,
+    "incomum": 1,
+    "raro": 6
+   },
+   "minCoins": -1267,
+   "finalCoins": -188
+  },
+  {
+   "profile": "competitivo",
+   "seed": 2,
+   "days": 730,
+   "careerLevel": 26,
+   "rankEnd": 83,
+   "ovrBaseEnd": 51.5,
+   "purchasesByRarity": {
+    "comum": 7,
+    "incomum": 1,
+    "raro": 9,
+    "epico": 1
+   },
+   "minCoins": -1932,
+   "finalCoins": -1932
+  },
+  {
+   "profile": "economico",
+   "seed": 1,
+   "days": 365,
+   "careerLevel": 17,
+   "rankEnd": 378,
+   "ovrBaseEnd": 34.8,
+   "purchasesByRarity": {
+    "comum": 3
+   },
+   "minCoins": 707,
+   "finalCoins": 8687
+  },
+  {
+   "profile": "economico",
+   "seed": 2,
+   "days": 365,
+   "careerLevel": 17,
+   "rankEnd": 371,
+   "ovrBaseEnd": 32.7,
+   "purchasesByRarity": {
+    "comum": 3
+   },
+   "minCoins": 707,
+   "finalCoins": 8686
+  },
+  {
+   "profile": "economico",
+   "seed": 3,
+   "days": 365,
+   "careerLevel": 18,
+   "rankEnd": 370,
+   "ovrBaseEnd": 34.4,
+   "purchasesByRarity": {
+    "comum": 3
+   },
+   "minCoins": 707,
+   "finalCoins": 9297
+  },
+  {
+   "profile": "economico",
+   "seed": 1,
+   "days": 730,
+   "careerLevel": 25,
+   "rankEnd": 312,
+   "ovrBaseEnd": 42.9,
+   "purchasesByRarity": {
+    "comum": 3
+   },
+   "minCoins": 707,
+   "finalCoins": 4632
+  },
+  {
+   "profile": "economico",
+   "seed": 2,
+   "days": 730,
+   "careerLevel": 25,
+   "rankEnd": 299,
+   "ovrBaseEnd": 39.7,
+   "purchasesByRarity": {
+    "comum": 3
+   },
+   "minCoins": 707,
+   "finalCoins": 4883
+  },
+  {
+   "profile": "equilibrado",
+   "seed": 1,
+   "days": 365,
+   "careerLevel": 19,
+   "rankEnd": 276,
+   "ovrBaseEnd": 42,
+   "purchasesByRarity": {
+    "comum": 6
+   },
+   "minCoins": 437,
+   "finalCoins": 14316
+  },
+  {
+   "profile": "equilibrado",
+   "seed": 2,
+   "days": 365,
+   "careerLevel": 18,
+   "rankEnd": 292,
+   "ovrBaseEnd": 42.5,
+   "purchasesByRarity": {
+    "comum": 6
+   },
+   "minCoins": 103,
+   "finalCoins": 11108
+  },
+  {
+   "profile": "equilibrado",
+   "seed": 3,
+   "days": 365,
+   "careerLevel": 20,
+   "rankEnd": 163,
+   "ovrBaseEnd": 44.1,
+   "purchasesByRarity": {
+    "comum": 6
+   },
+   "minCoins": 103,
+   "finalCoins": 18415
+  },
+  {
+   "profile": "equilibrado",
+   "seed": 1,
+   "days": 730,
+   "careerLevel": 31,
+   "rankEnd": 89,
+   "ovrBaseEnd": 48.6,
+   "purchasesByRarity": {
+    "comum": 6
+   },
+   "minCoins": 437,
+   "finalCoins": 16398
+  },
+  {
+   "profile": "equilibrado",
+   "seed": 2,
+   "days": 730,
+   "careerLevel": 30,
+   "rankEnd": 129,
+   "ovrBaseEnd": 51.4,
+   "purchasesByRarity": {
+    "comum": 6
+   },
+   "minCoins": 103,
+   "finalCoins": 12864
+  }
+ ],
+ "kitCosts": [
+  {
+   "rarity": "comum",
+   "kitCost": 2042,
+   "kitDeclaredOvr": 0.8,
+   "categories": 7
+  },
+  {
+   "rarity": "incomum",
+   "kitCost": 5506,
+   "kitDeclaredOvr": 0.9,
+   "categories": 8
+  },
+  {
+   "rarity": "raro",
+   "kitCost": 16956,
+   "kitDeclaredOvr": 2.2,
+   "categories": 9
+  },
+  {
+   "rarity": "epico",
+   "kitCost": 80450,
+   "kitDeclaredOvr": 4.5,
+   "categories": 9
+  },
+  {
+   "rarity": "lendario",
+   "kitCost": 253200,
+   "kitDeclaredOvr": 6.4,
+   "categories": 9
+  },
+  {
+   "rarity": "mitico",
+   "kitCost": 476400,
+   "kitDeclaredOvr": 8,
+   "categories": 8
+  },
+  {
+   "rarity": "exclusivo",
+   "kitCost": 156000,
+   "kitDeclaredOvr": 2.4,
+   "categories": 2
+  }
+ ],
+ "timeToBuy": [
+  {
+   "profile": "economico",
+   "days": 365,
+   "monthlyIncome": 3702,
+   "monthlySurplusBeforeEquipment": 3010,
+   "monthsToKit": {
+    "comum": 0.7,
+    "incomum": 1.8,
+    "raro": 5.6,
+    "epico": 26.7,
+    "lendario": 84.1,
+    "mitico": 158.3,
+    "exclusivo": 51.8
+   }
+  },
+  {
+   "profile": "equilibrado",
+   "days": 365,
+   "monthlyIncome": 3786,
+   "monthlySurplusBeforeEquipment": 2159,
+   "monthsToKit": {
+    "comum": 0.9,
+    "incomum": 2.6,
+    "raro": 7.9,
+    "epico": 37.3,
+    "lendario": 117.3,
+    "mitico": 220.6,
+    "exclusivo": 72.3
+   }
+  },
+  {
+   "profile": "competitivo",
+   "days": 365,
+   "monthlyIncome": 3648,
+   "monthlySurplusBeforeEquipment": 1428,
+   "monthsToKit": {
+    "comum": 1.4,
+    "incomum": 3.9,
+    "raro": 11.9,
+    "epico": 56.3,
+    "lendario": 177.3,
+    "mitico": 333.6,
+    "exclusivo": 109.2
+   }
+  },
+  {
+   "profile": "economico",
+   "days": 730,
+   "monthlyIncome": 3781,
+   "monthlySurplusBeforeEquipment": 2914,
+   "monthsToKit": {
+    "comum": 0.7,
+    "incomum": 1.9,
+    "raro": 5.8,
+    "epico": 27.6,
+    "lendario": 86.9,
+    "mitico": 163.5,
+    "exclusivo": 53.5
+   }
+  },
+  {
+   "profile": "equilibrado",
+   "days": 730,
+   "monthlyIncome": 4627,
+   "monthlySurplusBeforeEquipment": 2072,
+   "monthsToKit": {
+    "comum": 1,
+    "incomum": 2.7,
+    "raro": 8.2,
+    "epico": 38.8,
+    "lendario": 122.2,
+    "mitico": 230,
+    "exclusivo": 75.3
+   }
+  },
+  {
+   "profile": "competitivo",
+   "days": 730,
+   "monthlyIncome": 4064,
+   "monthlySurplusBeforeEquipment": 647,
+   "monthsToKit": {
+    "comum": 3.2,
+    "incomum": 8.5,
+    "raro": 26.2,
+    "epico": 124.3,
+    "lendario": 391.1,
+    "mitico": 735.9,
+    "exclusivo": 241
+   }
+  }
+ ],
+ "availabilityByStage": [
+  {
+   "stage": "inicio (dia 0)",
+   "career_level": 1,
+   "ranking_position": 1001,
+   "reputation": 0,
+   "coins": 900,
+   "economyStage": "beginner",
+   "unlocked": 20,
+   "availableAndUnlocked": 20,
+   "affordable": 15,
+   "inRotationAll": 84.2,
+   "unlockedRarities": [
+    "comum"
+   ]
+  },
+  {
+   "stage": "amador (≈ dia 60)",
+   "career_level": 5,
+   "ranking_position": 900,
+   "reputation": 4,
+   "coins": 1500,
+   "economyStage": "regional",
+   "unlocked": 37,
+   "availableAndUnlocked": 37,
+   "affordable": 30,
+   "inRotationAll": 84.2,
+   "unlockedRarities": [
+    "comum",
+    "incomum"
+   ]
+  },
+  {
+   "stage": "regional (≈ 1º ano)",
+   "career_level": 17,
+   "ranking_position": 300,
+   "reputation": 15,
+   "coins": 9000,
+   "economyStage": "professional",
+   "unlocked": 55,
+   "availableAndUnlocked": 53.1,
+   "affordable": 53.1,
+   "inRotationAll": 84.2,
+   "unlockedRarities": [
+    "comum",
+    "incomum",
+    "raro"
+   ]
+  },
+  {
+   "stage": "nacional (≈ 2º ano)",
+   "career_level": 28,
+   "ranking_position": 110,
+   "reputation": 30,
+   "coins": 15000,
+   "economyStage": "professional",
+   "unlocked": 79,
+   "availableAndUnlocked": 69.8,
+   "affordable": 69.8,
+   "inRotationAll": 84.2,
+   "unlockedRarities": [
+    "comum",
+    "incomum",
+    "raro",
+    "epico"
+   ]
+  },
+  {
+   "stage": "internacional",
+   "career_level": 30,
+   "ranking_position": 80,
+   "reputation": 45,
+   "coins": 30000,
+   "economyStage": "international",
+   "unlocked": 98,
+   "availableAndUnlocked": 78.7,
+   "affordable": 77,
+   "inRotationAll": 84.2,
+   "unlockedRarities": [
+    "comum",
+    "incomum",
+    "raro",
+    "epico",
+    "lendario"
+   ]
+  },
+  {
+   "stage": "elite",
+   "career_level": 40,
+   "ranking_position": 30,
+   "reputation": 70,
+   "coins": 80000,
+   "economyStage": "elite",
+   "unlocked": 111,
+   "availableAndUnlocked": 81.8,
+   "affordable": 81.8,
+   "inRotationAll": 84.2,
+   "unlockedRarities": [
+    "comum",
+    "incomum",
+    "raro",
+    "epico",
+    "lendario",
+    "mitico"
+   ]
+  },
+  {
+   "stage": "lenda",
+   "career_level": 50,
+   "ranking_position": 5,
+   "reputation": 90,
+   "coins": 200000,
+   "economyStage": "elite",
+   "unlocked": 125,
+   "availableAndUnlocked": 84.2,
+   "affordable": 84.2,
+   "inRotationAll": 84.2,
+   "unlockedRarities": [
+    "comum",
+    "incomum",
+    "raro",
+    "epico",
+    "lendario",
+    "mitico",
+    "exclusivo"
+   ]
+  }
+ ]
+}

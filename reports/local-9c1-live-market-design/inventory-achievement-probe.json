@@ -1,0 +1,103 @@
+{
+ "generatedBy": "tools/inventory-achievement-probe.mjs",
+ "bought": [
+  {
+   "name": "Padel Start Control One Club",
+   "rarity": "comum",
+   "category": "raquete"
+  },
+  {
+   "name": "Padel Start Control One Sport",
+   "rarity": "incomum",
+   "category": "raquete"
+  },
+  {
+   "name": "Padel Start Control One Pro",
+   "rarity": "raro",
+   "category": "raquete"
+  },
+  {
+   "name": "Padel Start Control One Elite",
+   "rarity": "epico",
+   "category": "raquete"
+  },
+  {
+   "name": "Padel Start Control One Legend",
+   "rarity": "lendario",
+   "category": "raquete"
+  },
+  {
+   "name": "Padel Start Power Entry Mythic",
+   "rarity": "mitico",
+   "category": "raquete"
+  },
+  {
+   "name": "Coroa do Grand Slam",
+   "rarity": "exclusivo",
+   "category": "colecionavel"
+  },
+  {
+   "name": "Tour Grip Dry Start",
+   "rarity": "comum",
+   "category": "grip"
+  },
+  {
+   "name": "Padel Start Training x3",
+   "rarity": "comum",
+   "category": "bola"
+  },
+  {
+   "name": "Joma Training Tee",
+   "rarity": "comum",
+   "category": "roupa"
+  },
+  {
+   "name": "Joma Court Basic",
+   "rarity": "comum",
+   "category": "tenis"
+  },
+  {
+   "name": "Padel Start Compact",
+   "rarity": "comum",
+   "category": "mochila"
+  },
+  {
+   "name": "Pulse Training Band",
+   "rarity": "incomum",
+   "category": "acessorio_tec"
+  },
+  {
+   "name": "Joma Wristband Base",
+   "rarity": "comum",
+   "category": "acessorio"
+  }
+ ],
+ "inventoryRows": 15,
+ "rowsWithQuantity": [
+  {
+   "item_name": "Grip Performance",
+   "quantity": 2,
+   "origin": "localSeed"
+  }
+ ],
+ "boughtRowsQuantityField": [
+  "undefined"
+ ],
+ "contextBefore": {
+  "totalOwned": 1,
+  "legendary": 0,
+  "mythic": 0,
+  "exclusive": 0,
+  "categories": 1,
+  "rarities": 1
+ },
+ "contextAfter": {
+  "totalOwned": 1,
+  "legendary": 0,
+  "mythic": 0,
+  "exclusive": 0,
+  "categories": 1,
+  "rarities": 1
+ },
+ "verdict": "DEFEITO CONFIRMADO: itens comprados não contam para as conquistas de coleção (quantity ausente)"
+}
