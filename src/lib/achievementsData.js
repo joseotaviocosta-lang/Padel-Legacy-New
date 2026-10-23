@@ -176,7 +176,7 @@ const RAW_ACHIEVEMENT_CATALOG = [
   { name: 'Colecionador', description: 'Possua 25 itens diferentes.', icon: 'Package', rarity: 'incomum', category: 'coleção', visibility: 'publico', difficulty: 'medio', trigger_type: 'own_items', threshold: 25, xp_reward: 500, coins_reward: 1000, points: 25 },
   { name: 'Acumulador', description: 'Possua 50 itens diferentes.', icon: 'Boxes', rarity: 'raro', category: 'coleção', visibility: 'publico', difficulty: 'dificil', trigger_type: 'own_items', threshold: 50, xp_reward: 1500, coins_reward: 3000, points: 50 },
   { name: 'Museu Pessoal', description: 'Possua 100 itens diferentes.', icon: 'Landmark', rarity: 'épico', category: 'coleção', visibility: 'publico', difficulty: 'extremo', trigger_type: 'own_items', threshold: 100, xp_reward: 4000, coins_reward: 8000, medal_reward: 'Colecionador Mestre', points: 100 },
-  { name: 'Arsenal Completo', description: 'Possua 250 itens diferentes.', icon: 'Castle', rarity: 'lendário', category: 'coleção', visibility: 'publico', difficulty: 'lendario', trigger_type: 'own_items', threshold: 250, xp_reward: 15000, coins_reward: 30000, medal_reward: 'Arsenal Completo', title_reward: 'O Colecionador', points: 300 },
+  { name: 'Arsenal Completo', description: 'Possua 115 itens diferentes (relíquias não contam).', icon: 'Castle', rarity: 'lendário', category: 'coleção', visibility: 'publico', difficulty: 'lendario', trigger_type: 'own_equipment', threshold: 115, xp_reward: 15000, coins_reward: 30000, medal_reward: 'Arsenal Completo', title_reward: 'O Colecionador', points: 300 },
 
   // Por raridade
   { name: 'Toque de Midas', description: 'Possua 1 item lendário.', icon: 'Crown', rarity: 'raro', category: 'coleção', visibility: 'publico', difficulty: 'medio', trigger_type: 'own_legendary', threshold: 1, xp_reward: 500, coins_reward: 1000, points: 30 },
@@ -186,8 +186,8 @@ const RAW_ACHIEVEMENT_CATALOG = [
 
   // Por categoria
   { name: 'Armeiro', description: 'Possua 20 raquetes diferentes.', icon: 'Disc', rarity: 'raro', category: 'coleção', visibility: 'publico', difficulty: 'medio', trigger_type: 'own_rackets', threshold: 20, xp_reward: 800, coins_reward: 1500, points: 35 },
-  { name: 'Sapateiro', description: 'Possua 10 pares de tênis diferentes.', icon: 'Footprints', rarity: 'incomum', category: 'coleção', visibility: 'publico', difficulty: 'medio', trigger_type: 'own_shoes', threshold: 10, xp_reward: 600, coins_reward: 1200, points: 30 },
-  { name: 'Guarda-Roupa', description: 'Possua 15 peças de vestuário.', icon: 'Shirt', rarity: 'incomum', category: 'coleção', visibility: 'publico', difficulty: 'medio', trigger_type: 'own_apparel', threshold: 15, xp_reward: 600, coins_reward: 1200, points: 30 },
+  { name: 'Sapateiro', description: 'Possua 9 pares de tênis diferentes.', icon: 'Footprints', rarity: 'incomum', category: 'coleção', visibility: 'publico', difficulty: 'medio', trigger_type: 'own_shoes', threshold: 9, xp_reward: 600, coins_reward: 1200, points: 30 },
+  { name: 'Guarda-Roupa', description: 'Possua 8 peças de vestuário.', icon: 'Shirt', rarity: 'incomum', category: 'coleção', visibility: 'publico', difficulty: 'medio', trigger_type: 'own_apparel', threshold: 8, xp_reward: 600, coins_reward: 1200, points: 30 },
   { name: 'Tecnólogo', description: 'Possua 5 acessórios tecnológicos.', icon: 'Zap', rarity: 'raro', category: 'coleção', visibility: 'publico', difficulty: 'dificil', trigger_type: 'own_tech', threshold: 5, xp_reward: 1000, coins_reward: 2000, points: 40 },
 
   // ═══════════════ COLEÇÃO — OCULTAS ═══════════════

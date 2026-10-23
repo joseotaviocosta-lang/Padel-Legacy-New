@@ -1,0 +1,473 @@
+{
+ "generatedBy": "LOCAL-9C.2-C stable collection identity and reachable goals",
+ "checks": [
+  {
+   "name": "U1: identidade estavel e deterministica",
+   "ok": true,
+   "detail": {
+    "a": "catalog:nox equation"
+   }
+  },
+  {
+   "name": "U2: nome exibido nao e identidade (chave normalizada, sem hash)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "U3: reliquia renomeada mantem a identidade (estrutural, sem alias)",
+   "ok": true,
+   "detail": {
+    "rid1": "relic:1992:colecionavel",
+    "rid2": "relic:1992:colecionavel"
+   }
+  },
+  {
+   "name": "U4: old ID + new ID com alias = 1 produto",
+   "ok": true,
+   "detail": {
+    "oid": "catalog:tour grip dry start",
+    "nid": "catalog:tour grip dry start"
+   }
+  },
+  {
+   "name": "U5: A-v1/A-v2/A-v3 = 1 produto",
+   "ok": true,
+   "detail": {
+    "v1": "catalog:zap a",
+    "v2": "catalog:zap a",
+    "v3": "catalog:zap a"
+   }
+  },
+  {
+   "name": "U6: produtos genuinamente distintos nunca colapsam",
+   "ok": true,
+   "detail": {
+    "d1": "catalog:shoe a",
+    "d2": "catalog:shoe b"
+   }
+  },
+  {
+   "name": "U7: sem nome e sem item = null (fail conservador)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "U8: reliquia excluida do Arsenal; normal e colecionavel incluidos",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "U9: kit inicial tem identidade valida e conta como 1 produto",
+   "ok": true,
+   "detail": {
+    "starterId": "catalog:grip performance",
+    "starterItemId": "shop-003"
+   }
+  },
+  {
+   "name": "A1: catalogo proprio tem 125 identidades distintas",
+   "ok": true,
+   "detail": {
+    "total": 125
+   }
+  },
+  {
+   "name": "A2: reliquias = 10 (modelo canonico)",
+   "ok": true,
+   "detail": {
+    "relics": 10
+   }
+  },
+  {
+   "name": "A3: elegiveis Arsenal = 115 = meta",
+   "ok": true,
+   "detail": {
+    "eligible": 115
+   }
+  },
+  {
+   "name": "A4: tenis = 9 = meta Sapateiro",
+   "ok": true,
+   "detail": {
+    "shoes": [
+     "Joma Court Basic",
+     "Asics Clay Motion",
+     "Mizuno Indoor Flash",
+     "Adidas Pro Stability",
+     "Babolat Jet Legend",
+     "Joma Elite Court",
+     "Asics Pro Tour Legend",
+     "Adidas Master Series",
+     "Tênis Court Pro"
+    ]
+   }
+  },
+  {
+   "name": "A5: vestuario = 8 = meta Guarda-Roupa",
+   "ok": true,
+   "detail": {
+    "apparel": [
+     "Joma Training Tee",
+     "Adidas Match Shorts",
+     "Bullpadel Competition Set",
+     "Nox Travel Team",
+     "Wilson Signature Tour",
+     "Nox Pro Competition Kit",
+     "Adidas Elite Tour Jacket",
+     "Bullpadel Champion Series"
+    ]
+   }
+  },
+  {
+   "name": "A6: 115 elegiveis alcancaveis (seed ou Loja no teto)",
+   "ok": true,
+   "detail": {
+    "blocked": []
+   }
+  },
+  {
+   "name": "B1: kit inicial conta exatamente 1 na carreira nova",
+   "ok": true,
+   "detail": {
+    "totalOwned": 1,
+    "equipmentOwned": 1
+   }
+  },
+  {
+   "name": "B2: vender o starter reduz em exatamente 1",
+   "ok": true,
+   "detail": {
+    "totalOwned": 0
+   }
+  },
+  {
+   "name": "B3: recompra do vendido volta a 1, sem duplicar",
+   "ok": true,
+   "detail": {
+    "totalOwned": 1,
+    "ok": true
+   }
+  },
+  {
+   "name": "B4: reliquia soma no total e fica fora do Arsenal",
+   "ok": true,
+   "detail": {
+    "totalOwned": 2,
+    "equipmentOwned": 1
+   }
+  },
+  {
+   "name": "B5: colecionavel soma no total e no Arsenal",
+   "ok": true,
+   "detail": {
+    "equipmentOwned": 2
+   }
+  },
+  {
+   "name": "B6: rename sem alias fratura em 2 (risco documentado)",
+   "ok": true,
+   "detail": {
+    "totalOwned": 5,
+    "expected": 5
+   }
+  },
+  {
+   "name": "B7: com alias explicito, old+new = 1",
+   "ok": true,
+   "detail": {
+    "totalOwned": 4,
+    "expected": 4
+   }
+  },
+  {
+   "name": "B8: save/load estavel com alias ativo",
+   "ok": true,
+   "detail": {
+    "before": 4,
+    "after": 4
+   }
+  },
+  {
+   "name": "B8b: sem alias a fratura reaparece (+1)",
+   "ok": true,
+   "detail": {
+    "totalOwned": 5
+   }
+  },
+  {
+   "name": "B9: tenis distintos contam 2, alias alheio nao interfere",
+   "ok": true,
+   "detail": {
+    "shoes": 2
+   }
+  },
+  {
+   "name": "B10: linha duplicada do mesmo item nao infla",
+   "ok": true,
+   "detail": {
+    "shoes": 2
+   }
+  },
+  {
+   "name": "C1: Arsenal = 115 via own_equipment",
+   "ok": true,
+   "detail": {
+    "threshold": 115,
+    "trigger": "own_equipment"
+   }
+  },
+  {
+   "name": "C2: Sapateiro = 9 pares",
+   "ok": true,
+   "detail": {
+    "threshold": 9
+   }
+  },
+  {
+   "name": "C3: Guarda-Roupa = 8 pecas",
+   "ok": true,
+   "detail": {
+    "threshold": 8
+   }
+  },
+  {
+   "name": "C4: nomes e recompensas intactos",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "C5: 9 tenis comprados -> Sapateiro desbloqueia no fechamento",
+   "ok": true,
+   "detail": {
+    "rShoes": {
+     "ok": true
+    },
+    "unlockedCount": 10
+   }
+  },
+  {
+   "name": "C6: 8 pecas compradas -> Guarda-Roupa desbloqueia no fechamento",
+   "ok": true,
+   "detail": {
+    "rApp": {
+     "ok": true
+    }
+   }
+  },
+  {
+   "name": "D: arsenal-115 alcancavel e sem exploit (custo 1742820, liquido 1189992)",
+   "ok": true,
+   "detail": {
+    "label": "arsenal-115",
+    "n": 115,
+    "poolSize": 115,
+    "reachable": true,
+    "cost": 1742820,
+    "resale": 522828,
+    "net": 1189992,
+    "exploit": false
+   }
+  },
+  {
+   "name": "D: sapateiro-9 alcancavel e sem exploit (custo 142176, liquido 98324)",
+   "ok": true,
+   "detail": {
+    "label": "sapateiro-9",
+    "n": 9,
+    "poolSize": 9,
+    "reachable": true,
+    "cost": 142176,
+    "resale": 42652,
+    "net": 98324,
+    "exploit": false
+   }
+  },
+  {
+   "name": "D: guarda-roupa-8 alcancavel e sem exploit (custo 144408, liquido 99886)",
+   "ok": true,
+   "detail": {
+    "label": "guarda-roupa-8",
+    "n": 8,
+    "poolSize": 8,
+    "reachable": true,
+    "cost": 144408,
+    "resale": 43322,
+    "net": 99886,
+    "exploit": false
+   }
+  },
+  {
+   "name": "D4a: revenda abaixo do preco (sem lucro mecanico)",
+   "ok": true,
+   "detail": {
+    "price": 420,
+    "resale": 126
+   }
+  },
+  {
+   "name": "D4b: ciclo completo nao desbloqueia nem paga Sapateiro",
+   "ok": true,
+   "detail": {
+    "ok": true
+   }
+  },
+  {
+   "name": "E1: duplicata antiga + orfa nao quebram nem inflam",
+   "ok": true,
+   "detail": {
+    "before": 2,
+    "after": 2
+   }
+  },
+  {
+   "name": "E2: Arsenal ja pago nunca e pago de novo",
+   "ok": true,
+   "detail": {
+    "txBefore": 1,
+    "txAfter": 17,
+    "arsenalTx": 1
+   }
+  },
+  {
+   "name": "E3a: setup sem unlock de Sapateiro",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "E3b: vender tudo nao cria unlock fantasma nem erro",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "E4: save R1 com 9 tenis reconcilia Sapateiro em silencio (sem pagar)",
+   "ok": true,
+   "detail": {
+    "reconciled": true,
+    "paid": false,
+    "sapateiroTx": 0,
+    "v2": true,
+    "version": 2
+   }
+  },
+  {
+   "name": "F1: false = progresso visivel, nada de colecao registrado nem pago",
+   "ok": true,
+   "detail": {
+    "totalOwned": 26,
+    "unlockedCount": 5
+   }
+  },
+  {
+   "name": "F2: true volta a registrar e pagar (Colecionador, 1.000, 1 extrato)",
+   "ok": true,
+   "detail": {
+    "newTx": [
+     "pa-achv-colecionador-playerprofile-1791115394701-adx462:1000"
+    ]
+   }
+  },
+  {
+   "name": "G1: censo deterministico entre carreiras",
+   "ok": true,
+   "detail": {
+    "r1": [
+     1,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "r2": [
+     1,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "name": "H1 (I40): compra legitima +1 produto e +1 Arsenal, sem gravar quantity",
+   "ok": true,
+   "detail": {
+    "totalOwned": [
+     1,
+     2
+    ]
+   }
+  },
+  {
+   "name": "H2 (I40): repeticao da mesma operacao nao conta",
+   "ok": true,
+   "detail": {
+    "code": "duplicate"
+   }
+  }
+ ],
+ "cases": {
+  "U1": {
+   "identity": "catalog:nox equation"
+  },
+  "U3": {
+   "relicId": "relic:1992:colecionavel"
+  },
+  "U9": {
+   "starterId": "catalog:grip performance",
+   "starterItemId": "shop-003"
+  },
+  "A_census": {
+   "total": 125,
+   "eligible": 115,
+   "shoes": 9,
+   "apparel": 8,
+   "relics": 10
+  },
+  "C_desc": {
+   "arsenal": "Possua 115 itens diferentes (relíquias não contam).",
+   "sapateiro": "Possua 9 pares de tênis diferentes.",
+   "guardaRoupa": "Possua 8 peças de vestuário."
+  },
+  "C_unlock": {
+   "shoeProgress": 9,
+   "apparelProgress": 8
+  },
+  "D_economy": [
+   {
+    "label": "arsenal-115",
+    "n": 115,
+    "poolSize": 115,
+    "reachable": true,
+    "cost": 1742820,
+    "resale": 522828,
+    "net": 1189992,
+    "exploit": false
+   },
+   {
+    "label": "sapateiro-9",
+    "n": 9,
+    "poolSize": 9,
+    "reachable": true,
+    "cost": 142176,
+    "resale": 42652,
+    "net": 98324,
+    "exploit": false
+   },
+   {
+    "label": "guarda-roupa-8",
+    "n": 8,
+    "poolSize": 8,
+    "reachable": true,
+    "cost": 144408,
+    "resale": 43322,
+    "net": 99886,
+    "exploit": false
+   }
+  ]
+ }
+}

@@ -388,3 +388,210 @@ preexistentes do HEAD (`achievement-career-progression`, `achievements-ui-v2`,
 `sports-economy-v26`), com as mesmas mensagens. **Regressões novas: nenhuma.**
 
 Estado final da flag: `COLLECTION_REWARDS_RELEASED = true`.
+
+## 19. LOCAL-9C.2-B-R2 — proposta 75/6/5 (SUBSTITUÍDA — não aplicar como final)
+
+> Estado histórico preservado: a R2 documentou 75/6/5 e gerou
+> `r2-goals-validation.json` e `economic-impact.json` com esses valores, mas o
+> código nunca convergiu para 75 (a árvore manteve 115/9/8 da LOCAL-9C.2-C e a
+> validação R2 registra 6/16). Não usar §19 como meta final — ver §20 (R4,
+> 60/6/5, aprovada).
+
+### 19.1 Metas aplicadas
+
+| Conquista | Meta anterior | Meta final | Critério |
+|---|---:|---:|---|
+| Arsenal Completo | 250 | **75** | 75 identidades distintas de equipamento elegível; relíquias não contam |
+| Sapateiro | 10 | **6** | 6 pares de tênis distintos |
+| Guarda-Roupa | 15 | **5** | 5 peças de vestuário distintas |
+
+As recompensas não foram alteradas: Arsenal Completo mantém 30.000 moedas / 15.000 XP; Sapateiro e Guarda-Roupa mantêm 1.200 moedas / 600 XP cada. A contagem continua por identidade distinta, não por quantidade de linhas ou unidades; duplicatas não progridem. O Grip Performance inicial continua sendo um item legítimo e conta uma vez.
+
+### 19.2 Coerência econômica
+
+`tools/economic-impact.mjs` foi atualizado para usar o mesmo critério do Arsenal (`own_equipment`, sem relíquias) e regenerou `economic-impact.json`.
+
+| Conquista | Custo mínimo | Revenda | Custo líquido após recompensa e venda | Estágio mínimo | Recompensa/custo |
+|---|---:|---:|---:|---|---:|
+| Arsenal Completo | 234.130 | 58.516 | 145.614 | nível 15, Top 200, reputação 20 | 12,8% |
+| Sapateiro | 20.976 | 5.244 | 14.532 | nível 15, Top 200, reputação 20 | 5,7% |
+| Guarda-Roupa | 19.608 | 4.902 | 13.506 | nível 15, Top 200, reputação 20 | 6,1% |
+
+Nenhuma das 14 conquistas de coleção tem exploração lucrativa: comprar, receber e revender ainda reduz o saldo. As reduções não mudam a política do simulador.
+
+### 19.3 Compatibilidade e testes R2
+
+`scripts/test-local-9c2b-r2-goals.mjs` — **16/16 PASS** (`r2-goals-validation.json`): 74/75 e 75/75; 5/6 e 6/6; 4/5 e 5/5; compra duplicada; venda/recompra; save/load; pagamento prévio; save antigo reconciliado; duas avaliações simultâneas; falha do lote e recuperação. Cada caso verifica conquista, saldo, extrato e inventário.
+
+Saves antigos continuam carregando: a primeira reconciliação registra as metas já provadas como `reconciled=true`, `reward_delivered=false`, sem crédito de moedas/XP e sem transação. Saves já pagos mantêm o registro idempotente e não recebem nada novamente. Como a reconciliação é anterior ao pagamento e gravada no mesmo lote, reduzir a meta não cria pagamento retroativo em carreira antiga.
+
+### 19.4 Simulações e risco residual
+
+A baseline LOCAL-9E.1 não foi regravada. A tentativa de executar os cenários de 365 e 730 dias, para os perfis econômico, equilibrado e competitivo, parou antes da criação da carreira: `Save Foundation` tentou usar o armazenamento nativo Tauri e o harness Node retornou `TAURI_UNSUPPORTED`. A repetição de 30 dias confirmou o mesmo bloqueio. Não há resultado de simulação novo a interpretar; a comparação previamente versionada permanece apenas como referência histórica, não como evidência R2.
+
+Risco residual: executar a matriz de simulações em um runtime Tauri configurado (ou ajustar o harness para suprimir o backup nativo em `MemoryStorage`) antes do commit. A alteração de meta e sua validação de integridade não dependem desse runtime.
+
+Arquivos R2 alterados: `src/lib/achievementsData.js`, `reports/local-9c2-b-collection-achievements/tools/economic-impact.mjs`, `reports/local-9c2-b-collection-achievements/economic-impact.json`, `reports/local-9c2-b-collection-achievements/r2-goals-validation.json` e este documento.
+
+## 20. LOCAL-9C.2-B-R4 — metas moderadas finais 60/6/5 e reconciliação V2
+
+Metas finais implementadas (código, testes e evidências convergem):
+
+| Conquista | Meta anterior (C) | Meta final R4 | Critério |
+|---|---:|---:|---|
+| Arsenal Completo | 115 | **60** | 60 identidades distintas elegíveis (`own_equipment`); relíquias não contam |
+| Sapateiro | 9 | **6** | 6 pares de tênis distintos |
+| Guarda-Roupa | 8 | **5** | 5 peças de vestuário distintas |
+
+Recompensas inalteradas: Arsenal 30.000 moedas / 15.000 XP; Sapateiro e Guarda-Roupa 1.200 / 600. `COLLECTION_REWARDS_RELEASED = true` mantido. Contagem por identidade canônica (LOCAL-9C.2-C): duplicatas, renomeações e IDs antigos/novos não inflam; kit inicial conta uma vez; relíquias fora do Arsenal. Demais conquistas inalteradas.
+
+### 20.1 Custo mínimo exato (R4)
+
+`tools/economic-impact.mjs` regenerado sob as metas 60/6/5 (mesmo critério do Arsenal, sem relíquias):
+
+| Conquista | Custo mínimo | Revenda (30%) | Líquido após revenda e recompensa | Estágio mínimo | Recompensa/custo |
+|---|---:|---:|---:|---|---:|
+| Arsenal Completo (60) | 113.679 | 28.406 | 55.273 | nível 15, Top 200, reputação 20 | 26,4% |
+| Sapateiro (6) | 20.976 | 5.244 | 14.532 | nível 15, Top 200, reputação 20 | 5,7% |
+| Guarda-Roupa (5) | 19.608 | 4.902 | 13.506 | nível 15, Top 200, reputação 20 | 6,1% |
+
+Referências: Arsenal 50 = 58.740; Arsenal 75 = 234.130; recompensa Arsenal 60 = 30.000. Nenhuma combinação lucrativa: recompensa < custo − revenda em todas as 14 (comprar → receber → revender sempre perde; repetir não paga de novo). Sapateiro 6 e Guarda-Roupa 5 confirmados acima, sem exploit.
+
+### 20.2 Reconciliação V2 — regras
+
+Nova flags: `collection_achievements_v2_reconciled` + `collection_achievements_goals_version = 2` (`achievementEngine.js`). Carreiras novas nascem com V1=true, V2=true e versão 2 (`padel.js ensureMyProfile`, escrita única). Saves preexistentes não têm o campo de versão.
+
+1. Vale para saves novos e antigos, inclusive já reconciliados na V1.
+2. Na primeira avaliação sob as metas novas, o que já está satisfeito (60/60, 6/6, 5/5 ou qualquer coleção já provada) é registrado com `reconciled:true`, `reward_delivered:false`, `reward_coins/xp = 0`, sem extrato.
+3. Conquistas já pagas são preservadas (id `pa-<id>-<perfil>`), sem estorno e sem repagar.
+4. O que for alcançado depois da V2 paga normalmente, uma vez.
+5. Sem pagamentos duplicados (decisão dentro do lote serializado; `playerIncrement`).
+6. Idempotente (reavaliar não muda nada), atômica (lote único ou nada), resiste a avaliações simultâneas e a falhas (nada gravado; próxima avaliação conclui).
+7. Preserva saldo, XP, extrato e inventário no caminho silencioso.
+8. V2 é aplicada antes de qualquer pagamento da redução, no mesmo lote.
+9. Distinção explícita: ausência da flag V2 sozinha não decide; exige `versão !== 2` para reconciliar silenciosamente. Só limpar a flag sem limpar a versão não simula save antigo. Sem forma segura, o trabalho pararia — a forma acima foi considerada segura e implementada.
+
+### 20.3 Testes R4
+
+`scripts/test-local-9c2b-r4-goals.mjs` — **25/25 PASS** (`r4-goals-validation.json`): 59/60 e 60/60; 5/6 e 6/6; 4/5 e 5/5; duplicados; IDs antigos/novos; renomeações com/sem alias; relíquias excluídas; kit inicial; compra recusada; venda/recompra; save/load; conquista previamente paga; save antigo não reconciliado; save antigo já V1; save novo (nasce com V1+V2+versão); concorrência; falha e recuperação; atomicidade; integridade de moedas/XP/extrato; conquista obtida após a V2.
+
+Save antigo com 60/60, 6/6 ou 5/5 não recebe pagamento retroativo; carreira nova conquista e recebe normalmente as três recompensas.
+
+Identidade estável (LOCAL-9C.2-C) verificada em `scripts/test-local-9c2c-collection-identity.mjs` — **46/46 PASS** (`reports/local-9c2-c-collection-identity/identity-tests.json`), atualizado para metas 60/6/5 com censo preservado (125 identidades, 115 elegíveis, 9 tênis, 8 vestuário, 10 relíquias).
+
+### 20.4 Arquivos R4
+
+Alterados: `src/lib/achievementsData.js` (60/6/5), `src/lib/achievementEngine.js` (V2), `src/lib/padel.js` (nascimento com V2+versão), `scripts/test-local-9c2b-r4-goals.mjs` (novo), `scripts/test-local-9c2c-collection-identity.mjs` (metas 60/6/5), `reports/local-9c2-b-collection-achievements/tools/economic-impact.mjs` + `economic-impact.json` (60/6/5), `reports/local-9c2-b-collection-achievements/r4-goals-validation.json` (novo), `reports/local-9c2-c-collection-identity/identity-tests.json` e este documento. Baselines históricas não regravadas; backup Tauri de produção intocado.
+
+## 21. LOCAL-9C.2-C — identidade estável de coleção + metas 115/9/8
+
+Decisão do owner (final): Arsenal Completo = 115 itens (relíquias não contam),
+Sapateiro = 9 pares, Guarda-Roupa = 8 peças. Recompensas inalteradas
+(30.000 / 1.200 / 1.200). As metas 60/6/5 da seção 20 eram proposta
+intermediária de trabalho e ficam substituídas por esta seção.
+
+### 21.1 Identidade estável (`src/lib/collectionIdentity.js`, novo, puro)
+
+Separação entre identidade de catálogo e identidade de conquista:
+
+- Regra anterior: uma linha por `item_id`. Como o catálogo reconcilia por
+  NOME, renomear/substituir um produto criava uma linha nova e o save antigo
+  + produto novo contavam 2 (risco residual da R1, §16).
+- Regra nova: `resolveCollectionId(linha, shopItem)` →
+  `relic:ano:categoria` (relíquia verdadeira, match estrutural contra
+  HISTORICAL_RARE_ITEMS: ano+categoria+raridade, sem `catalog_order`) ou
+  `catalog:chave` (nome normalizado resolvido pelo mapa
+  COLLECTION_ALIASES, vazio no embarque).
+- display-name nunca é identidade; sem hash de nome; desconhecido nunca vira
+  conhecido (retorna null, não conta, não quebra); genuinamente distintos
+  nunca colapsam (só alias explícito funde).
+- Relíquia renomeada mantém a identidade sem alias (caso real: rename da
+  Fase 0 preservou id estrutural e modelo).
+
+Elegibilidade do Arsenal (`isArsenalEligible`): toda identidade resolvida,
+exceto relíquias. Colecionáveis contam (catálogo regular).
+
+### 21.2 Contagem por identidades (achievementContext.js)
+
+`fetchInventoryStats` deduplica por identidade canônica (antes: por
+item_id), mantendo "primeira linha com ShopItem wins". Novos campos no
+contexto: `equipmentOwned` (distintos não-relíquia, para o Arsenal).
+`totalOwned` = distintos totais. Semântica de posse atual preservada
+(venda reduz, recompra restaura, unlock nunca revoga); starter kit conta 1.
+
+### 21.3 Novo trigger (`own_equipment`)
+
+Arsenal Completo usa `own_equipment` → `context.inventory.equipmentOwned`
+(threshold 115). `own_items` (25/50/100) inalterado. Trigger registrado em
+EVALUABLE_TRIGGER_TYPES, COLLECTION_ACHIEVEMENT_TRIGGERS e no peso de
+relevância (55, igual a own_items). Nenhum nome de conquista foi alterado;
+a descrição do Arsenal agora diz "115 itens (relíquias não contam)".
+
+### 21.4 Censo de alcançabilidade (programático, não manual)
+
+Via harness real sobre carreira em memória (seed + catálogo + relíquias):
+
+| Conjunto | Identidades | Meta | Veredito |
+|---|---:|---:|---|
+| Catálogo próprio total | 125 | — | = R1 §2 |
+| Relíquias (template canônico) | 10 | — | estrutural |
+| Elegíveis Arsenal (total − relíquias) | 115 | 115 | alcançável |
+| Tênis distintos | 9 | 9 (Sapateiro) | alcançável |
+| Vestuário distinto | 8 | 8 (Guarda-Roupa) | alcançável |
+
+Todas as 115 elegíveis são compráveis com perfil no teto (ou seed inicial);
+gating (nível/rank/reputação) e estoque limitado de relíquia verificados por
+`getShopItemAccess` + disponibilidade de mercado.
+
+### 21.5 Economia (sem exploit)
+
+Conjuntos mínimos (preço de lista canônico, revenda = 30%):
+
+| Conquista | Custo | Revenda | Líquido (recompensa) |
+|---|---:|---:|---|
+| Arsenal 115 | 1.742.820 | 435.705 | +1.189.992 (recompensa 30.000) |
+| Sapateiro 9 | 142.176 | 35.544 | +98.324 (recompensa 1.200) |
+| Guarda-Roupa 8 | 144.408 | 36.102 | +98.988 (recompensa 1.200) |
+
+Idênticos aos projetados na R1 §18.2 (B′/A/A). Ciclo comprar→receber→vender→
+recomprar perde dinheiro; repetir não paga de novo.
+
+### 21.6 Saves legados e idempotência
+
+- Save antigo com duplicatas/órfãs: reconcilia sem quebrar nem inflar.
+- Save já recompensado: nunca pago de novo (registro idempotente).
+- Save da era R1 (flag V1, sem versão) com 9 tênis: reconcilia Sapateiro em
+  silêncio na primeira avaliação (sem pagar), gravando flag V2 + versão 2 —
+  mesma política da R1 para transições de regra. Carreiras novas (V2 na
+  origem) pagam normalmente.
+- Kill switch: `false` mostra progresso sem registrar nem pagar;
+  `true` volta a registrar e pagar.
+- Determinismo: censo idêntico entre carreiras. I40 inalterado e verde.
+
+### 21.7 Validação
+
+`scripts/test-local-9c2c-collection-identity.mjs` — 47/47 PASS
+(`reports/local-9c2-c-collection-identity/identity-tests.json`): U (9),
+A (6), B (10), C (6), D (4), E (5: E1/E2/E3/E3b/E4), F (2), G (1), H (2).
+Chrome real (`tools/ui-9c2c-goals.mjs`) — 9/9: compra pelo modal da Loja →
+progresso 2/9 → sem unlock parcial → reload estável; alias funde 2 em 1
+(sem alias, fratura em 2); aba Conquistas exibe 115/9/8; zero erros de página.
+Regressões: 9C.2-A 47/47, 9C.2-A-R1, 9C.2-B 32/32, 9C.2-B-R1, atomicidade,
+recompensas, migração 27/27, persistência 53/53, 9E.1, H1/H1-R1, 9B/9B-R1,
+8E, loja/inventário, determinismo, lint, arquitetura, build,
+`git diff --check` — sem regressões novas (só as 3 preexistentes do HEAD).
+
+### 21.8 Arquivos 9C.2-C
+
+Novos: `src/lib/collectionIdentity.js`,
+`scripts/test-local-9c2c-collection-identity.mjs`,
+`reports/local-9c2-c-collection-identity/` (identity-tests.json,
+ui-9c2c-goals.json, tools/ui-9c2c-goals.mjs, ui/*.png).
+Alterados: `src/lib/achievementsData.js` (metas 115/9/8 + own_equipment +
+copy), `src/lib/achievementContext.js` (dedup por identidade +
+equipmentOwned), `src/lib/achievementEngine.js` (case own_equipment +
+trigger sets), `src/lib/achievementRelevance.js` (peso own_equipment),
+mais §18.4/§20.4 pontuais onde a mecânica V2 exigiu neutralidade de metas
+(comentários; sem mudança de comportamento).
+Nada foi removido: arquivos e evidências R2/R4 permanecem intactos no
+worktree; as metas 60/6/5 estão substituídas por decisão do owner.

@@ -5,6 +5,7 @@
 // desta fase, só que reunido num só lugar.
 import { localGame } from '@/api/localGameClient.js';
 import { getExpandedCatalogSummary, normalizeShopItem } from '@/lib/storeCatalog.js';
+import { resolveCollectionId, isArsenalEligible } from '@/lib/collectionIdentity.js';
 import { resolveActiveCoach } from '@/game-core/coachLifecycle.js';
 import { calculateAffinity } from '@/lib/coaches.js';
 import { isOfficialRankedTournament } from '@/lib/circuitCatalog.js';
@@ -84,23 +85,34 @@ async function fetchInventoryStats(profileId) {
     localGame.entities.ShopItem.list().catch(() => []),
   ]);
   const itemById = new Map(shopItems.map((item) => [item.id, item]));
-  // Itens DIFERENTES (como as descrições dizem): uma linha por item_id possuído.
-  // Linhas duplicadas do mesmo item (saves anteriores à 9C.2-A, clique duplo)
-  // não inflam a coleção.
-  const ownedById = new Map();
+  // Distinct items (as the descriptions say): one row per collection
+  // IDENTITY (LOCAL-9C.2-C). Before, one row per item_id — a renamed product
+  // (catalog reconciles by name) counted twice. Duplicate rows of the same
+  // item (pre-9C.2-A saves, double click) still do not inflate the collection.
+  const ownedByCollection = new Map();
   for (const row of inventory) {
-    if (!row?.item_id || inventoryRowUnits(row) <= 0 || ownedById.has(row.item_id)) continue;
-    ownedById.set(row.item_id, row);
+    if (!row?.item_id || inventoryRowUnits(row) <= 0) continue;
+    const item = itemById.get(row.item_id) || null;
+    const collectionId = resolveCollectionId(row, item);
+    if (!collectionId) continue;
+    const existing = ownedByCollection.get(collectionId);
+    if (existing) {
+      if (!existing.item && item) { existing.row = row; existing.item = item; }
+      continue;
+    }
+    ownedByCollection.set(collectionId, { row, item, eligible: isArsenalEligible(collectionId) });
   }
-  const owned = [...ownedById.values()];
+  const ownedEntries = [...ownedByCollection.values()];
+  const owned = ownedEntries.map((entry) => entry.row);
   const categories = new Set();
   const rarities = new Set();
   const categoryCounts = { rackets: 0, shoes: 0, apparel: 0, tech: 0 };
   let legendary = 0;
   let mythic = 0;
   let exclusive = 0;
-  for (const row of owned) {
-    const item = itemById.get(row.item_id);
+  for (const entry of ownedEntries) {
+    const row = entry.row;
+    const item = entry.item;
     if (!item) continue;
     if (item.category) categories.add(item.category);
     if (item.rarity) rarities.add(item.rarity);
@@ -118,7 +130,7 @@ async function fetchInventoryStats(profileId) {
   // (storeCatalog.js), sempre completo; raridades normalizadas dos dois lados.
   const canonicalRarities = Object.keys(getExpandedCatalogSummary().byRarity || {});
   const totalRaritiesInCatalog = new Set([...shopItems.map((item) => normalizeShopItem(item).rarity), ...canonicalRarities].filter(Boolean)).size;
-  const ownedRarities = new Set(owned.map((row) => itemById.get(row.item_id)).filter(Boolean).map((item) => normalizeShopItem(item).rarity).filter(Boolean));
+  const ownedRarities = new Set(ownedEntries.map((entry) => entry.item).filter(Boolean).map((item) => normalizeShopItem(item).rarity).filter(Boolean));
   rarities.clear();
   ownedRarities.forEach((rarity) => rarities.add(rarity));
   // LOCAL-9B: modificadores do equipamento equipado (mesma passada). As
@@ -126,7 +138,11 @@ async function fetchInventoryStats(profileId) {
   // quando o bônus ficava gravado no atributo (ver achievementEngine.js).
   const equipmentModifiers = computeEquipmentModifiers(inventory, itemById);
   const totalUnits = inventory.reduce((sum, row) => sum + inventoryRowUnits(row), 0);
-  return { totalOwned: owned.length, totalUnits, categories: categories.size, rarities: rarities.size, legendary, mythic, exclusive, totalCategoriesInCatalog, totalRaritiesInCatalog, equipmentModifiers, ...categoryCounts };
+  // LOCAL-9C.2-C — distinct identities eligible for Arsenal Completo
+  // (all owned catalog, minus relics). Collectibles count; only relic
+  // content (limited stock, outside the normal equipment circuit) is out.
+  const equipmentOwned = ownedEntries.filter((entry) => entry.eligible).length;
+  return { totalOwned: owned.length, equipmentOwned, totalUnits, categories: categories.size, rarities: rarities.size, legendary, mythic, exclusive, totalCategoriesInCatalog, totalRaritiesInCatalog, equipmentModifiers, ...categoryCounts };
 }
 
 async function fetchTrainingCenter(profileId) {

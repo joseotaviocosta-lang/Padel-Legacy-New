@@ -30,7 +30,7 @@ const EVALUABLE_TRIGGER_TYPES = new Set([
   // Economia (nunca profile.coins — ver achievementContext.js)
   'reach_coins', 'buy_property', 'make_investment', 'sign_sponsor', 'multi_sponsor',
   // Equipamentos
-  'own_items', 'own_legendary', 'own_mythic', 'own_exclusive', 'all_categories',
+  'own_items', 'own_equipment', 'own_legendary', 'own_mythic', 'own_exclusive', 'all_categories',
   // Fase 13 (Parte 10): mesma passada de inventário de own_items/
   // all_categories acima, só contando por categoria/raridade específica —
   // reclassificadas de "C" pra "A" porque o dado (ShopItem.category/rarity)
@@ -92,6 +92,10 @@ function rawMetricValue(achievement, profile, context) {
     case 'multi_sponsor': return Number(context?.sponsorContracts?.active) || 0;
 
     case 'own_items': return Number(context?.inventory?.totalOwned) || 0;
+    // LOCAL-9C.2-C — Arsenal Completo: eligible distinct identities
+    // (owned minus relics). Own trigger so own_items keeps counting
+    // everything for Colecionador/Acumulador/Museu.
+    case 'own_equipment': return Number(context?.inventory?.equipmentOwned) || 0;
     case 'own_legendary': return Number(context?.inventory?.legendary) || 0;
     case 'own_mythic': return Number(context?.inventory?.mythic) || 0;
     case 'own_exclusive': return Number(context?.inventory?.exclusive) || 0;
@@ -212,10 +216,35 @@ export function findNextLockedAchievement(profile, context, { category, triggerT
 // quando (nem se legitimamente) esses itens foram obtidos. A flag é gravada
 // no mesmo lote; perfis novos já nascem com ela (padel.js ensureMyProfile).
 export const COLLECTION_ACHIEVEMENT_TRIGGERS = new Set([
-  'own_items', 'own_legendary', 'own_mythic', 'own_exclusive', 'all_categories',
+  'own_items', 'own_equipment', 'own_legendary', 'own_mythic', 'own_exclusive', 'all_categories',
   'own_rackets', 'own_shoes', 'own_apparel', 'own_tech', 'all_rarities',
 ]);
 export const COLLECTION_RECONCILED_FLAG = 'collection_achievements_v1_reconciled';
+// Reconciliação versionada de mudança de metas (ex.: 250/10/15 → 115/9/8).
+// A V1 sozinha não protege saves que já passaram por ela: com a flag V1
+// gravada, a primeira avaliação sob metas reduzidas pagaria de forma
+// retroativa o que o inventário antigo já prova. A V2 registra sem recompensa,
+// no mesmo lote atômico, tudo o que já está satisfeito sob as metas novas na
+// primeira avaliação — antes de qualquer pagamento decorrente da redução.
+//
+// Distinção explícita save preexistente × carreira nova (verificável):
+// - Carreiras criadas pelo código atual nascem com V1=true, V2=true e
+//   `collection_achievements_goals_version === 2` (padel.js ensureMyProfile,
+//   escrita única atômica).
+// - Saves preexistentes não têm o campo de versão (ausente ou < 2).
+// - A ausência da flag V2 SOZINHA não decide: `v2Baseline` exige também
+//   versão !== 2. Carreira nova nunca cai em reconciliação silenciosa;
+//   save antigo (com ou sem V1) sempre reconcilia antes de pagar.
+// - Simular save antigo em testes exige limpar flag V2 E versão — limpar só a
+//   flag não reproduz um save real.
+export const COLLECTION_RECONCILED_V2_FLAG = 'collection_achievements_v2_reconciled';
+export const COLLECTION_GOALS_VERSION_FIELD = 'collection_achievements_goals_version';
+export const COLLECTION_GOALS_VERSION = 2;
+export function isCollectionV2Baseline(player) {
+  if (!player || typeof player !== 'object') return false;
+  if (player[COLLECTION_RECONCILED_V2_FLAG]) return false;
+  return player[COLLECTION_GOALS_VERSION_FIELD] !== COLLECTION_GOALS_VERSION;
+}
 
 // LOCAL-9C.2-B — liberação das recompensas de coleção. Corrigida a contagem, as
 // 14 conquistas passam a ser alcançáveis (até 46.700 moedas; 32.400 das 79.100
@@ -236,8 +265,11 @@ export async function syncPlayerAchievements(profile, context, { localGame, reco
   const released = collectionRewardsReleased();
   const candidates = evaluateAchievements(profile, context)
     .filter((row) => row.evaluable && row.unlocked && (released || !COLLECTION_ACHIEVEMENT_TRIGGERS.has(row.achievement.trigger_type)));
-  // Sem candidatos, só há o que gravar se a coleção está liberada e a flag ainda falta.
-  if (!candidates.length && (profile[COLLECTION_RECONCILED_FLAG] || !released)) return { profile, unlocked: [] };
+  // Sem candidatos, só há o que gravar se a coleção está liberada e alguma
+  // flag de reconciliação (V1 ou V2) ainda falta.
+  const needsV1 = released && !profile[COLLECTION_RECONCILED_FLAG];
+  const needsV2 = released && isCollectionV2Baseline(profile);
+  if (!candidates.length && (!released || (!needsV1 && !needsV2))) return { profile, unlocked: [] };
 
   // Playthrough 5.24-E — DESBLOQUEIO + RECOMPENSA ATÔMICOS.
   //
@@ -267,7 +299,13 @@ export async function syncPlayerAchievements(profile, context, { localGame, reco
     const player = view.player;
     if (!player?.id || player.id !== profile.id) return { rejected: { code: 'profile-not-found' } };
     const existingIds = new Set(view.filter('PlayerAchievement', (row) => row.profile_id === profile.id).map((row) => row.achievement_id));
-    const collectionBaseline = released && !player[COLLECTION_RECONCILED_FLAG];
+    // V1: save anterior à correção da contagem. V2: save anterior a uma
+    // redução de metas (inclui saves já reconciliados na V1). Ambas são
+    // decididas DENTRO da gravação serializada, sobre o save atual — a V2 é
+    // aplicada antes de qualquer pagamento decorrente das metas reduzidas.
+    const v1Baseline = released && !player[COLLECTION_RECONCILED_FLAG];
+    const v2Baseline = released && isCollectionV2Baseline(player);
+    const collectionBaseline = v1Baseline || v2Baseline;
     const operations = [];
     const unlockedIds = [];
     const reconciledIds = [];
@@ -315,7 +353,8 @@ export async function syncPlayerAchievements(profile, context, { localGame, reco
     if (xpGain > 0) increments.xp = xpGain;
     if (coinsGain > 0) increments.coins = coinsGain;
     if (Object.keys(increments).length) operations.push({ type: 'playerIncrement', id: profile.id, data: increments });
-    if (collectionBaseline) operations.push({ type: 'playerUpdate', id: profile.id, data: { [COLLECTION_RECONCILED_FLAG]: true } });
+    if (v1Baseline) operations.push({ type: 'playerUpdate', id: profile.id, data: { [COLLECTION_RECONCILED_FLAG]: true } });
+    if (v2Baseline) operations.push({ type: 'playerUpdate', id: profile.id, data: { [COLLECTION_RECONCILED_V2_FLAG]: true, [COLLECTION_GOALS_VERSION_FIELD]: COLLECTION_GOALS_VERSION } });
     return { operations, outcome: { unlockedIds, reconciledIds, coinsGain } };
   }, { caller: 'achievements.syncPlayerAchievements' });
 

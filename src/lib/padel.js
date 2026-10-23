@@ -435,6 +435,11 @@ export async function ensureMyProfile(user) {
       // LOCAL-9C.2-B: idem para as conquistas de coleção — carreira nova não
       // tem inventário anterior à correção da contagem; tudo o que comprar paga.
       collection_achievements_v1_reconciled: true,
+      // Metas correntes (9C.2-C: 115/9/8). Carreira criada já sob as metas atuais
+      // nasce reconciliada na V2, com versão explícita — nunca cai na
+      // reconciliação silenciosa. Saves preexistentes não têm este campo.
+      collection_achievements_v2_reconciled: true,
+      collection_achievements_goals_version: 2,
     });
     return created;
   } catch (e) {

@@ -1,0 +1,117 @@
+{
+ "generatedBy": "LOCAL-9C.2-C ui-9c2c-goals (Chrome real)",
+ "checks": [
+  {
+   "name": "A1: 2 tenis pelo modal da Loja -> progresso 2/9 em andamento",
+   "ok": true,
+   "detail": {
+    "bought": [
+     {
+      "name": "Joma Court Basic",
+      "clicked": true
+     },
+     {
+      "name": "Asics Clay Motion",
+      "clicked": true
+     }
+    ],
+    "progress": "2/9"
+   }
+  },
+  {
+   "name": "A2: sem unlock parcial (2/9), sem pagamento de Sapateiro",
+   "ok": true,
+   "detail": {
+    "pa": 4
+   }
+  },
+  {
+   "name": "A3: recarga preserva inventario e contagem",
+   "ok": true,
+   "detail": {
+    "inv": 3
+   }
+  },
+  {
+   "name": "B1: sem alias, old+new fraturam em +2",
+   "ok": true,
+   "detail": {
+    "totalOwned": 5
+   }
+  },
+  {
+   "name": "B2: com alias, old+new = +1 (funde sem duplicar)",
+   "ok": true,
+   "detail": {
+    "totalOwned": 4
+   }
+  },
+  {
+   "name": "C1: Arsenal Completo exibe denominador 115",
+   "ok": true,
+   "detail": {
+    "inProgress": true,
+    "progress": "5/115",
+    "completedList": false
+   }
+  },
+  {
+   "name": "C2: Sapateiro exibe denominador 9",
+   "ok": true,
+   "detail": {
+    "inProgress": true,
+    "progress": "2/9",
+    "completedList": false
+   }
+  },
+  {
+   "name": "C3: Guarda-Roupa exibe denominador 8",
+   "ok": true,
+   "detail": {
+    "inProgress": true,
+    "progress": "0/8",
+    "completedList": false
+   }
+  },
+  {
+   "name": "sem erros de pagina",
+   "ok": true,
+   "detail": null
+  }
+ ],
+ "steps": {
+  "start": {
+   "shop": 125,
+   "totalOwned": 1,
+   "coins": 50000000
+  },
+  "aliasFracture": {
+   "totalOwned": 5
+  },
+  "aliasMerged": {
+   "totalOwned": 4
+  },
+  "goals": {
+   "arsenal": {
+    "inProgress": true,
+    "progress": "5/115",
+    "completedList": false
+   },
+   "sapateiro": {
+    "inProgress": true,
+    "progress": "2/9",
+    "completedList": false
+   },
+   "guardaRoupa": {
+    "inProgress": true,
+    "progress": "0/8",
+    "completedList": false
+   }
+  }
+ },
+ "summary": {
+  "total": 9,
+  "passed": 9,
+  "failed": 0
+ }
+}

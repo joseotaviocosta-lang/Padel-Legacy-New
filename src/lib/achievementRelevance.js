@@ -37,7 +37,7 @@ const TRIGGER_ACTIONABILITY = {
   all_max_attributes: 75, hire_coach: 68, sign_sponsor: 68, max_attribute: 70,
   complete_training: 65, multi_sponsor: 65, upgrade_facility: 60, reach_coins: 60,
   reach_level: 60, own_legendary: 58, own_mythic: 58, own_exclusive: 58,
-  buy_property: 55, make_investment: 55, own_items: 55, all_categories: 55,
+  buy_property: 55, make_investment: 55, own_items: 55, own_equipment: 55, all_categories: 55,
   max_coach_affinity: 48, long_coach: 45, recover_injury: 40,
   advance_day: 15, reach_age: 10, create_profile: 5,
 };
