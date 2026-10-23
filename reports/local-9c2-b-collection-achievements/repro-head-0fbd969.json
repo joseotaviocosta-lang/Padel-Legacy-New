@@ -1,0 +1,599 @@
+{
+ "generatedBy": "LOCAL-9C.2-B audit-repro",
+ "head": "0fbd969",
+ "catalog": {
+  "shopItems": 125,
+  "rawRarities": [
+   "comum",
+   "exclusivo",
+   "incomum",
+   "raro",
+   "epico",
+   "lendario",
+   "mitico"
+  ],
+  "rawCategories": [
+   "raquete",
+   "tenis",
+   "grip",
+   "mochila",
+   "bola",
+   "colecionavel",
+   "roupa",
+   "acessorio_tec",
+   "acessorio"
+  ],
+  "sideCollection": [
+   {
+    "id": "achv-primeira-compra",
+    "name": "Primeira Compra",
+    "trigger": "buy_item",
+    "evaluable": false,
+    "coins": 100
+   },
+   {
+    "id": "achv-fabricante-fiel",
+    "name": "Fabricante Fiel",
+    "trigger": "brand_loyalty",
+    "evaluable": false,
+    "coins": 1500
+   },
+   {
+    "id": "achv-durabilidade-zero",
+    "name": "Durabilidade Zero",
+    "trigger": "item_broken",
+    "evaluable": false,
+    "coins": 600
+   },
+   {
+    "id": "achv-veterano-de-equipamentos",
+    "name": "Veterano de Equipamentos",
+    "trigger": "long_equipped",
+    "evaluable": false,
+    "coins": 2000
+   }
+  ]
+ },
+ "audit": [
+  {
+   "id": "achv-colecionador",
+   "name": "Colecionador",
+   "description": "Possua 25 itens diferentes.",
+   "trigger": "own_items",
+   "metric": "context.inventory.totalOwned",
+   "threshold": 25,
+   "coins": 1000,
+   "xp": 500,
+   "category": "coleção",
+   "eligibleInSave": 125,
+   "purchasable": 125,
+   "eligibleNormalized": 125,
+   "reachable": true
+  },
+  {
+   "id": "achv-acumulador",
+   "name": "Acumulador",
+   "description": "Possua 50 itens diferentes.",
+   "trigger": "own_items",
+   "metric": "context.inventory.totalOwned",
+   "threshold": 50,
+   "coins": 3000,
+   "xp": 1500,
+   "category": "coleção",
+   "eligibleInSave": 125,
+   "purchasable": 125,
+   "eligibleNormalized": 125,
+   "reachable": true
+  },
+  {
+   "id": "achv-museu-pessoal",
+   "name": "Museu Pessoal",
+   "description": "Possua 100 itens diferentes.",
+   "trigger": "own_items",
+   "metric": "context.inventory.totalOwned",
+   "threshold": 100,
+   "coins": 8000,
+   "xp": 4000,
+   "category": "coleção",
+   "eligibleInSave": 125,
+   "purchasable": 125,
+   "eligibleNormalized": 125,
+   "reachable": true
+  },
+  {
+   "id": "achv-arsenal-completo",
+   "name": "Arsenal Completo",
+   "description": "Possua 250 itens diferentes.",
+   "trigger": "own_items",
+   "metric": "context.inventory.totalOwned",
+   "threshold": 250,
+   "coins": 30000,
+   "xp": 15000,
+   "category": "coleção",
+   "eligibleInSave": 125,
+   "purchasable": 125,
+   "eligibleNormalized": 125,
+   "reachable": false
+  },
+  {
+   "id": "achv-toque-de-midas",
+   "name": "Toque de Midas",
+   "description": "Possua 1 item lendário.",
+   "trigger": "own_legendary",
+   "metric": "context.inventory.legendary",
+   "threshold": 1,
+   "coins": 1000,
+   "xp": 500,
+   "category": "coleção",
+   "eligibleInSave": 19,
+   "purchasable": 19,
+   "eligibleNormalized": 19,
+   "reachable": true
+  },
+  {
+   "id": "achv-rei-mida",
+   "name": "Rei Mida",
+   "description": "Possua 10 itens lendários.",
+   "trigger": "own_legendary",
+   "metric": "context.inventory.legendary",
+   "threshold": 10,
+   "coins": 5000,
+   "xp": 2500,
+   "category": "coleção",
+   "eligibleInSave": 19,
+   "purchasable": 19,
+   "eligibleNormalized": 19,
+   "reachable": true
+  },
+  {
+   "id": "achv-mito-vivo",
+   "name": "Mito Vivo",
+   "description": "Possua 1 item mítico.",
+   "trigger": "own_mythic",
+   "metric": "context.inventory.mythic",
+   "threshold": 1,
+   "coins": 10000,
+   "xp": 5000,
+   "category": "coleção",
+   "eligibleInSave": 13,
+   "purchasable": 13,
+   "eligibleNormalized": 13,
+   "reachable": true
+  },
+  {
+   "id": "achv-exclusividade",
+   "name": "Exclusividade",
+   "description": "Possua 1 item exclusivo.",
+   "trigger": "own_exclusive",
+   "metric": "context.inventory.exclusive",
+   "threshold": 1,
+   "coins": 10000,
+   "xp": 5000,
+   "category": "coleção",
+   "eligibleInSave": 14,
+   "purchasable": 14,
+   "eligibleNormalized": 14,
+   "reachable": true
+  },
+  {
+   "id": "achv-armeiro",
+   "name": "Armeiro",
+   "description": "Possua 20 raquetes diferentes.",
+   "trigger": "own_rackets",
+   "metric": "context.inventory.rackets",
+   "threshold": 20,
+   "coins": 1500,
+   "xp": 800,
+   "category": "coleção",
+   "eligibleInSave": 60,
+   "purchasable": 60,
+   "eligibleNormalized": 60,
+   "reachable": true
+  },
+  {
+   "id": "achv-sapateiro",
+   "name": "Sapateiro",
+   "description": "Possua 10 pares de tênis diferentes.",
+   "trigger": "own_shoes",
+   "metric": "context.inventory.shoes",
+   "threshold": 10,
+   "coins": 1200,
+   "xp": 600,
+   "category": "coleção",
+   "eligibleInSave": 9,
+   "purchasable": 9,
+   "eligibleNormalized": 9,
+   "reachable": false
+  },
+  {
+   "id": "achv-guarda-roupa",
+   "name": "Guarda-Roupa",
+   "description": "Possua 15 peças de vestuário.",
+   "trigger": "own_apparel",
+   "metric": "context.inventory.apparel",
+   "threshold": 15,
+   "coins": 1200,
+   "xp": 600,
+   "category": "coleção",
+   "eligibleInSave": 8,
+   "purchasable": 8,
+   "eligibleNormalized": 8,
+   "reachable": false
+  },
+  {
+   "id": "achv-tecnologo",
+   "name": "Tecnólogo",
+   "description": "Possua 5 acessórios tecnológicos.",
+   "trigger": "own_tech",
+   "metric": "context.inventory.tech",
+   "threshold": 5,
+   "coins": 2000,
+   "xp": 1000,
+   "category": "coleção",
+   "eligibleInSave": 8,
+   "purchasable": 8,
+   "eligibleNormalized": 8,
+   "reachable": true
+  },
+  {
+   "id": "achv-pau-para-toda-obra",
+   "name": "Pau para Toda Obra",
+   "description": "Possua pelo menos 1 item de cada categoria.",
+   "trigger": "all_categories",
+   "metric": "context.inventory.categories (vs totalCategoriesInCatalog)",
+   "threshold": 1,
+   "coins": 1200,
+   "xp": 600,
+   "category": "coleção",
+   "eligibleInSave": null,
+   "purchasable": null,
+   "eligibleNormalized": null,
+   "reachable": null
+  },
+  {
+   "id": "achv-rainbow-collection",
+   "name": "Rainbow Collection",
+   "description": "Possua 1 item de cada raridade.",
+   "trigger": "all_rarities",
+   "metric": "context.inventory.rarities (vs totalRaritiesInCatalog)",
+   "threshold": 1,
+   "coins": 4000,
+   "xp": 2000,
+   "category": "coleção",
+   "eligibleInSave": null,
+   "purchasable": null,
+   "eligibleNormalized": null,
+   "reachable": null
+  }
+ ],
+ "totalCoins": 79100,
+ "count": 14,
+ "repro": {
+  "contextBeforePurchases": {
+   "totalOwned": 1,
+   "categories": 1,
+   "rarities": 1
+  },
+  "bought": [
+   {
+    "name": "Padel Start Control One Club",
+    "category": "raquete",
+    "rarity": "comum",
+    "result": "purchased",
+    "price": 384
+   },
+   {
+    "name": "Padel Start Control One Sport",
+    "category": "raquete",
+    "rarity": "incomum",
+    "result": "purchased",
+    "price": 687
+   },
+   {
+    "name": "Padel Start Control One Pro",
+    "category": "raquete",
+    "rarity": "raro",
+    "result": "purchased",
+    "price": 1520
+   },
+   {
+    "name": "Padel Start Control One Elite",
+    "category": "raquete",
+    "rarity": "epico",
+    "result": "purchased",
+    "price": 5790
+   },
+   {
+    "name": "Padel Start Control One Legend",
+    "category": "raquete",
+    "rarity": "lendario",
+    "result": "purchased",
+    "price": 18055
+   },
+   {
+    "name": "Padel Start Power Entry Mythic",
+    "category": "raquete",
+    "rarity": "mitico",
+    "result": "purchased",
+    "price": 38221
+   },
+   {
+    "name": "Tour Grip Dry Start",
+    "category": "grip",
+    "rarity": "comum",
+    "result": "purchased",
+    "price": 66
+   },
+   {
+    "name": "Padel Start Training x3",
+    "category": "bola",
+    "rarity": "comum",
+    "result": "purchased",
+    "price": 54
+   },
+   {
+    "name": "Joma Training Tee",
+    "category": "roupa",
+    "rarity": "comum",
+    "result": "purchased",
+    "price": 264
+   },
+   {
+    "name": "Joma Court Basic",
+    "category": "tenis",
+    "rarity": "comum",
+    "result": "purchased",
+    "price": 576
+   },
+   {
+    "name": "Padel Start Compact",
+    "category": "mochila",
+    "rarity": "comum",
+    "result": "purchased",
+    "price": 312
+   },
+   {
+    "name": "Pulse Training Band",
+    "category": "acessorio_tec",
+    "rarity": "incomum",
+    "result": "purchased",
+    "price": 1071
+   },
+   {
+    "name": "Joma Wristband Base",
+    "category": "acessorio",
+    "rarity": "comum",
+    "result": "purchased",
+    "price": 72
+   },
+   {
+    "name": "Medalha Circuito Local",
+    "category": "colecionavel",
+    "rarity": "raro",
+    "result": "purchased",
+    "price": 1457
+   },
+   {
+    "name": "Raquete de Madeira Original (1969)",
+    "category": "raquete",
+    "rarity": "exclusivo",
+    "is_exclusive": true,
+    "result": "purchased",
+    "price": 176359
+   }
+  ],
+  "inventoryRows": [
+   {
+    "id": "inventory-001",
+    "item": "Grip Performance",
+    "quantity": 2,
+    "starter_seed": true
+   },
+   {
+    "id": "inventory-shop-audit-shopitem-1791117096239-evnnf6",
+    "item": "Padel Start Control One Club",
+    "quantity": "(ausente)",
+    "starter_seed": false
+   },
+   {
+    "id": "inventory-shop-audit-shopitem-1791117097239-4rbpw0",
+    "item": "Padel Start Control One Sport",
+    "quantity": "(ausente)",
+    "starter_seed": false
+   },
+   {
+    "id": "inventory-shop-audit-shopitem-1791117098239-5j4g5a",
+    "item": "Padel Start Control One Pro",
+    "quantity": "(ausente)",
+    "starter_seed": false
+   },
+   {
+    "id": "inventory-shop-audit-shopitem-1791117099239-uk1eji",
+    "item": "Padel Start Control One Elite",
+    "quantity": "(ausente)",
+    "starter_seed": false
+   },
+   {
+    "id": "inventory-shop-audit-shopitem-1791117100239-jh1xvq",
+    "item": "Padel Start Control One Legend",
+    "quantity": "(ausente)",
+    "starter_seed": false
+   },
+   {
+    "id": "inventory-shop-audit-shopitem-1791117105239-6g6ng3",
+    "item": "Padel Start Power Entry Mythic",
+    "quantity": "(ausente)",
+    "starter_seed": false
+   },
+   {
+    "id": "inventory-shop-audit-shopitem-1791117146239-cr3vut",
+    "item": "Tour Grip Dry Start",
+    "quantity": "(ausente)",
+    "starter_seed": false
+   },
+   {
+    "id": "inventory-shop-audit-shopitem-1791117154239-m7ilc0",
+    "item": "Padel Start Training x3",
+    "quantity": "(ausente)",
+    "starter_seed": false
+   },
+   {
+    "id": "inventory-shop-audit-shopitem-1791117159239-eizbk2",
+    "item": "Joma Training Tee",
+    "quantity": "(ausente)",
+    "starter_seed": false
+   },
+   {
+    "id": "inventory-shop-audit-shopitem-1791117167239-a40fh6",
+    "item": "Joma Court Basic",
+    "quantity": "(ausente)",
+    "starter_seed": false
+   },
+   {
+    "id": "inventory-shop-audit-shopitem-1791117175239-pnno8t",
+    "item": "Padel Start Compact",
+    "quantity": "(ausente)",
+    "starter_seed": false
+   },
+   {
+    "id": "inventory-shop-audit-shopitem-1791117183239-ev35ti",
+    "item": "Pulse Training Band",
+    "quantity": "(ausente)",
+    "starter_seed": false
+   },
+   {
+    "id": "inventory-shop-audit-shopitem-1791117191239-vqfgh7",
+    "item": "Joma Wristband Base",
+    "quantity": "(ausente)",
+    "starter_seed": false
+   },
+   {
+    "id": "inventory-shop-audit-shopitem-1791117199239-1234o9",
+    "item": "Medalha Circuito Local",
+    "quantity": "(ausente)",
+    "starter_seed": false
+   },
+   {
+    "id": "inventory-shop-audit-relic",
+    "item": "Raquete de Madeira Original (1969)",
+    "quantity": "(ausente)",
+    "starter_seed": false
+   }
+  ],
+  "afterPurchases": {
+   "inventory": {
+    "totalOwned": 1,
+    "categories": 1,
+    "rarities": 1,
+    "legendary": 0,
+    "mythic": 0,
+    "exclusive": 0,
+    "rackets": 0,
+    "shoes": 0,
+    "apparel": 0,
+    "tech": 0,
+    "totalCategoriesInCatalog": 9,
+    "totalRaritiesInCatalog": 7
+   },
+   "rows": [
+    {
+     "id": "achv-colecionador",
+     "value": 1,
+     "percent": 4,
+     "unlocked": false
+    },
+    {
+     "id": "achv-acumulador",
+     "value": 1,
+     "percent": 2,
+     "unlocked": false
+    },
+    {
+     "id": "achv-museu-pessoal",
+     "value": 1,
+     "percent": 1,
+     "unlocked": false
+    },
+    {
+     "id": "achv-arsenal-completo",
+     "value": 1,
+     "percent": 0,
+     "unlocked": false
+    },
+    {
+     "id": "achv-toque-de-midas",
+     "value": 0,
+     "percent": 0,
+     "unlocked": false
+    },
+    {
+     "id": "achv-rei-mida",
+     "value": 0,
+     "percent": 0,
+     "unlocked": false
+    },
+    {
+     "id": "achv-mito-vivo",
+     "value": 0,
+     "percent": 0,
+     "unlocked": false
+    },
+    {
+     "id": "achv-exclusividade",
+     "value": 0,
+     "percent": 0,
+     "unlocked": false
+    },
+    {
+     "id": "achv-armeiro",
+     "value": 0,
+     "percent": 0,
+     "unlocked": false
+    },
+    {
+     "id": "achv-sapateiro",
+     "value": 0,
+     "percent": 0,
+     "unlocked": false
+    },
+    {
+     "id": "achv-guarda-roupa",
+     "value": 0,
+     "percent": 0,
+     "unlocked": false
+    },
+    {
+     "id": "achv-tecnologo",
+     "value": 0,
+     "percent": 0,
+     "unlocked": false
+    },
+    {
+     "id": "achv-pau-para-toda-obra",
+     "value": 0,
+     "percent": 0,
+     "unlocked": false
+    },
+    {
+     "id": "achv-rainbow-collection",
+     "value": 0,
+     "percent": 0,
+     "unlocked": false
+    }
+   ]
+  },
+  "dayClose": {
+   "unlockedCount": 4,
+   "collectionAchievementRows": [],
+   "coinsDelta": 900
+  },
+  "afterReload": {
+   "totalOwned": 1,
+   "categories": 1,
+   "rarities": 1,
+   "legendary": 0,
+   "mythic": 0,
+   "exclusive": 0
+  }
+ }
+}

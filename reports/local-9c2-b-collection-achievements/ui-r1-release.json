@@ -1,0 +1,252 @@
+{
+ "generatedBy": "LOCAL-9C.2-B-R1 ui-r1-release (Chrome real)",
+ "checks": [
+  {
+   "name": "liberação ligada no padrão do código; perfil novo já reconciliado (flag)",
+   "ok": true,
+   "detail": {
+    "released": true,
+    "flag": true,
+    "coins": 5000000
+   }
+  },
+  {
+   "name": "1. compra pelo modal da Loja (\"Compra realizada!\") → \"Toque de Midas\" mostra 1/1 em andamento antes do fechamento do dia",
+   "ok": true,
+   "detail": {
+    "buy": {
+     "clicked": true,
+     "toasts": [
+      "Compra realizada!Padel Start Control One Legend adicionado ao inventário. Você economizou 3%!"
+     ]
+    },
+    "coinsDelta": -18617,
+    "midas": {
+     "inProgress": true,
+     "progress": "1/1",
+     "completedList": false,
+     "visible": [
+      {
+       "name": "Toque de Midas",
+       "progress": "1/1"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "2. fechamento do dia conclui \"Toque de Midas\" legitimamente (registrada, paga, não reconciliada); a aba tira do andamento e avança a escada para \"Rei Mida 1/10\"",
+   "ok": true,
+   "detail": {
+    "unlocked": 6,
+    "midasRow": [
+     "achv-toque-de-midas:false:true:1000"
+    ],
+    "midasReward": [
+     "reward-pa-achv-toque-de-midas:1000"
+    ],
+    "coinsDelta": 21900,
+    "rewardSum": 21900,
+    "ui": {
+     "inProgress": false,
+     "nextLadder": {
+      "name": "Rei Mida",
+      "progress": "1/10"
+     }
+    }
+   }
+  },
+  {
+   "name": "3. crédito: +1.000 de \"Toque de Midas\" no extrato (reward-pa-…) e saldo = soma das recompensas do dia",
+   "ok": true,
+   "detail": {
+    "unlocked": 6,
+    "midasRow": [
+     "achv-toque-de-midas:false:true:1000"
+    ],
+    "midasReward": [
+     "reward-pa-achv-toque-de-midas:1000"
+    ],
+    "coinsDelta": 21900,
+    "rewardSum": 21900,
+    "ui": {
+     "inProgress": false,
+     "nextLadder": {
+      "name": "Rei Mida",
+      "progress": "1/10"
+     }
+    }
+   }
+  },
+  {
+   "name": "4. após recarregar: saldo, registros, extrato e inventário idênticos; conquista segue concluída",
+   "ok": true,
+   "detail": {
+    "s2": 5003283,
+    "s4": 5003283
+   }
+  },
+  {
+   "name": "5. dois fechamentos de dia depois: nenhum pagamento novo de \"Toque de Midas\"; saldo inalterado",
+   "ok": true,
+   "detail": {
+    "coins": [
+     5003283,
+     5003283
+    ]
+   }
+  },
+  {
+   "name": "7. venda pelo Inventário (\"Item vendido!\") e recompra pela Loja: nenhuma nova recompensa; conquista segue concluída; saldo = início − preço + revenda (sem lucro)",
+   "ok": true,
+   "detail": {
+    "sold": {
+     "clicked": true,
+     "toasts": [
+      "Item vendido!Padel Start Control One Legend vendido por 4800 moedas."
+     ]
+    },
+    "rebuy": {
+     "clicked": true,
+     "toasts": [
+      "Compra realizada!Padel Start Control One Legend adicionado ao inventário. Você economizou 3%!"
+     ]
+    },
+    "shop": [
+     "expense:18617",
+     "income:4800",
+     "expense:18617"
+    ],
+    "coins": [
+     5003283,
+     5008083,
+     4989466
+    ],
+    "midasRewards": [
+     "reward-pa-achv-toque-de-midas:1000"
+    ],
+    "ui": {
+     "inProgress": false
+    }
+   }
+  },
+  {
+   "name": "6. save legado: \"Pau para Toda Obra\" registrada como reconciliada SEM pagamento; flag gravada; nenhuma moeda de coleção; aparece concluída na aba",
+   "ok": true,
+   "detail": {
+    "allcat": [
+     "achv-pau-para-toda-obra:true:false:0"
+    ],
+    "flag": true,
+    "coinsDelta": 0,
+    "newRewards": [],
+    "ui": {
+     "inProgress": false,
+     "progress": null,
+     "completedList": true,
+     "visible": []
+    }
+   }
+  },
+  {
+   "name": "sem erros de página",
+   "ok": true,
+   "detail": null
+  }
+ ],
+ "steps": {
+  "month": "2026-02-15",
+  "start": {
+   "released": true,
+   "flag": true,
+   "coins": 5000000
+  },
+  "purchase": {
+   "buy": {
+    "clicked": true,
+    "toasts": [
+     "Compra realizada!Padel Start Control One Legend adicionado ao inventário. Você economizou 3%!"
+    ]
+   },
+   "coinsDelta": -18617,
+   "midas": {
+    "inProgress": true,
+    "progress": "1/1",
+    "completedList": false,
+    "visible": [
+     {
+      "name": "Toque de Midas",
+      "progress": "1/1"
+     }
+    ]
+   }
+  },
+  "completion": {
+   "unlocked": 6,
+   "midasRow": [
+    "achv-toque-de-midas:false:true:1000"
+   ],
+   "midasReward": [
+    "reward-pa-achv-toque-de-midas:1000"
+   ],
+   "coinsDelta": 21900,
+   "rewardSum": 21900,
+   "ui": {
+    "inProgress": false,
+    "nextLadder": {
+     "name": "Rei Mida",
+     "progress": "1/10"
+    }
+   }
+  },
+  "sellRebuy": {
+   "sold": {
+    "clicked": true,
+    "toasts": [
+     "Item vendido!Padel Start Control One Legend vendido por 4800 moedas."
+    ]
+   },
+   "rebuy": {
+    "clicked": true,
+    "toasts": [
+     "Compra realizada!Padel Start Control One Legend adicionado ao inventário. Você economizou 3%!"
+    ]
+   },
+   "shop": [
+    "expense:18617",
+    "income:4800",
+    "expense:18617"
+   ],
+   "coins": [
+    5003283,
+    5008083,
+    4989466
+   ],
+   "midasRewards": [
+    "reward-pa-achv-toque-de-midas:1000"
+   ],
+   "ui": {
+    "inProgress": false
+   }
+  },
+  "legacy": {
+   "allcat": [
+    "achv-pau-para-toda-obra:true:false:0"
+   ],
+   "flag": true,
+   "coinsDelta": 0,
+   "newRewards": [],
+   "ui": {
+    "inProgress": false,
+    "progress": null,
+    "completedList": true,
+    "visible": []
+   }
+  }
+ },
+ "summary": {
+  "total": 9,
+  "passed": 9,
+  "failed": 0
+ }
+}

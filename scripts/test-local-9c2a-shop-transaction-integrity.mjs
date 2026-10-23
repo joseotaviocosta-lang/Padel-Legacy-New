@@ -430,8 +430,14 @@ const monthWhere = (ctx, item, available) => MONTHS.find((d) => ctx.eco.getEquip
   check('I38: atributos naturais não mudam com compra/equipar', ATTRS.every((k) => p[k] === 50), report.cases.I35_38);
   const statsAfter = (await quiet(async () => ctx.AC.buildAchievementContext(await P(ctx)))).inventory;
   const achRowsAfter = ((await ctx.E.PlayerAchievement.filter({ profile_id: ctx.profile.id })) || []).length;
-  report.cases.I40 = { quantityField: r.inventoryItem.quantity ?? null, totalOwned: [statsBefore.totalOwned, statsAfter.totalOwned], achievementRows: [achRowsBefore, achRowsAfter] };
-  check('I40: compra canônica não altera contagem/progresso das conquistas de coleção (fica para a 9C.2-B)', r.inventoryItem.quantity === undefined && statsBefore.totalOwned === statsAfter.totalOwned && achRowsBefore === achRowsAfter, report.cases.I40);
+  // LOCAL-9C.2-B-R1: a compra legítima passa a contar (+1 produto distinto),
+  // sem gravar `quantity`; repetir a operação não conta de novo; a compra em
+  // si não registra nem paga conquista (isso é do fechamento do dia, no lote
+  // atômico do motor de conquistas).
+  const repeat = await buy(ctx, racket.id, { operationId: 'i35' });
+  const statsRepeat = (await quiet(async () => ctx.AC.buildAchievementContext(await P(ctx)))).inventory;
+  report.cases.I40 = { quantityField: r.inventoryItem.quantity ?? null, totalOwned: [statsBefore.totalOwned, statsAfter.totalOwned, statsRepeat.totalOwned], repeat: repeat.code, achievementRows: [achRowsBefore, achRowsAfter] };
+  check('I40: compra legítima atualiza o progresso de coleção (+1 produto, sem gravar quantity); repetição da mesma operação não conta de novo; a compra não registra conquista por si', r.inventoryItem.quantity === undefined && statsAfter.totalOwned === statsBefore.totalOwned + 1 && repeat.code === 'duplicate' && statsRepeat.totalOwned === statsAfter.totalOwned && achRowsBefore === achRowsAfter, report.cases.I40);
 
   // I34b — o simulador compra pela operação canônica: extrato e estoque gravados.
   const act = await import('./lib/v526Actions.mjs');

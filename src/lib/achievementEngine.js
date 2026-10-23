@@ -204,13 +204,40 @@ export function findNextLockedAchievement(profile, context, { category, triggerT
  * guarda `existingIds.has` de baixo já impedia re-concessão antes desta
  * fase e continua sendo a única fonte de idempotência.
  */
+// LOCAL-9C.2-B — as 14 conquistas de coleção (posse atual do inventário).
+// Até a 9C.2-B nenhuma compra contava (achievementContext.inventoryRowUnits):
+// em saves anteriores a esta fase, o que o inventário JÁ prova na primeira
+// sincronização é registrado como desbloqueado SEM recompensa — mesma
+// política da reconciliação da Fase 12, porque não há histórico que prove
+// quando (nem se legitimamente) esses itens foram obtidos. A flag é gravada
+// no mesmo lote; perfis novos já nascem com ela (padel.js ensureMyProfile).
+export const COLLECTION_ACHIEVEMENT_TRIGGERS = new Set([
+  'own_items', 'own_legendary', 'own_mythic', 'own_exclusive', 'all_categories',
+  'own_rackets', 'own_shoes', 'own_apparel', 'own_tech', 'all_rarities',
+]);
+export const COLLECTION_RECONCILED_FLAG = 'collection_achievements_v1_reconciled';
+
+// LOCAL-9C.2-B — liberação das recompensas de coleção. Corrigida a contagem, as
+// 14 conquistas passam a ser alcançáveis (até 46.700 moedas; 32.400 das 79.100
+// estão em metas inalcançáveis). Aprovada na LOCAL-9C.2-B-R1 depois de validar
+// reconciliação de saves antigos, idempotência, atomicidade e ausência de lucro
+// por compra/venda/recompra (docs/LOCAL_9C2_B_COLLECTION_ACHIEVEMENTS_INTEGRITY.md).
+// `false` volta a desligar: progresso continua visível, mas nada é registrado
+// nem pago, e a flag de reconciliação não é gravada.
+// Harness/testes: globalThis.__PL9C2B_COLLECTION_REWARDS = true | false.
+export const COLLECTION_REWARDS_RELEASED = true;
+export function collectionRewardsReleased() {
+  const override = typeof globalThis !== 'undefined' ? globalThis.__PL9C2B_COLLECTION_REWARDS : undefined;
+  return typeof override === 'boolean' ? override : COLLECTION_REWARDS_RELEASED;
+}
+
 export async function syncPlayerAchievements(profile, context, { localGame, reconciliation = false }) {
   if (!profile?.id) return { profile, unlocked: [] };
-  const candidates = evaluateAchievements(profile, context).filter((row) => row.evaluable && row.unlocked);
-  if (!candidates.length) return { profile, unlocked: [] };
-
-  const existing = await localGame.entities.PlayerAchievement.filter({ profile_id: profile.id }).catch(() => []);
-  const existingIds = new Set((existing || []).map((row) => row.achievement_id));
+  const released = collectionRewardsReleased();
+  const candidates = evaluateAchievements(profile, context)
+    .filter((row) => row.evaluable && row.unlocked && (released || !COLLECTION_ACHIEVEMENT_TRIGGERS.has(row.achievement.trigger_type)));
+  // Sem candidatos, só há o que gravar se a coleção está liberada e a flag ainda falta.
+  if (!candidates.length && (profile[COLLECTION_RECONCILED_FLAG] || !released)) return { profile, unlocked: [] };
 
   // Playthrough 5.24-E — DESBLOQUEIO + RECOMPENSA ATÔMICOS.
   //
@@ -228,88 +255,87 @@ export async function syncPlayerAchievements(profile, context, { localGame, reco
   // fonte paralela — para auditoria de saves futuros.
   // LOCAL-8F: data da CARREIRA (antes: relógio do computador — dois avanços
   // idênticos gravavam datas diferentes). Sem data de carreira, o relógio.
+  // LOCAL-9C.2-B — o lote usa planejador (CareerEntityRepository.batch): quais
+  // conquistas já existem é decidido DENTRO da gravação serializada, sobre o
+  // save atual — duas sincronizações concorrentes nunca registram nem pagam a
+  // mesma conquista duas vezes, sem depender de um `create` duplicado abortar o
+  // lote (o que, dentro de uma transação de avanço de dia, invalidaria a
+  // transação inteira). Moedas e XP por `playerIncrement` (soma sobre o saldo
+  // atual): um crédito concorrente nunca é sobrescrito.
   const unlockedDate = profile.career_date ? `${String(profile.career_date).slice(0, 10)}T12:00:00.000Z` : new Date().toISOString();
-  const unlocked = [];
-  const operations = [];
-  let xpGain = 0;
-  let coinsGain = 0;
-  for (const { achievement } of candidates) {
-    if (existingIds.has(achievement.id)) continue;
-    existingIds.add(achievement.id);
-    const rewardXp = reconciliation ? 0 : Math.max(0, Number(achievement.xp_reward) || 0);
-    const rewardCoins = reconciliation ? 0 : Math.max(0, Number(achievement.coins_reward) || 0);
-    operations.push({
-      type: 'create',
-      entityName: 'PlayerAchievement',
-      id: `pa-${achievement.id}-${profile.id}`,
-      data: {
-        profile_id: profile.id,
-        achievement_id: achievement.id,
-        achievement_name: achievement.name,
-        unlocked_date: unlockedDate,
-        career_date: profile.career_date || null,
-        is_new: !reconciliation,
-        progress: achievement.threshold,
-        reconciled: reconciliation,
-        reward_delivered: !reconciliation,
-        reward_xp: rewardXp,
-        reward_coins: rewardCoins,
-      },
-    });
-    // 5.27-M: a moeda paga entra no extrato no MESMO lote (id = o do registro
-    // da conquista, que já é a guarda de idempotência).
-    if (rewardCoins > 0) {
+  const result = await localGame.batch((view) => {
+    const player = view.player;
+    if (!player?.id || player.id !== profile.id) return { rejected: { code: 'profile-not-found' } };
+    const existingIds = new Set(view.filter('PlayerAchievement', (row) => row.profile_id === profile.id).map((row) => row.achievement_id));
+    const collectionBaseline = released && !player[COLLECTION_RECONCILED_FLAG];
+    const operations = [];
+    const unlockedIds = [];
+    const reconciledIds = [];
+    let xpGain = 0;
+    let coinsGain = 0;
+    for (const { achievement } of candidates) {
+      if (existingIds.has(achievement.id)) continue;
+      existingIds.add(achievement.id);
+      const silent = reconciliation || (collectionBaseline && COLLECTION_ACHIEVEMENT_TRIGGERS.has(achievement.trigger_type));
+      const rewardXp = silent ? 0 : Math.max(0, Number(achievement.xp_reward) || 0);
+      const rewardCoins = silent ? 0 : Math.max(0, Number(achievement.coins_reward) || 0);
       operations.push({
-        type: 'upsert',
-        entityName: 'FinancialTransaction',
-        id: `reward-pa-${achievement.id}-${profile.id}`,
-        data: { profile_id: profile.id, date: String(profile.career_date || '').slice(0, 10) || null, type: 'income', category: 'conquista', source_id: `pa-${achievement.id}-${profile.id}`, description: `Conquista: ${achievement.name}`, amount: rewardCoins },
+        type: 'create',
+        entityName: 'PlayerAchievement',
+        id: `pa-${achievement.id}-${profile.id}`,
+        data: {
+          profile_id: profile.id,
+          achievement_id: achievement.id,
+          achievement_name: achievement.name,
+          unlocked_date: unlockedDate,
+          career_date: profile.career_date || null,
+          is_new: !silent,
+          progress: achievement.threshold,
+          reconciled: silent,
+          reward_delivered: !silent,
+          reward_xp: rewardXp,
+          reward_coins: rewardCoins,
+        },
       });
-    }
-    xpGain += rewardXp;
-    coinsGain += rewardCoins;
-    unlocked.push(achievement);
-  }
-
-  let updatedProfile = profile;
-  if (operations.length) {
-    const current = (await localGame.entities.PlayerProfile.filter({ id: profile.id }).catch(() => []))?.[0] || profile;
-    if (xpGain > 0 || coinsGain > 0) {
-      const patch = {};
-      if (xpGain > 0) patch.xp = (Number(current.xp) || 0) + xpGain;
-      if (coinsGain > 0) patch.coins = (Number(current.coins) || 0) + coinsGain;
-      operations.push({ type: 'playerUpdate', id: profile.id, data: patch });
-    }
-    let result;
-    try {
-      result = await localGame.batch(operations, { caller: 'achievements.syncPlayerAchievements' });
-    } catch (error) {
-      // Sync concorrente (ex.: efeito duplo do StrictMode) já registrou estas
-      // conquistas: o `create` duplicado aborta ESTE batch inteiro — nada
-      // dele é aplicado, nem as moedas. Se todas já existem, não há o que
-      // pagar; qualquer outra falha sobe normalmente.
-      const nowExisting = await localGame.entities.PlayerAchievement.filter({ profile_id: profile.id }).catch(() => []);
-      const nowIds = new Set((nowExisting || []).map((row) => row.achievement_id));
-      if (unlocked.every((achievement) => nowIds.has(achievement.id))) {
-        const fresh = (await localGame.entities.PlayerProfile.filter({ id: profile.id }).catch(() => []))?.[0] || current;
-        return { profile: fresh, unlocked: [] };
+      // 5.27-M: a moeda paga entra no extrato no MESMO lote (id = o do registro
+      // da conquista, que já é a guarda de idempotência).
+      if (rewardCoins > 0) {
+        operations.push({
+          type: 'upsert',
+          entityName: 'FinancialTransaction',
+          id: `reward-pa-${achievement.id}-${profile.id}`,
+          data: { profile_id: profile.id, date: String(profile.career_date || '').slice(0, 10) || null, type: 'income', category: 'conquista', source_id: `pa-${achievement.id}-${profile.id}`, description: `Conquista: ${achievement.name}`, amount: rewardCoins },
+        });
       }
-      throw error;
+      xpGain += rewardXp;
+      coinsGain += rewardCoins;
+      (silent ? reconciledIds : unlockedIds).push(achievement.id);
     }
-    updatedProfile = result?.player ? { ...current, ...result.player } : current;
-    // Mesmo aviso que PlayerAdapter.update dispara quando o saldo muda (header).
-    if (coinsGain > 0 && typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('padel:profile-updated', {
-        detail: { profile: updatedProfile, profileId: updatedProfile.id, careerDate: updatedProfile.career_date, source: 'player-adapter-balance' },
-      }));
-    }
+    const increments = {};
+    if (xpGain > 0) increments.xp = xpGain;
+    if (coinsGain > 0) increments.coins = coinsGain;
+    if (Object.keys(increments).length) operations.push({ type: 'playerIncrement', id: profile.id, data: increments });
+    if (collectionBaseline) operations.push({ type: 'playerUpdate', id: profile.id, data: { [COLLECTION_RECONCILED_FLAG]: true } });
+    return { operations, outcome: { unlockedIds, reconciledIds, coinsGain } };
+  }, { caller: 'achievements.syncPlayerAchievements' });
+
+  const outcome = result?.outcome || { unlockedIds: [], reconciledIds: [], coinsGain: 0 };
+  const byId = new Map(candidates.map(({ achievement }) => [achievement.id, achievement]));
+  const rewarded = outcome.unlockedIds.map((id) => byId.get(id)).filter(Boolean);
+  const unlocked = [...rewarded, ...outcome.reconciledIds.map((id) => byId.get(id)).filter(Boolean)];
+  const updatedProfile = result?.player ? { ...profile, ...result.player } : profile;
+  // Mesmo aviso que PlayerAdapter.update dispara quando o saldo muda (header).
+  if (outcome.coinsGain > 0 && typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('padel:profile-updated', {
+      detail: { profile: updatedProfile, profileId: updatedProfile.id, careerDate: updatedProfile.career_date, source: 'player-adapter-balance' },
+    }));
+  }
+  // Notificação só do que foi desbloqueado e pago agora; reconciliadas são silenciosas.
+  if (rewarded.length && typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('padel:achievement-unlocked', { detail: { achievements: rewarded } }));
   }
 
-  if (!reconciliation && unlocked.length && typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent !== 'undefined') {
-    window.dispatchEvent(new CustomEvent('padel:achievement-unlocked', { detail: { achievements: unlocked } }));
-  }
-
-  return { profile: updatedProfile, unlocked };
+  return { profile: updatedProfile, unlocked, rewarded, reconciled: outcome.reconciledIds };
 }
 
 /** Resumo compacto — usado pelo cabeçalho da página unificada (CompactStats). */

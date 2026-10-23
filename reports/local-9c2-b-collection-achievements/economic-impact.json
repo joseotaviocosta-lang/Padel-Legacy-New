@@ -1,0 +1,542 @@
+{
+ "generatedBy": "LOCAL-9C.2-B economic-impact",
+ "proposalsNotApplied": {
+  "achv-arsenal-completo": {
+   "current": 250,
+   "reward": 30000,
+   "options": [
+    {
+     "label": "A) 120 itens (catálogo menos 5)",
+     "threshold": 120,
+     "reachable": true,
+     "eligible": 125,
+     "cheapestSetCost": 2159220,
+     "resale": 539785,
+     "rewardShareOfCost": 1.4,
+     "profitableExploit": false,
+     "requires": {
+      "level": 45,
+      "rank": 10,
+      "reputation": 85
+     },
+     "includesRelic": true
+    },
+    {
+     "label": "B) 115 itens (todo o catálogo sem relíquias)",
+     "threshold": 115,
+     "reachable": true,
+     "eligible": 125,
+     "cheapestSetCost": 1742820,
+     "resale": 435685,
+     "rewardShareOfCost": 1.7,
+     "profitableExploit": false,
+     "requires": {
+      "level": 45,
+      "rank": 10,
+      "reputation": 85
+     },
+     "includesRelic": true
+    },
+    {
+     "label": "C) todos os 125 (meta = tamanho do catálogo)",
+     "threshold": 125,
+     "reachable": true,
+     "eligible": 125,
+     "cheapestSetCost": 2651220,
+     "resale": 662785,
+     "rewardShareOfCost": 1.1,
+     "profitableExploit": false,
+     "requires": {
+      "level": 45,
+      "rank": 10,
+      "reputation": 85
+     },
+     "includesRelic": true
+    },
+    {
+     "label": "B′) 115 só itens não-relíquia (sem depender de estoque limitado)",
+     "threshold": 115,
+     "reachable": true,
+     "eligible": 115,
+     "cheapestSetCost": 1742820,
+     "resale": 435685,
+     "rewardShareOfCost": 1.7,
+     "profitableExploit": false,
+     "requires": {
+      "level": 45,
+      "rank": 10,
+      "reputation": 85
+     },
+     "includesRelic": false
+    }
+   ]
+  },
+  "achv-sapateiro": {
+   "current": 10,
+   "reward": 1200,
+   "options": [
+    {
+     "label": "A) 9 (todos os tênis)",
+     "threshold": 9,
+     "reachable": true,
+     "eligible": 9,
+     "cheapestSetCost": 142176,
+     "resale": 35544,
+     "rewardShareOfCost": 0.8,
+     "profitableExploit": false,
+     "requires": {
+      "level": 35,
+      "rank": 40,
+      "reputation": 65
+     },
+     "includesRelic": false
+    },
+    {
+     "label": "B) 8",
+     "threshold": 8,
+     "reachable": true,
+     "eligible": 9,
+     "cheapestSetCost": 76176,
+     "resale": 19044,
+     "rewardShareOfCost": 1.6,
+     "profitableExploit": false,
+     "requires": {
+      "level": 25,
+      "rank": 100,
+      "reputation": 40
+     },
+     "includesRelic": false
+    }
+   ]
+  },
+  "achv-guarda-roupa": {
+   "current": 15,
+   "reward": 1200,
+   "options": [
+    {
+     "label": "A) 8 (todo o vestuário)",
+     "threshold": 8,
+     "reachable": true,
+     "eligible": 8,
+     "cheapestSetCost": 144408,
+     "resale": 36102,
+     "rewardShareOfCost": 0.8,
+     "profitableExploit": false,
+     "requires": {
+      "level": 35,
+      "rank": 40,
+      "reputation": 65
+     },
+     "includesRelic": false
+    },
+    {
+     "label": "B) 6",
+     "threshold": 6,
+     "reachable": true,
+     "eligible": 8,
+     "cheapestSetCost": 38808,
+     "resale": 9702,
+     "rewardShareOfCost": 3.1,
+     "profitableExploit": false,
+     "requires": {
+      "level": 25,
+      "rank": 100,
+      "reputation": 40
+     },
+     "includesRelic": false
+    }
+   ]
+  }
+ },
+ "pricing": "preço de lista canônico (normalizeShopItem × shopPriceMultiplier), sem eventos, sem desconto de patrocínio, sem volatilidade diária; revenda = computeResalePrice (30% do preço gravado)",
+ "totals": {
+  "theoreticalMax": 79100,
+  "reachableMax": 46700,
+  "unreachable": 32400,
+  "achievements": 14,
+  "profitableExploits": []
+ },
+ "rows": [
+  {
+   "id": "achv-colecionador",
+   "name": "Colecionador",
+   "threshold": 25,
+   "coins": 1000,
+   "xp": 500,
+   "reachable": true,
+   "itemsAvailable": 25,
+   "cheapestSetCost": 12337,
+   "resaleOfSet": 3079,
+   "netCostBuyRewardSell": 8258,
+   "rewardShareOfCost": 8.1,
+   "profitableExploit": false,
+   "requires": {
+    "level": 3,
+    "rank": null,
+    "reputation": 0
+   },
+   "includesRelic": false
+  },
+  {
+   "id": "achv-acumulador",
+   "name": "Acumulador",
+   "threshold": 50,
+   "coins": 3000,
+   "xp": 1500,
+   "reachable": true,
+   "itemsAvailable": 50,
+   "cheapestSetCost": 58740,
+   "resaleOfSet": 14673,
+   "netCostBuyRewardSell": 41067,
+   "rewardShareOfCost": 5.1,
+   "profitableExploit": false,
+   "requires": {
+    "level": 8,
+    "rank": 500,
+    "reputation": 8
+   },
+   "includesRelic": false
+  },
+  {
+   "id": "achv-museu-pessoal",
+   "name": "Museu Pessoal",
+   "threshold": 100,
+   "coins": 8000,
+   "xp": 4000,
+   "reachable": true,
+   "itemsAvailable": 100,
+   "cheapestSetCost": 821329,
+   "resaleOfSet": 205313,
+   "netCostBuyRewardSell": 608016,
+   "rewardShareOfCost": 1,
+   "profitableExploit": false,
+   "requires": {
+    "level": 35,
+    "rank": 40,
+    "reputation": 65
+   },
+   "includesRelic": false
+  },
+  {
+   "id": "achv-arsenal-completo",
+   "name": "Arsenal Completo",
+   "threshold": 250,
+   "coins": 30000,
+   "xp": 15000,
+   "reachable": false,
+   "itemsAvailable": 125,
+   "cheapestSetCost": null,
+   "resaleOfSet": null,
+   "netCostBuyRewardSell": null,
+   "rewardShareOfCost": null,
+   "profitableExploit": null,
+   "requires": {
+    "level": 45,
+    "rank": 10,
+    "reputation": 85
+   },
+   "includesRelic": true
+  },
+  {
+   "id": "achv-toque-de-midas",
+   "name": "Toque de Midas",
+   "threshold": 1,
+   "coins": 1000,
+   "xp": 500,
+   "reachable": true,
+   "itemsAvailable": 1,
+   "cheapestSetCost": 19200,
+   "resaleOfSet": 4800,
+   "netCostBuyRewardSell": 13400,
+   "rewardShareOfCost": 5.2,
+   "profitableExploit": false,
+   "requires": {
+    "level": 25,
+    "rank": 100,
+    "reputation": 40
+   },
+   "includesRelic": false
+  },
+  {
+   "id": "achv-rei-mida",
+   "name": "Rei Mida",
+   "threshold": 10,
+   "coins": 5000,
+   "xp": 2500,
+   "reachable": true,
+   "itemsAvailable": 10,
+   "cheapestSetCost": 192000,
+   "resaleOfSet": 48000,
+   "netCostBuyRewardSell": 139000,
+   "rewardShareOfCost": 2.6,
+   "profitableExploit": false,
+   "requires": {
+    "level": 25,
+    "rank": 100,
+    "reputation": 40
+   },
+   "includesRelic": false
+  },
+  {
+   "id": "achv-mito-vivo",
+   "name": "Mito Vivo",
+   "threshold": 1,
+   "coins": 10000,
+   "xp": 5000,
+   "reachable": true,
+   "itemsAvailable": 1,
+   "cheapestSetCost": 42000,
+   "resaleOfSet": 10500,
+   "netCostBuyRewardSell": 21500,
+   "rewardShareOfCost": 23.8,
+   "profitableExploit": false,
+   "requires": {
+    "level": 35,
+    "rank": 40,
+    "reputation": 65
+   },
+   "includesRelic": false
+  },
+  {
+   "id": "achv-exclusividade",
+   "name": "Exclusividade",
+   "threshold": 1,
+   "coins": 10000,
+   "xp": 5000,
+   "reachable": true,
+   "itemsAvailable": 1,
+   "cheapestSetCost": 78000,
+   "resaleOfSet": 19500,
+   "netCostBuyRewardSell": 48500,
+   "rewardShareOfCost": 12.8,
+   "profitableExploit": false,
+   "requires": {
+    "level": 45,
+    "rank": 10,
+    "reputation": 85
+   },
+   "includesRelic": true
+  },
+  {
+   "id": "achv-armeiro",
+   "name": "Armeiro",
+   "threshold": 20,
+   "coins": 1500,
+   "xp": 800,
+   "reachable": true,
+   "itemsAvailable": 20,
+   "cheapestSetCost": 22304,
+   "resaleOfSet": 5567,
+   "netCostBuyRewardSell": 15237,
+   "rewardShareOfCost": 6.7,
+   "profitableExploit": false,
+   "requires": {
+    "level": 8,
+    "rank": 500,
+    "reputation": 8
+   },
+   "includesRelic": false
+  },
+  {
+   "id": "achv-sapateiro",
+   "name": "Sapateiro",
+   "threshold": 10,
+   "coins": 1200,
+   "xp": 600,
+   "reachable": false,
+   "itemsAvailable": 9,
+   "cheapestSetCost": null,
+   "resaleOfSet": null,
+   "netCostBuyRewardSell": null,
+   "rewardShareOfCost": null,
+   "profitableExploit": null,
+   "requires": {
+    "level": 35,
+    "rank": 40,
+    "reputation": 65
+   },
+   "includesRelic": false
+  },
+  {
+   "id": "achv-guarda-roupa",
+   "name": "Guarda-Roupa",
+   "threshold": 15,
+   "coins": 1200,
+   "xp": 600,
+   "reachable": false,
+   "itemsAvailable": 8,
+   "cheapestSetCost": null,
+   "resaleOfSet": null,
+   "netCostBuyRewardSell": null,
+   "rewardShareOfCost": null,
+   "profitableExploit": null,
+   "requires": {
+    "level": 35,
+    "rank": 40,
+    "reputation": 65
+   },
+   "includesRelic": false
+  },
+  {
+   "id": "achv-tecnologo",
+   "name": "Tecnólogo",
+   "threshold": 5,
+   "coins": 2000,
+   "xp": 1000,
+   "reachable": true,
+   "itemsAvailable": 5,
+   "cheapestSetCost": 42840,
+   "resaleOfSet": 10710,
+   "netCostBuyRewardSell": 30130,
+   "rewardShareOfCost": 4.7,
+   "profitableExploit": false,
+   "requires": {
+    "level": 25,
+    "rank": 100,
+    "reputation": 40
+   },
+   "includesRelic": false
+  },
+  {
+   "id": "achv-pau-para-toda-obra",
+   "name": "Pau para Toda Obra",
+   "threshold": 1,
+   "coins": 1200,
+   "xp": 600,
+   "reachable": true,
+   "itemsAvailable": 9,
+   "cheapestSetCost": 4044,
+   "resaleOfSet": 1010,
+   "netCostBuyRewardSell": 1834,
+   "rewardShareOfCost": 29.7,
+   "profitableExploit": false,
+   "requires": {
+    "level": 8,
+    "rank": 500,
+    "reputation": 8
+   },
+   "includesRelic": false
+  },
+  {
+   "id": "achv-rainbow-collection",
+   "name": "Rainbow Collection",
+   "threshold": 1,
+   "coins": 4000,
+   "xp": 2000,
+   "reachable": true,
+   "itemsAvailable": 7,
+   "cheapestSetCost": 146994,
+   "resaleOfSet": 36748,
+   "netCostBuyRewardSell": 106246,
+   "rewardShareOfCost": 2.7,
+   "profitableExploit": false,
+   "requires": {
+    "level": 45,
+    "rank": 10,
+    "reputation": 85
+   },
+   "includesRelic": true
+  }
+ ],
+ "baseline9E1": [
+  {
+   "days": 30,
+   "profile": "economico",
+   "finalCoins": 1558.3,
+   "totalIncome": 1251.3,
+   "rankEnd": 997,
+   "rankBest": 997,
+   "purchases": 3,
+   "equipmentSpend": 173,
+   "achievementIncome": 1167
+  },
+  {
+   "days": 30,
+   "profile": "equilibrado",
+   "finalCoins": 917,
+   "totalIncome": 1136,
+   "rankEnd": 1001,
+   "rankBest": 1001,
+   "purchases": 3,
+   "equipmentSpend": 173,
+   "achievementIncome": 1100
+  },
+  {
+   "days": 30,
+   "profile": "competitivo",
+   "finalCoins": 727.7,
+   "totalIncome": 1136,
+   "rankEnd": 1001,
+   "rankBest": 1001,
+   "purchases": 2,
+   "equipmentSpend": 677,
+   "achievementIncome": 1100
+  },
+  {
+   "days": 365,
+   "profile": "economico",
+   "finalCoins": 8890,
+   "totalIncome": 44447.3,
+   "rankEnd": 373,
+   "rankBest": 373,
+   "purchases": 3,
+   "equipmentSpend": 173,
+   "achievementIncome": 18300
+  },
+  {
+   "days": 365,
+   "profile": "equilibrado",
+   "finalCoins": 14613,
+   "totalIncome": 45452.7,
+   "rankEnd": 243.7,
+   "rankBest": 243.3,
+   "purchases": 6,
+   "equipmentSpend": 1320,
+   "achievementIncome": 14733
+  },
+  {
+   "days": 365,
+   "profile": "competitivo",
+   "finalCoins": 4666.3,
+   "totalIncome": 43801,
+   "rankEnd": 248.3,
+   "rankBest": 248.3,
+   "purchases": 14.7,
+   "equipmentSpend": 13379,
+   "achievementIncome": 13000
+  },
+  {
+   "days": 730,
+   "profile": "economico",
+   "finalCoins": 4757.5,
+   "totalIncome": 90803.5,
+   "rankEnd": 305.5,
+   "rankBest": 304,
+   "purchases": 3,
+   "equipmentSpend": 173,
+   "achievementIncome": 30300
+  },
+  {
+   "days": 730,
+   "profile": "equilibrado",
+   "finalCoins": 14631,
+   "totalIncome": 111109,
+   "rankEnd": 109,
+   "rankBest": 109,
+   "purchases": 6,
+   "equipmentSpend": 1320,
+   "achievementIncome": 33250
+  },
+  {
+   "days": 730,
+   "profile": "competitivo",
+   "finalCoins": -1060,
+   "totalIncome": 97585,
+   "rankEnd": 101.5,
+   "rankBest": 101.5,
+   "purchases": 16,
+   "equipmentSpend": 17505,
+   "achievementIncome": 18250
+  }
+ ]
+}

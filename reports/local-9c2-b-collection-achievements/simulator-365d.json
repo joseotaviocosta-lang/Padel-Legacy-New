@@ -1,0 +1,98 @@
+{
+ "generatedBy": "LOCAL-9C.2-B simulador LOCAL-9E.1 365 dias, liberação de coleção on × off (tools/sim-collection-wrapper.mjs); carreiras brutas não versionadas",
+ "rows": [
+  {
+   "profile": "economico",
+   "seed": 1,
+   "days": 365,
+   "sameHash": true,
+   "off": {
+    "hash": "8e067c021ce5722d",
+    "finalCoins": 8385,
+    "achievementIncome": 19300,
+    "purchases": 3,
+    "rank": 360,
+    "errors": 0,
+    "violations": 0,
+    "saveLoad": true
+   },
+   "on": {
+    "hash": "8e067c021ce5722d",
+    "finalCoins": 8385,
+    "achievementIncome": 19300,
+    "purchases": 3,
+    "rank": 360,
+    "errors": [],
+    "violations": 0,
+    "saveLoad": true
+   },
+   "collectionRewardDelta": 0
+  },
+  {
+   "profile": "equilibrado",
+   "seed": 1,
+   "days": 365,
+   "sameHash": true,
+   "off": {
+    "hash": "8d8d68acfb970b5b",
+    "finalCoins": 13291,
+    "achievementIncome": 12300,
+    "purchases": 5,
+    "rank": 293,
+    "errors": 0,
+    "violations": 0,
+    "saveLoad": true
+   },
+   "on": {
+    "hash": "8d8d68acfb970b5b",
+    "finalCoins": 13291,
+    "achievementIncome": 12300,
+    "purchases": 5,
+    "rank": 293,
+    "errors": [],
+    "violations": 0,
+    "saveLoad": true
+   },
+   "collectionRewardDelta": 0
+  },
+  {
+   "profile": "competitivo",
+   "seed": 1,
+   "days": 365,
+   "sameHash": false,
+   "off": {
+    "hash": "f457b6efb126338a",
+    "finalCoins": 4316,
+    "achievementIncome": 12000,
+    "purchases": 14,
+    "rank": 275,
+    "errors": 0,
+    "violations": 0,
+    "saveLoad": true
+   },
+   "on": {
+    "hash": "92045ffc0b339356",
+    "finalCoins": 4583,
+    "achievementIncome": 13200,
+    "purchases": 15,
+    "rank": 280,
+    "errors": [
+     "treinador:Fora do mercado neste mês.",
+     "treinador:Fora do mercado neste mês.",
+     "treinador:Fora do mercado neste mês.",
+     "treinador:Fora do mercado neste mês.",
+     "treinador:Fora do mercado neste mês.",
+     "treinador:Fora do mercado neste mês.",
+     "treinador:Fora do mercado neste mês."
+    ],
+    "violations": 0,
+    "saveLoad": true
+   },
+   "collectionRewardDelta": 1200
+  }
+ ],
+ "notes": [
+  "economico e equilibrado: hash idêntico — nenhuma conquista de coleção atingida em 1 ano.",
+  "competitivo: +1.200 (Pau para Toda Obra, dia 252, 9ª categoria). O caixa extra muda decisões seguintes da política: +1 compra e 7 tentativas de contratar treinador fora do mercado do mês (erro da política do simulador, não do jogo); 0 violações, save/load idêntico."
+ ]
+}

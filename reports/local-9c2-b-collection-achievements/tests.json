@@ -1,0 +1,457 @@
+{
+ "generatedBy": "LOCAL-9C.2-B collection achievements integrity",
+ "checks": [
+  {
+   "name": "A2/A3: unidades da linha — ausente = 1 (equipamento único); número = parte inteira; 0, negativo, inválido = 0",
+   "ok": true,
+   "detail": {
+    "ausente": 1,
+    "nulo": 1,
+    "um": 1,
+    "dois": 2,
+    "texto3": 3,
+    "zero": 0,
+    "negativo": 0,
+    "invalido": 0,
+    "fracao": 1,
+    "semLinha": 0
+   }
+  },
+  {
+   "name": "A1: compra legítima incrementa itens possuídos, lendários e raquetes em exatamente 1",
+   "ok": true,
+   "detail": {
+    "before": {
+     "totalOwned": 1,
+     "legendary": 0,
+     "rackets": 0,
+     "units": 2
+    },
+    "after": {
+     "totalOwned": 2,
+     "legendary": 1,
+     "rackets": 1,
+     "units": 3
+    }
+   }
+  },
+  {
+   "name": "A3: linha de demonstração (quantity 2) conta 1 item diferente e 2 unidades",
+   "ok": true,
+   "detail": {
+    "demo": 2,
+    "s0": [
+     1,
+     2
+    ]
+   }
+  },
+  {
+   "name": "A4: item equipado continua contabilizado",
+   "ok": true,
+   "detail": {
+    "totalOwned": 2
+   }
+  },
+  {
+   "name": "A5: compras recusadas (saldo, estoque) não geram progresso",
+   "ok": true,
+   "detail": {
+    "rf": "insufficient-funds",
+    "rs": "out-of-stock"
+   }
+  },
+  {
+   "name": "A6: clique duplo / repetição da mesma operação → progresso +1 só",
+   "ok": true,
+   "detail": {
+    "dd": [
+     "purchased",
+     "duplicate"
+    ],
+    "again": "duplicate",
+    "totalOwned": 3
+   }
+  },
+  {
+   "name": "A8: três compras concorrentes distintas → +3 exatamente",
+   "ok": true,
+   "detail": {
+    "codes": [
+     "purchased",
+     "purchased",
+     "purchased"
+    ],
+    "totalOwned": 6
+   }
+  },
+  {
+   "name": "A9: compra com falha injetada no lote não gera progresso",
+   "ok": true,
+   "detail": {
+    "ok": false,
+    "error": "falha injetada no meio do lote"
+   }
+  },
+  {
+   "name": "A7: após save/load o progresso é o mesmo e repetir a compra não duplica",
+   "ok": true,
+   "detail": {
+    "s7": 6,
+    "s9": 6,
+    "again7": "duplicate"
+   }
+  },
+  {
+   "name": "A10: venda + compra concorrentes → posse atual −1 +1; recompra do vendido → +1 (sem duplicar)",
+   "ok": true,
+   "detail": {
+    "sold": "sold",
+    "boughtTech": "purchased",
+    "afterSaleAndBuy": 6,
+    "afterRebuy": 7
+   }
+  },
+  {
+   "name": "B10/B3: linhas legadas sem quantity contam; três linhas do MESMO item contam como 1 item diferente",
+   "ok": true,
+   "detail": {
+    "totalOwned": 2,
+    "legendary": 1,
+    "units": 5
+   }
+  },
+  {
+   "name": "B4/B7: uma peça de cada uma das 9 categorias (colecionável incluído) completa \"Pau para Toda Obra\"",
+   "ok": true,
+   "detail": {
+    "categories": 9,
+    "unlocked": true
+   }
+  },
+  {
+   "name": "B6/B8: relíquia (is_exclusive) conta para \"Exclusividade\"; 7 raridades completam \"Rainbow Collection\"",
+   "ok": true,
+   "detail": {
+    "relic": "purchased",
+    "rarities": 7,
+    "exclusive": 1,
+    "mythic": 1,
+    "rainbow": true,
+    "exclusividade": true
+   }
+  },
+  {
+   "name": "B9: item de demonstração (kit inicial, quantity 2) segue contando como posse atual — semântica preservada",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "B1: a métrica é a POSSE ATUAL (contexto lido do inventário a cada avaliação; nenhum contador paralelo gravado)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "C2: sem item lendário, \"Toque de Midas\" não é registrada nem paga",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "C1: \"Toque de Midas\" registrada e paga (1.000) com linha de extrato reward-pa-… no mesmo lote",
+   "ok": true,
+   "detail": {
+    "bought": "purchased",
+    "row": {
+     "reward_delivered": true,
+     "reward_coins": 1000,
+     "reconciled": false
+    },
+    "ledger": [
+     [
+      "reward-pa-achv-toque-de-midas-playerprofile-1791115451100-ae9z7d",
+      1000
+     ],
+     [
+      "reward-pa-achv-primeiro-dia-playerprofile-1791115451100-ae9z7d",
+      100
+     ],
+     [
+      "reward-pa-achv-uma-semana-playerprofile-1791115451100-ae9z7d",
+      200
+     ]
+    ],
+    "delta": 1300,
+    "unlocked": 3
+   }
+  },
+  {
+   "name": "C3: repetir a avaliação (dois fechamentos de dia) não paga de novo",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "C4: após save/load, conquista paga continua registrada e não paga outra vez",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "C5: falha no lote de conclusão+pagamento → nem registro, nem moedas, nem extrato; o próximo fechamento conclui e paga uma vez",
+   "ok": true,
+   "detail": {
+    "failure": "falha injetada no meio do lote",
+    "unchanged": true,
+    "after": {
+     "delta": 10500,
+     "mito": 10000,
+     "led": 2
+    }
+   }
+  },
+  {
+   "name": "C6: duas sincronizações concorrentes + luvas → cada conquista registrada/paga uma vez; nenhum crédito sobrescrito",
+   "ok": true,
+   "detail": {
+    "rewarded": [
+     [
+      "achv-primeiro-lucro",
+      "achv-pau-para-toda-obra"
+     ],
+     []
+    ],
+    "ledger": [
+     [
+      "reward-pa-achv-pau-para-toda-obra-playerprofile-1791115451100-ae9z7d",
+      1200
+     ]
+    ],
+    "bonus": 372,
+    "delta": 1572,
+    "expected": 1572
+   }
+  },
+  {
+   "name": "C9: cada conquista paga tem 1 linha de extrato com o mesmo valor; nenhuma linha órfã",
+   "ok": true,
+   "detail": {
+    "paid": 10,
+    "ledger": 9
+   }
+  },
+  {
+   "name": "C10: XP e moedas creditados por incremento (registro guarda reward_xp/reward_coins)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "D1: save antigo — conquistas de coleção que o inventário legado já prova são registradas SEM recompensa (reconciliadas), uma vez; flag gravada no mesmo lote",
+   "ok": true,
+   "detail": {
+    "midas": [
+     true,
+     false,
+     0
+    ],
+    "allcat": [
+     true,
+     false
+    ],
+    "collectionLedger": [],
+    "flag": true,
+    "unlocked": 5
+   }
+  },
+  {
+   "name": "D3/D4: conquista antiga paga preservada, sem estorno; conquista antiga ambígua (reconciliada) segue sem pagamento",
+   "ok": true,
+   "detail": {
+    "coll": true,
+    "arm": false
+   }
+  },
+  {
+   "name": "D2/D6: nenhuma linha de inventário perdida (inclusive duplicadas); atributos naturais intactos",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "D8: nenhuma moeda de coleção paga retroativamente (variação de saldo = só conquistas não-coleção do dia)",
+   "ok": true,
+   "detail": {
+    "delta": 800,
+    "ledger": [
+     "reward-pa-achv-estreia-em-torneios-playerprofile-1791115471663-p9zkyc",
+     "reward-pa-achv-frequentador-playerprofile-1791115471663-p9zkyc",
+     "reward-pa-achv-nascido-para-vencer-playerprofile-1791115471663-p9zkyc"
+    ]
+   }
+  },
+  {
+   "name": "D5: após a reconciliação, aquisição nova que completa \"Mito Vivo\" paga normalmente (10.000), uma vez",
+   "ok": true,
+   "detail": {
+    "mito": 10000,
+    "before5": 5000800
+   }
+  },
+  {
+   "name": "D7: save anterior à Fase 12 segue a reconciliação antiga — tudo registrado sem recompensa",
+   "ok": true,
+   "detail": {
+    "m7": false
+   }
+  },
+  {
+   "name": "G0: padrão do código = recompensas de coleção LIBERADAS (aprovado na LOCAL-9C.2-B-R1)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "G1: com a liberação desligada o progresso aparece correto (1/1, 100%), mas nada é registrado nem pago, e a flag de saves antigos não é gravada",
+   "ok": true,
+   "detail": {
+    "bought": "purchased",
+    "progress": {
+     "value": 1,
+     "percent": 100,
+     "unlocked": true
+    },
+    "registered": false,
+    "coinsDelta": 1100,
+    "flag": false
+   }
+  },
+  {
+   "name": "G2: ao liberar, save sem flag reconcilia o que já possui (sem pagamento) — política de saves antigos vale no dia da liberação",
+   "ok": true,
+   "detail": {
+    "m": [
+     true,
+     false
+    ]
+   }
+  }
+ ],
+ "cases": {
+  "A_units": {
+   "ausente": 1,
+   "nulo": 1,
+   "um": 1,
+   "dois": 2,
+   "texto3": 3,
+   "zero": 0,
+   "negativo": 0,
+   "invalido": 0,
+   "fracao": 1,
+   "semLinha": 0
+  },
+  "A1": {
+   "before": {
+    "totalOwned": 1,
+    "legendary": 0,
+    "rackets": 0,
+    "units": 2
+   },
+   "after": {
+    "totalOwned": 2,
+    "legendary": 1,
+    "rackets": 1,
+    "units": 3
+   }
+  },
+  "A10": {
+   "sold": "sold",
+   "boughtTech": "purchased",
+   "afterSaleAndBuy": 6,
+   "afterRebuy": 7
+  },
+  "B6": {
+   "relic": "purchased",
+   "rarities": 7,
+   "exclusive": 1,
+   "mythic": 1,
+   "rainbow": true,
+   "exclusividade": true
+  },
+  "C1": {
+   "bought": "purchased",
+   "row": {
+    "reward_delivered": true,
+    "reward_coins": 1000,
+    "reconciled": false
+   },
+   "ledger": [
+    [
+     "reward-pa-achv-toque-de-midas-playerprofile-1791115451100-ae9z7d",
+     1000
+    ],
+    [
+     "reward-pa-achv-primeiro-dia-playerprofile-1791115451100-ae9z7d",
+     100
+    ],
+    [
+     "reward-pa-achv-uma-semana-playerprofile-1791115451100-ae9z7d",
+     200
+    ]
+   ],
+   "delta": 1300,
+   "unlocked": 3
+  },
+  "C5": {
+   "failure": "falha injetada no meio do lote",
+   "unchanged": true,
+   "after": {
+    "delta": 10500,
+    "mito": 10000,
+    "led": 2
+   }
+  },
+  "C6": {
+   "rewarded": [
+    [
+     "achv-primeiro-lucro",
+     "achv-pau-para-toda-obra"
+    ],
+    []
+   ],
+   "ledger": [
+    [
+     "reward-pa-achv-pau-para-toda-obra-playerprofile-1791115451100-ae9z7d",
+     1200
+    ]
+   ],
+   "bonus": 372,
+   "delta": 1572,
+   "expected": 1572
+  },
+  "D1": {
+   "midas": [
+    true,
+    false,
+    0
+   ],
+   "allcat": [
+    true,
+    false
+   ],
+   "collectionLedger": [],
+   "flag": true,
+   "unlocked": 5
+  },
+  "G1": {
+   "bought": "purchased",
+   "progress": {
+    "value": 1,
+    "percent": 100,
+    "unlocked": true
+   },
+   "registered": false,
+   "coinsDelta": 1100,
+   "flag": false
+  }
+ },
+ "summary": {
+  "total": 32,
+  "passed": 32,
+  "failed": 0
+ }
+}

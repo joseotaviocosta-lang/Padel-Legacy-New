@@ -432,6 +432,9 @@ export async function ensureMyProfile(user) {
       // zerava a recompensa de conquistas legítimas (ex.: "Encontrou um
       // Guia"), enquanto a 1ª sincronização pós-partida pagava tudo.
       achievements_v2_reconciled: true,
+      // LOCAL-9C.2-B: idem para as conquistas de coleção — carreira nova não
+      // tem inventário anterior à correção da contagem; tudo o que comprar paga.
+      collection_achievements_v1_reconciled: true,
     });
     return created;
   } catch (e) {

@@ -1,0 +1,252 @@
+{
+ "generatedBy": "LOCAL-9C.2-B-R1 collection rewards release",
+ "forcedRelease": false,
+ "checks": [
+  {
+   "name": "R0: liberação efetiva ligada nesta execução",
+   "ok": true,
+   "detail": {
+    "constant": true,
+    "effective": true
+   }
+  },
+  {
+   "name": "K1: kit inicial = linha `starter_seed` (remapSeedRow, 5.27-M) de um produto REAL do catálogo à venda na Loja; conta como 1 produto distinto",
+   "ok": true,
+   "detail": {
+    "row": {
+     "id": "inventory-001",
+     "item_id": "shop-003",
+     "quantity": 2,
+     "starter_seed": true
+    },
+    "catalogItem": {
+     "id": "shop-003",
+     "name": "Grip Performance",
+     "available": true,
+     "price": 80
+    },
+    "counted": {
+     "totalOwned": 1,
+     "units": 2
+    }
+   }
+  },
+  {
+   "name": "K1: kit inicial é equipamento utilizável (equipa) e vendável pela regra normal — item legítimo, não registro técnico",
+   "ok": true,
+   "detail": {
+    "equipped": true,
+    "sold": "sold"
+   }
+  },
+  {
+   "name": "E1: três ciclos comprar → receber → vender → recomprar: \"Toque de Midas\" paga UMA vez; cada ciclo perde dinheiro (sem lucro)",
+   "ok": true,
+   "detail": {
+    "cycle": [
+     {
+      "buy": "purchased",
+      "price": 20153,
+      "sell": "sold",
+      "resale": 4800
+     },
+     {
+      "buy": "purchased",
+      "price": 20153,
+      "sell": "sold",
+      "resale": 4800
+     },
+     {
+      "buy": "purchased",
+      "price": 20153,
+      "sell": "sold",
+      "resale": 4800
+     }
+    ],
+    "midasRewardRows": 1,
+    "midasPaid": 1000,
+    "netShop": -46059,
+    "coinsDelta": -44159,
+    "explained": -44159
+   }
+  },
+  {
+   "name": "I1: saldo = extrato (loja + conquista) ao longo dos ciclos",
+   "ok": true,
+   "detail": {
+    "delta": -44159,
+    "explained": -44159,
+    "rows": 11
+   }
+  },
+  {
+   "name": "E1: após save/load e dois fechamentos, nada pago de novo; registro único",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "L1: save antigo com duas avaliações concorrentes → Midas e Pau para Toda Obra registradas UMA vez, reconciliadas, sem moeda nem extrato de coleção; flag gravada",
+   "ok": true,
+   "detail": {
+    "reconciled": [
+     [
+      "achv-toque-de-midas",
+      true,
+      false,
+      0
+     ],
+     [
+      "achv-pau-para-toda-obra",
+      true,
+      false,
+      0
+     ]
+    ],
+    "collectionLedger": [],
+    "flag": true,
+    "acc": {
+     "delta": 100,
+     "explained": 100,
+     "rows": 1
+    }
+   }
+  },
+  {
+   "name": "L1: saldo = extrato (só conquistas não-coleção pagas no dia)",
+   "ok": true,
+   "detail": {
+    "delta": 100,
+    "explained": 100,
+    "rows": 1
+   }
+  },
+  {
+   "name": "L1: após duas recargas e fechamentos, reconciliação não se repete, nada é pago, nada duplica",
+   "ok": true,
+   "detail": 2
+  },
+  {
+   "name": "L3: após a reconciliação, \"Mito Vivo\" (aquisição nova) paga 10.000 uma vez",
+   "ok": true,
+   "detail": {
+    "mito": 10000,
+    "cBefore": 5000100
+   }
+  },
+  {
+   "name": "F1: falha no lote da reconciliação → nem registro nem flag; a próxima avaliação reconcilia uma vez, sem pagar",
+   "ok": true,
+   "detail": {
+    "failure": "falha injetada no meio do lote",
+    "afterFail": {
+     "flag": false,
+     "rows": 0
+    },
+    "midas": [
+     true,
+     false
+    ]
+   }
+  },
+  {
+   "name": "L2: save antigo sem nada a provar → flag gravada sem registrar nada; a 1ª conquista real depois disso paga normalmente",
+   "ok": true,
+   "detail": {
+    "flagged": true,
+    "noRows": 0,
+    "midas2": 1000
+   }
+  }
+ ],
+ "cases": {
+  "K1": {
+   "row": {
+    "id": "inventory-001",
+    "item_id": "shop-003",
+    "quantity": 2,
+    "starter_seed": true
+   },
+   "catalogItem": {
+    "id": "shop-003",
+    "name": "Grip Performance",
+    "available": true,
+    "price": 80
+   },
+   "counted": {
+    "totalOwned": 1,
+    "units": 2
+   }
+  },
+  "E1": {
+   "cycle": [
+    {
+     "buy": "purchased",
+     "price": 20153,
+     "sell": "sold",
+     "resale": 4800
+    },
+    {
+     "buy": "purchased",
+     "price": 20153,
+     "sell": "sold",
+     "resale": 4800
+    },
+    {
+     "buy": "purchased",
+     "price": 20153,
+     "sell": "sold",
+     "resale": 4800
+    }
+   ],
+   "midasRewardRows": 1,
+   "midasPaid": 1000,
+   "netShop": -46059,
+   "coinsDelta": -44159,
+   "explained": -44159
+  },
+  "L1": {
+   "reconciled": [
+    [
+     "achv-toque-de-midas",
+     true,
+     false,
+     0
+    ],
+    [
+     "achv-pau-para-toda-obra",
+     true,
+     false,
+     0
+    ]
+   ],
+   "collectionLedger": [],
+   "flag": true,
+   "acc": {
+    "delta": 100,
+    "explained": 100,
+    "rows": 1
+   }
+  },
+  "F1": {
+   "failure": "falha injetada no meio do lote",
+   "afterFail": {
+    "flag": false,
+    "rows": 0
+   },
+   "midas": [
+    true,
+    false
+   ]
+  }
+ },
+ "releaseState": {
+  "constant": true,
+  "effective": true
+ },
+ "summary": {
+  "total": 12,
+  "passed": 12,
+  "failed": 0
+ }
+}

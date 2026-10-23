@@ -64,13 +64,35 @@ async function fetchCareerEarnings(profileId) {
 // categoria/raridade específica. Nenhum campo novo, nenhuma mecânica nova.
 const CATEGORY_COUNT_KEYS = { raquete: 'rackets', tenis: 'shoes', roupa: 'apparel', acessorio_tec: 'tech' };
 
+// LOCAL-9C.2-B — unidades de uma linha de inventário. A Loja (Shop.jsx até a
+// 9C.2-A, purchaseShopItem depois) nunca gravou `quantity`: cada compra é UMA
+// linha de equipamento único. Exigir `quantity > 0` deixava toda compra fora
+// das 14 conquistas de coleção (só a linha de demonstração, quantity 2,
+// contava). Ausente = 1 unidade; número finito = parte inteira (0 = consumido);
+// negativo ou inválido = 0 (nunca conta).
+export function inventoryRowUnits(row) {
+  if (!row) return 0;
+  const raw = row.quantity;
+  if (raw === undefined || raw === null || raw === '') return 1;
+  const value = Number(raw);
+  return Number.isFinite(value) && value > 0 ? Math.floor(value) : 0;
+}
+
 async function fetchInventoryStats(profileId) {
   const [inventory, shopItems] = await Promise.all([
     localGame.entities.PlayerInventory.filter({ profile_id: profileId }).catch(() => []),
     localGame.entities.ShopItem.list().catch(() => []),
   ]);
   const itemById = new Map(shopItems.map((item) => [item.id, item]));
-  const owned = inventory.filter((row) => Number(row.quantity) > 0);
+  // Itens DIFERENTES (como as descrições dizem): uma linha por item_id possuído.
+  // Linhas duplicadas do mesmo item (saves anteriores à 9C.2-A, clique duplo)
+  // não inflam a coleção.
+  const ownedById = new Map();
+  for (const row of inventory) {
+    if (!row?.item_id || inventoryRowUnits(row) <= 0 || ownedById.has(row.item_id)) continue;
+    ownedById.set(row.item_id, row);
+  }
+  const owned = [...ownedById.values()];
   const categories = new Set();
   const rarities = new Set();
   const categoryCounts = { rackets: 0, shoes: 0, apparel: 0, tech: 0 };
@@ -103,7 +125,8 @@ async function fetchInventoryStats(profileId) {
   // conquistas "Alcance 100 em X" avaliam o atributo EFETIVO, como antes,
   // quando o bônus ficava gravado no atributo (ver achievementEngine.js).
   const equipmentModifiers = computeEquipmentModifiers(inventory, itemById);
-  return { totalOwned: owned.length, categories: categories.size, rarities: rarities.size, legendary, mythic, exclusive, totalCategoriesInCatalog, totalRaritiesInCatalog, equipmentModifiers, ...categoryCounts };
+  const totalUnits = inventory.reduce((sum, row) => sum + inventoryRowUnits(row), 0);
+  return { totalOwned: owned.length, totalUnits, categories: categories.size, rarities: rarities.size, legendary, mythic, exclusive, totalCategoriesInCatalog, totalRaritiesInCatalog, equipmentModifiers, ...categoryCounts };
 }
 
 async function fetchTrainingCenter(profileId) {

@@ -10,7 +10,15 @@ import { check, done } from './lib/v524dRewardHarness.mjs';
 const source = readFileSync(new URL('../src/lib/achievementEngine.js', import.meta.url), 'utf8');
 const sync = source.match(/export async function syncPlayerAchievements[\s\S]*?\n\}/)[0];
 await check('domínio: registros + recompensa numa única localGame.batch', () => {
-  assert.match(sync, /localGame\.batch\(operations/);
+  // LOCAL-9C.2-B-R1: o lote recebe um planejador (CareerEntityRepository.batch,
+  // LOCAL-9C.2-A), avaliado dentro da gravação serializada. Continua UMA
+  // chamada só, com registro + crédito no mesmo lote — e o crédito é por
+  // incremento, nunca saldo absoluto lido antes do lote.
+  assert.equal((sync.match(/localGame\.batch\(/g) || []).length, 1, 'uma única localGame.batch');
+  assert.match(sync, /localGame\.batch\(\(view\) =>/, 'lote com planejador');
+  assert.match(sync, /entityName: 'PlayerAchievement'/, 'registro da conquista no lote');
+  assert.match(sync, /type: 'playerIncrement'/, 'crédito por incremento no lote');
+  assert.doesNotMatch(sync, /coins\s*[:=]\s*\(Number\(/, 'sem saldo absoluto');
   assert.doesNotMatch(sync, /PlayerAchievement\.create\(/, 'sem create isolado');
   assert.doesNotMatch(sync, /PlayerProfile\.update\(/, 'sem update isolado de moedas');
 });
